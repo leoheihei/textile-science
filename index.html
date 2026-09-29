@@ -41,11 +41,6 @@
       letter-spacing: 0.5px;
     }
 
-    .author #visit-count {
-      color: #1d4ed8;
-      font-weight: 600;
-    }
-
     .subtitle {
       margin: 0 0 32px;
       text-align: center;
@@ -90,6 +85,18 @@
       font-size: 15px;
     }
 
+    .counter {
+      margin: 32px 0 0;
+      text-align: center;
+      color: #6b7280;
+      font-size: 14px;
+    }
+
+    .counter span {
+      font-weight: 600;
+      color: #1d4ed8;
+    }
+
     @media (max-width: 640px) {
       .cards {
         grid-template-columns: 1fr;
@@ -104,10 +111,7 @@
 <body>
   <main class="container">
     <h1>纺织材料学专题</h1>
-    <p class="author">
-      梁帅童 &nbsp;|&nbsp; 纺织服装学院 &nbsp;|&nbsp; 上海工程技术大学
-      &nbsp;|&nbsp; 访问量：<span id="visit-count">加载中...</span> 次
-    </p>
+    <p class="author">梁帅童 &nbsp;|&nbsp; 纺织服装学院 &nbsp;|&nbsp; 上海工程技术大学</p>
     <p class="subtitle">请选择要查看的专题页面</p>
 
     <div class="cards">
@@ -121,44 +125,15 @@
         <p>纤维织物课堂专题</p>
       </a>
     </div>
+
+    <p class="counter">
+      本站总访问量 <span id="vercount_value_site_pv">加载中…</span> 次
+      &nbsp;|&nbsp;
+      总访客数 <span id="vercount_value_site_uv">加载中…</span> 人
+    </p>
   </main>
 
-  <script>
-    (function () {
-      // 命名空间与键名：可在后续多页面统计中复用同一套命名规则
-      const NAMESPACE = "liang-shuaitong-su" + "es"; // 唯一命名空间
-      const KEY = "index-page";                      // 页面唯一键
-      const COUNT_URL = "https://api.counterapi.dev/v1";
-
-      const counterEl = document.getElementById("visit-count");
-      const storageKey = "visited_" + NAMESPACE + "_" + KEY;
-
-      async function updateCounter() {
-        try {
-          const hasVisited = localStorage.getItem(storageKey);
-
-          // 已访问过：只读取当前值；首次访问：先自增再返回
-          const endpoint = hasVisited
-            ? `${COUNT_URL}/${NAMESPACE}/${KEY}/`
-            : `${COUNT_URL}/${NAMESPACE}/${KEY}/up`;
-
-          const response = await fetch(endpoint);
-          if (!response.ok) throw new Error("HTTP " + response.status);
-
-          const data = await response.json();
-          counterEl.textContent = data.count;
-
-          if (!hasVisited) {
-            localStorage.setItem(storageKey, "true");
-          }
-        } catch (err) {
-          counterEl.textContent = "—";
-          console.warn("访问计数器加载失败：", err);
-        }
-      }
-
-      updateCounter();
-    })();
-  </script>
+  <!-- Vercount 访问计数器 -->
+  <script defer src="https://events.vercount.one/js"></script>
 </body>
 </html>
