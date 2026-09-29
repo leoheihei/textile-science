@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>特克斯 / 旦尼尔 / 支数 — 课堂讲义</title>
+<style>
+:root{
+  --ink:#1c2733;
+  --ink-2:#455468;
+  --ink-3:#6b7a8d;
+  --line:#dde3ea;
+  --line-2:#eef1f5;
+  --bg:#f2f4f7;
+  --paper:#ffffff;
+
+  --direct:#1f4e79;      /* 定长制 蓝 */
+  --direct-bg:#eef4fa;
+  --direct-soft:#c8d8e8;
+
+  --indirect:#1a6f5a;    /* 定重制 绿 */
+  --indirect-bg:#ecf6f2;
+  --indirect-soft:#bfe0d5;
+
+  --warn:#b5342a;        /* 重点/警示 红 */
+  --warn-bg:#fdf1ef;
+
+  --gold:#8a6d1f;        /* 常数 金 */
+  --gold-bg:#fdf8ec;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:96px}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+  font-size:17px;
+  line-height:1.78;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ 顶部条 ============ */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1320px; margin:0 auto; padding:10px 24px;
+  display:flex; align-items:center; gap:16px;
+}
+.topbar-title{font-size:15px; font-weight:700; letter-spacing:.02em; color:var(--direct)}
+.topbar-sub{font-size:12.5px; color:var(--ink-3); border-left:1px solid var(--line); padding-left:14px}
+.topbar-actions{margin-left:auto; display:flex; gap:8px}
+.btn{
+  font:inherit; font-size:12.5px; padding:5px 13px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-2);
+  cursor:pointer; transition:.16s;
+}
+.btn:hover{border-color:var(--direct); color:var(--direct); background:var(--direct-bg)}
+.progress{height:3px; background:var(--line-2)}
+.progress-bar{height:100%; width:0; background:linear-gradient(90deg,var(--direct),var(--indirect)); transition:width .1s linear}
+
+/* ============ 布局 ============ */
+.shell{max-width:1320px; margin:0 auto; padding:0 24px 80px; display:grid; grid-template-columns:236px 1fr; gap:36px; align-items:start}
+
+/* ============ 侧栏导航 ============ */
+.nav{position:sticky; top:74px; padding:22px 0; max-height:calc(100vh - 90px); overflow-y:auto}
+.nav-h{font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; margin:0 0 10px 12px}
+.nav a{
+  display:block; font-size:14px; color:var(--ink-2); text-decoration:none;
+  padding:7px 12px; border-radius:8px; border-left:2px solid transparent;
+  transition:.14s; line-height:1.45;
+}
+.nav a:hover{background:#fff; color:var(--direct)}
+.nav a.on{background:#fff; color:var(--direct); font-weight:600; border-left-color:var(--direct); box-shadow:0 1px 3px rgba(31,78,121,.09)}
+.nav a .n{display:inline-block; width:20px; color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:12px}
+.nav a.on .n{color:var(--direct)}
+
+/* ============ 正文 ============ */
+main{min-width:0; padding-top:26px}
+section{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:32px 38px 36px; margin-bottom:26px; scroll-margin-top:96px;
+}
+h2{
+  font-size:23px; margin:0 0 6px; letter-spacing:.01em; line-height:1.4;
+  display:flex; align-items:baseline; gap:12px;
+}
+h2 .num{
+  font-size:13px; font-weight:700; color:#fff; background:var(--direct);
+  border-radius:6px; padding:2px 9px; letter-spacing:.04em; position:relative; top:-2px;
+  font-variant-numeric:tabular-nums;
+}
+h2.g .num{background:var(--indirect)}
+h2.r .num{background:var(--warn)}
+h2.k .num{background:var(--gold)}
+.lead{color:var(--ink-2); font-size:15.5px; margin:0 0 24px; padding-bottom:16px; border-bottom:1px dashed var(--line)}
+h3{font-size:18px; margin:30px 0 10px; color:var(--direct); letter-spacing:.01em}
+h3.g{color:var(--indirect)}
+h3::before{content:""; display:inline-block; width:4px; height:15px; background:currentColor; border-radius:2px; margin-right:9px; position:relative; top:1px}
+h4{font-size:16px; margin:22px 0 8px; color:var(--ink)}
+p{margin:10px 0}
+ul,ol{margin:10px 0; padding-left:24px}
+li{margin:6px 0}
+strong{color:var(--ink); font-weight:700}
+code{
+  font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.88em;
+  background:#f3f5f8; border:1px solid var(--line); border-radius:4px;
+  padding:1px 5px; color:#25476e;
+}
+
+/* ============ 公式 ============ */
+.eq{
+  display:block; margin:16px 0; padding:15px 20px;
+  background:#f8fafc; border:1px solid var(--line); border-left:3px solid var(--direct);
+  border-radius:8px; font-size:16.5px; line-height:2.1; overflow-x:auto;
+}
+.eq.g{border-left-color:var(--indirect)}
+.eq.k{border-left-color:var(--gold)}
+.eq .lbl{font-size:12.5px; color:var(--ink-3); margin-left:10px}
+.frac{display:inline-block; vertical-align:-0.55em; text-align:center; font-size:.86em; line-height:1.18; margin:0 .18em}
+.frac .num{display:block; border-bottom:1.2px solid currentColor; padding:0 .3em}
+.frac .den{display:block; padding:0 .3em}
+.big{font-size:20px; font-weight:700; color:var(--direct)}
+.big.g{color:var(--indirect)}
+
+/* ============ 表格 ============ */
+.tw{overflow-x:auto; margin:16px 0; border:1px solid var(--line); border-radius:10px}
+table{border-collapse:collapse; width:100%; font-size:14.5px; background:#fff}
+th,td{padding:9px 13px; text-align:left; border-bottom:1px solid var(--line-2); vertical-align:top}
+thead th{
+  background:#f6f8fb; font-weight:700; font-size:13.5px; color:var(--direct);
+  border-bottom:1px solid var(--line); white-space:nowrap; position:sticky; top:0;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafcfe}
+td.num,th.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+.tc{text-align:center}
+caption{caption-side:top; text-align:left; font-size:13px; color:var(--ink-3); padding:10px 13px 8px; background:#fff}
+
+/* ============ 卡片/提示 ============ */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:#fcfdfe}
+.card h4{margin:0 0 8px; font-size:15.5px}
+.card p:last-child{margin-bottom:0}
+.card.d{border-color:var(--direct-soft); background:var(--direct-bg)}
+.card.g{border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.card.k{border-color:#ecdcb0; background:var(--gold-bg)}
+.card.r{border-color:#f0cfca; background:var(--warn-bg)}
+
+.note{
+  border-radius:10px; padding:14px 18px; margin:18px 0; font-size:15.5px;
+  border:1px solid var(--line); background:#f8fafc;
+}
+.note.d{border-left:3px solid var(--direct); background:var(--direct-bg)}
+.note.g{border-left:3px solid var(--indirect); background:var(--indirect-bg)}
+.note.k{border-left:3px solid var(--gold); background:var(--gold-bg)}
+.note.r{border-left:3px solid var(--warn); background:var(--warn-bg)}
+.note-h{font-weight:700; font-size:14px; letter-spacing:.03em; margin-bottom:5px; display:block}
+.note.d .note-h{color:var(--direct)}
+.note.g .note-h{color:var(--indirect)}
+.note.k .note-h{color:var(--gold)}
+.note.r .note-h{color:var(--warn)}
+
+.tag{
+  display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-3); margin:0 5px 5px 0;
+  font-variant-numeric:tabular-nums;
+}
+.tag.d{color:var(--direct); border-color:var(--direct-soft); background:var(--direct-bg)}
+.tag.g{color:var(--indirect); border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.tag.r{color:var(--warn); border-color:#f0cfca; background:var(--warn-bg)}
+
+.kbd-f{font-family:"SF Mono",Menlo,monospace; font-size:14px; background:#fff; border:1px solid var(--line); border-radius:6px; padding:3px 8px}
+
+/* ============ 交互工具 ============ */
+.tool{border:1px solid var(--direct-soft); border-radius:12px; background:linear-gradient(180deg,#f7fafd,#fff); padding:20px 22px; margin:20px 0}
+.tool-h{font-size:15px; font-weight:700; color:var(--direct); margin:0 0 14px; display:flex; align-items:center; gap:8px}
+.tool-h::before{content:"▸"; color:var(--direct)}
+.tool-h.g{color:var(--indirect)} .tool-h.g::before{color:var(--indirect)}
+.frow{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:14px}
+.fld{display:flex; flex-direction:column; gap:5px}
+.fld label{font-size:12.5px; color:var(--ink-3); font-weight:600; letter-spacing:.02em}
+input[type=number],select{
+  font:inherit; font-size:15px; padding:8px 11px; border:1px solid var(--line);
+  border-radius:8px; background:#fff; color:var(--ink); min-width:118px;
+  font-variant-numeric:tabular-nums;
+}
+input[type=number]:focus,select:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.chips{display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 14px}
+.chip{
+  font:inherit; font-size:12.5px; padding:4px 11px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--direct-soft); background:#fff; color:var(--direct); transition:.14s;
+}
+.chip:hover{background:var(--direct); color:#fff}
+.out{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px; margin-top:6px}
+.ocard{border:1px solid var(--line); border-radius:9px; background:#fff; padding:11px 13px; text-align:center}
+.ocard .k{font-size:11.5px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase; font-weight:700}
+.ocard .v{font-size:21px; font-weight:700; color:var(--direct); font-variant-numeric:tabular-nums; line-height:1.3; word-break:break-all}
+.ocard .u{font-size:12px; color:var(--ink-3)}
+.ocard.hi{background:var(--direct); border-color:var(--direct)}
+.ocard.hi .k{color:#b8d0e6} .ocard.hi .v{color:#fff} .ocard.hi .u{color:#b8d0e6}
+.err{color:var(--warn); font-size:13.5px; min-height:20px; margin-top:6px}
+
+/* ============ 练习 ============ */
+details.q{border:1px solid var(--line); border-radius:10px; background:#fff; margin:12px 0; overflow:hidden}
+details.q>summary{
+  cursor:pointer; padding:14px 18px; font-size:15.5px; font-weight:600;
+  list-style:none; display:flex; gap:11px; align-items:flex-start; transition:.14s;
+}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary:hover{background:#f8fafc}
+details.q>summary .qn{
+  flex:0 0 auto; width:24px; height:24px; border-radius:50%; background:var(--direct);
+  color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; margin-top:2px;
+  font-variant-numeric:tabular-nums;
+}
+details.q[open]>summary{border-bottom:1px solid var(--line-2); background:#f8fafc}
+details.q .ans{padding:15px 18px 18px 53px; font-size:15px; color:var(--ink-2); background:#fcfdfe}
+details.q .ans .fin{color:var(--warn); font-weight:700}
+
+/* ============ 参考文献 ============ */
+.refs{counter-reset:r; list-style:none; padding:0; margin:14px 0 0}
+.refs li{
+  counter-increment:r; position:relative; padding:9px 0 9px 42px;
+  border-bottom:1px dashed var(--line-2); font-size:14.5px; line-height:1.72;
+}
+.refs li:last-child{border-bottom:none}
+.refs li::before{
+  content:"[" counter(r) "]"; position:absolute; left:0; top:9px;
+  font-size:12.5px; color:var(--direct); font-weight:700; font-variant-numeric:tabular-nums;
+}
+.refs li em{font-style:normal; color:var(--ink-3)}
+.refs li .src{color:var(--ink-3); font-size:13px}
+.refs-cat{font-size:14px; font-weight:700; color:var(--ink); margin:26px 0 6px; padding:6px 0 6px 0; border-bottom:2px solid var(--line)}
+.refs-cat:first-of-type{margin-top:8px}
+.refs-cat span{color:var(--ink-3); font-weight:400; font-size:12.5px; margin-left:8px}
+
+/* ============ 封面 ============ */
+.cover{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:46px 46px 40px; margin-bottom:26px; position:relative; overflow:hidden;
+}
+.cover::after{
+  content:""; position:absolute; right:-80px; top:-80px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 70%,rgba(31,78,121,.09),rgba(26,111,90,.05) 55%,transparent 72%);
+}
+.cover .kicker{font-size:12.5px; letter-spacing:.2em; color:var(--indirect); font-weight:700; text-transform:uppercase}
+.cover h1{font-size:35px; margin:14px 0 4px; letter-spacing:.01em; line-height:1.32}
+.cover h1 .a{color:var(--direct)} .cover h1 .b{color:var(--indirect)}
+.cover .sub{font-size:16.5px; color:var(--ink-2); margin:12px 0 0; max-width:660px}
+.cover .meta{
+  margin-top:26px; padding-top:18px; border-top:1px solid var(--line);
+  display:flex; flex-wrap:wrap; gap:10px 26px; font-size:13.5px; color:var(--ink-3);
+}
+.cover .meta b{color:var(--ink-2); font-weight:600}
+.cover .tags{margin-top:20px}
+.academic-note{margin-top:18px; font-size:13px; color:var(--ink-3); line-height:1.7}
+
+footer{
+  max-width:1320px; margin:0 auto; padding:22px 24px 60px;
+  font-size:13px; color:var(--ink-3); border-top:1px solid var(--line);
+}
+
+/* ============ 响应式 ============ */
+@media (max-width:1000px){
+  .shell{grid-template-columns:1fr; gap:0}
+  .nav{position:static; max-height:none; border-bottom:1px solid var(--line); padding:14px 0 18px}
+  .nav a{display:inline-block; margin:0 6px 6px 0}
+  .grid2,.grid3{grid-template-columns:1fr}
+  section{padding:24px 20px 28px}
+  .cover{padding:32px 24px}
+  .cover h1{font-size:27px}
+  .topbar-sub{display:none}
+}
+@media (min-width:1001px) and (max-width:1200px){
+  .grid3{grid-template-columns:1fr 1fr}
+}
+
+/* ============ 打印 ============ */
+@media print{
+  :root{--bg:#fff}
+  body{font-size:11.5pt; background:#fff}
+  .topbar,.nav,.tool .chips,.topbar-actions,footer .noprint{display:none !important}
+  .shell{display:block; max-width:none; padding:0}
+  section,.cover{border:none; border-radius:0; padding:0 0 18px; margin:0 0 20px; break-inside:auto; box-shadow:none}
+  h2,h3{break-after:avoid}
+  table,.card,.note,.eq,details.q{break-inside:avoid}
+  details.q{display:block} details.q>summary{cursor:default} details.q .ans{display:block !important}
+  details.q:not([open]) .ans{display:block !important}
+  a{color:inherit; text-decoration:none}
+  .cover::after{display:none}
+  .refs li{break-inside:avoid}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-title">纱线线密度三套语言</div>
+    <div class="topbar-sub">特克斯 · 旦尼尔 · 支数｜课堂讲解课件</div>
+    <div class="topbar-actions">
+      <button class="btn" onclick="window.print()">打印 / 导出 PDF</button>
+      <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">回到顶部</button>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="pbar"></div></div>
+</div>
+
+<div class="shell">
+
+  <!-- ================= 侧栏 ================= -->
+  <nav class="nav" id="nav">
+    <p class="nav-h">本讲目录</p>
+    <a href="#obj"><span class="n">01</span>学习目标与课时</a>
+    <a href="#frame"><span class="n">02</span>核心框架：定长制与定重制</a>
+    <a href="#tex"><span class="n">03</span>特克斯 tex</a>
+    <a href="#den"><span class="n">04</span>旦尼尔 D</a>
+    <a href="#count"><span class="n">05</span>支数 Nm / Ne</a>
+    <a href="#conv"><span class="n">06</span>换算体系与交互工具</a>
+    <a href="#const"><span class="n">07</span>常数之谜：583.1 / 590.5</a>
+    <a href="#table"><span class="n">08</span>速查表</a>
+    <a href="#apply"><span class="n">09</span>实务应用</a>
+    <a href="#test"><span class="n">10</span>测量方法</a>
+    <a href="#quiz"><span class="n">11</span>课堂练习</a>
+    <a href="#pitfall"><span class="n">12</span>常见误区</a>
+    <a href="#summary"><span class="n">13</span>一页速记</a>
+    <a href="#ref"><span class="n">14</span>参考文献与标准</a>
+  </nav>
+
+  <!-- ================= 正文 ================= -->
+  <main>
+
+  <!-- ========== 封面 ========== -->
+  <div class="cover" id="cover">
+    <div class="kicker">Textile Materials · 补充讲义</div>
+    <h1>纱线线密度的<span class="a">三套语言</span><br>特克斯 · 旦尼尔 · <span class="b">支数</span></h1>
+    <p class="sub">
+      同一根纱，棉纺厂说「32 支」，化纤厂说「150 旦」，国标申报写「16.7 特」——
+      三个数字，一件事。本讲把三套体系的定义、换算、常数由来与实务陷阱讲透，
+      并给出可直接用于验货与报价的计算工具。
+    </p>
+    <div class="tags">
+      <span class="tag d">定长制：tex / dtex / denier</span>
+      <span class="tag g">定重制：Nm / Ne</span>
+      <span class="tag k">换算常数 K</span>
+      <span class="tag r">回潮率基准</span>
+    </div>
+    <div class="meta">
+      <span><b>配套单元：</b>服装用纱线的线密度表示与换算</span>
+      <span><b>课时：</b>2 学时（90 min）</span>
+      <span><b>授课：</b>梁帅童 · 上海工程技术大学纺织服装学院</span>
+    </div>
+    <p class="academic-note">
+      本讲义所引术语定义以 GB/T 3291.1—1997 为准，符号与单位体系依 FZ/T 01035—2014
+      （修改采用 ISO 1144）、纱线标示依 GB/T 8693—2008（修改采用 ISO 1139），
+      公定回潮率依 GB/T 9994—2018。完整出处见第 14 节。
+    </p>
+  </div>
+
+  <!-- ========== 01 学习目标 ========== -->
+  <section id="obj">
+    <h2><span class="num">01</span>学习目标与课时安排</h2>
+    <p class="lead">本讲的落点不是背公式，而是建立「看到任何一个数字，先问它属于哪套体系」的条件反射。</p>
+
+    <div class="grid3">
+      <div class="card d">
+        <h4>知识目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>说出线密度的两种制度（定长制/定重制）的根本差别</li>
+          <li>准确复述 tex、denier、Nm、Ne 四个单位的定义</li>
+          <li>解释换算常数 590.5 与 583.1 的由来</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <h4>能力目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>在四套单位之间任意双向换算，误差可控</li>
+          <li>读懂 <code>150D/48F</code>、<code>C 14.8 tex × 2</code> 等规格串</li>
+          <li>由经纬密与纱支估算织物平方米克重</li>
+        </ul>
+      </div>
+      <div class="card r">
+        <h4>素养目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>意识到「同一支数不同基准」是贸易纠纷高发区</li>
+          <li>养成换算前先确认体系、基准与回潮率的职业习惯</li>
+          <li>理解我国公英制双轨制的历史成因</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>进度安排（90 min）</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:52%">环节</th><th class="num" style="width:16%">时长</th><th>形式</th></tr></thead>
+        <tbody>
+          <tr><td>概念框架：为什么要分两套制度</td><td class="num">10 min</td><td>概念对比与辨析</td></tr>
+          <tr><td>三个单位的定义与适用领域</td><td class="num">20 min</td><td>定义讲解与实物观察</td></tr>
+          <tr><td>换算体系与交互工具实操</td><td class="num">15 min</td><td>交互工具实操</td></tr>
+          <tr><td>常数之谜：回潮率与公英制双轨</td><td class="num">15 min</td><td>推导与讨论</td></tr>
+          <tr><td>实务应用：规格串解读、克重估算</td><td class="num">15 min</td><td>案例演算</td></tr>
+          <tr><td>练习与讨论（第 11 节 6 题）</td><td class="num">15 min</td><td>练习与讨论</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== 02 核心框架 ========== -->
+  <section id="frame">
+    <h2><span class="num">02</span>核心框架：定长制与定重制</h2>
+    <p class="lead">所有混乱的源头，是这两个制度的「数值增大方向」相反。</p>
+
+    <p>纱线是细长的柔性体，直接量直径既困难又不可靠（截面被压扁、有毛羽、有捻缩）。工业上的通行做法绕开直径，改用<strong>线密度</strong>（linear density）——即单位长度的质量，或单位质量的长度。围绕「先固定谁」，历史上形成了两套制度：</p>
+
+    <div class="grid2">
+      <div class="card d">
+        <h4>定长制（直接制，direct system）</h4>
+        <p><strong>先固定长度，再称质量。</strong>单位长度的质量越大，纱越粗。</p>
+        <p style="margin-bottom:0">代表单位：<span class="tag d">特克斯 tex</span><span class="tag d">旦尼尔 D</span><span class="tag d">分特克斯 dtex</span></p>
+        <p style="margin:10px 0 0"><strong style="color:var(--direct)">数值越大 → 纱越粗 ↑</strong></p>
+      </div>
+      <div class="card g">
+        <h4>定重制（间接制，indirect system）</h4>
+        <p><strong>先固定质量，再量长度。</strong>单位质量的长度越大，纱越细。</p>
+        <p style="margin-bottom:0">代表单位：<span class="tag g">公制支数 Nm</span><span class="tag g">英制棉纱支数 Ne</span><span class="tag g">毛纱英制支数</span></p>
+        <p style="margin:10px 0 0"><strong style="color:var(--indirect)">数值越大 → 纱越细 ↑</strong></p>
+      </div>
+    </div>
+
+    <div class="note r">
+      <span class="note-h">关键提醒</span>
+      看到「32 支」，第一反应不能是「很细」，而是先问：<strong>32 什么支？公支还是英支？棉纱基准还是毛纱基准？</strong>基准不同，同一数字对应的实际粗细可以差到 50% 以上（详见第 11 节练习 5）。
+    </div>
+
+    <h3>四个单位的定义对照</h3>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th>单位</th><th>制度</th><th>固定量</th><th>计量量</th><th class="num">数值增大</th><th>主要适用</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>特克斯 tex</strong></td><td><span class="tag d">定长制</span></td>
+            <td>1000 m</td><td>质量 / g</td><td class="num" style="color:var(--direct)">变粗</td>
+            <td>棉纱、化纤、混纺；ISO 与我国法定单位</td>
+          </tr>
+          <tr>
+            <td><strong>旦尼尔 D</strong></td><td><span class="tag d">定长制</span></td>
+            <td>9000 m</td><td>质量 / g</td><td class="num" style="color:var(--direct)">变粗</td>
+            <td>化学纤维长丝、真丝、氨纶、丝袜</td>
+          </tr>
+          <tr>
+            <td><strong>公制支数 Nm</strong></td><td><span class="tag g">定重制</span></td>
+            <td>1 g</td><td>长度 / m</td><td class="num" style="color:var(--indirect)">变细</td>
+            <td>毛纱、麻纱、绢纺纱</td>
+          </tr>
+          <tr>
+            <td><strong>英制支数 Ne</strong></td><td><span class="tag g">定重制</span></td>
+            <td>1 lb</td><td>长度 / 840 yd 的倍数</td><td class="num" style="color:var(--indirect)">变细</td>
+            <td>棉型纱线、棉与棉型化纤混纺纱</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>为什么恰好是 1000 m 与 9000 m？</h3>
+    <p>不是随意取的。1000 m 是米制的整齐倍数，便于用克直接读数；9000 m 则是旦尼尔的历史遗产——它源于「1 旦 = 1/24 盎司的丝长」这一以蚕丝绞长为基准的古老定义，最终折算到米制就落在 9000 m 上。两者的长度比恰好是 <strong>9 : 1</strong>，这正是后文「旦数 = 特数 × 9」的来源。</p>
+  </section>
+
+  <!-- ========== 03 特克斯 ========== -->
+  <section id="tex">
+    <h2><span class="num">03</span>特克斯 tex —— 国际与法定的共同语言</h2>
+    <p class="lead">别名「号数」「特数」，符号 tex，是唯一被 ISO 与我国国标同时认可的线密度单位。</p>
+
+    <div class="eq">
+      <span class="lbl">定义式</span><br>
+      <span class="big">T<sub>t</sub> = </span>
+      <span class="frac"><span class="num">G</span><span class="den">L</span></span>
+      × 1000&nbsp;&nbsp;<span class="lbl">G 为公定回潮率下的质量（g），L 为长度（m）</span><br>
+      <span class="lbl">即：1 tex = 1 g / km = 每千米克数</span>
+    </div>
+
+    <h3>定义的三层含义</h3>
+    <ol>
+      <li><strong>它是直接制</strong>：数值即「每千米多少克」，读数与秤直接挂钩，无需倒数。</li>
+      <li><strong>它必须带一个回潮率前提</strong>：同一根纱，干态与湿态称重不同，所以标准规定必须折算到<strong>公定回潮率</strong>下的质量（GB/T 9994—2018）。这一条是后面所有常数争议的根源。</li>
+      <li><strong>它是十进制</strong>：保留小数即可，无需像支数那样取分数。这正是 ISO 1956 年决定推广它的理由——纱线含多种纤维、织物含多种纱时，支数体系会迅速失控。</li>
+    </ol>
+
+    <h3>倍数单位：四级体系</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>单位</th><th>符号</th><th class="num">折合基准单位</th><th>定义</th><th>典型使用场景</th></tr></thead>
+        <tbody>
+          <tr><td>千特克斯</td><td><code>ktex</code></td><td class="num">10³ tex</td><td>千克 / 千米</td><td>粗支纱、缆绳、帘子线</td></tr>
+          <tr><td><strong>特克斯</strong></td><td><code>tex</code></td><td class="num">1 tex</td><td>克 / 千米</td><td>基准单位，纱线申报</td></tr>
+          <tr><td><strong>分特克斯</strong></td><td><code>dtex</code></td><td class="num">10⁻¹ tex</td><td>分克 / 千米</td><td>化纤长丝（欧洲体系惯用，如 167 dtex）</td></tr>
+          <tr><td>毫特克斯</td><td><code>mtex</code></td><td class="num">10⁻³ tex</td><td>毫克 / 千米</td><td>单根纤维细度、超细纤维</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14.5px;color:var(--ink-3)">书写规范：数值与单位连写，中间空一格，如 <code>60 dtex</code>、<code>16.7 tex</code>；公式中通用符号为 <code>T<sub>t</sub></code>。</p>
+
+    <div class="note d">
+      <span class="note-h">易混提示</span>
+      <code>167 dtex</code> 与 <code>150 D</code> 是同一根丝。分特与旦的换算系数是 <strong>1 D ↔ 1.111 dtex</strong>。若在规格书上看到两个数字相差约 11%，先怀疑是这一刻的换算，而不是两批货。
+    </div>
+  </section>
+
+  <!-- ========== 04 旦尼尔 ========== -->
+  <section id="den">
+    <h2><span class="num">04</span>旦尼尔 Denier —— 长丝与真丝的传统尺度</h2>
+    <p class="lead">符号 D 或 den，基准长度 9000 m，是化学纤维长丝领域的「母语」。</p>
+
+    <div class="eq">
+      <span class="lbl">定义式</span><br>
+      <span class="big">D = </span>
+      <span class="frac"><span class="num">G</span><span class="den">L</span></span>
+      × 9000&nbsp;&nbsp;<span class="lbl">G 为公定回潮率下的质量（g），L 为长度（m）</span><br>
+      <span class="lbl">即：1 D = 1 g / 9 km = 每 9000 m 的克数</span>
+    </div>
+
+    <p>两种单位都以「克」计量，只是基准长度不同；基准长度之比为 9000 ÷ 1000 = 9，所以同一条纱的旦数恰为特数的 9 倍：</p>
+
+    <div class="eq k">
+      <span style="font-size:12.5px;color:var(--ink-3);letter-spacing:.04em">同一条纱的两个数字之间的关系</span><br>
+      <span class="big" style="color:var(--gold)">旦数 = 特数 × 9&nbsp;&nbsp;&nbsp;⟺&nbsp;&nbsp;&nbsp;特数 = 旦数 ÷ 9</span>
+      <br><span class="lbl">实例：<strong>16.7 tex 的纱就是 150 D 的纱</strong>。这是全讲最值钱的一个数字，其余换算都能顺着推。</span>
+      <br><span class="lbl" style="color:var(--warn)">注意：切勿倒过来读成「1 D = 9 tex」——那是 81 倍的错误。</span>
+    </div>
+
+    <h3>为什么长丝不用 tex 而用 D？</h3>
+    <ul>
+      <li><strong>历史惯性</strong>：旦尼尔自蚕丝贸易时代就用于长丝，化纤工业化后直接继承了这套尺度与设备刻度。</li>
+      <li><strong>数值区间友好</strong>：常见长丝在 20～1000 D 之间，都是用着顺手的个位到四位整数；换成 tex 就变成 2.2～111 的小数与三位数混杂。</li>
+      <li><strong>细度分辨率</strong>：单丝纤度常在 1～5 D 区间，用 D 表达比 0.11～0.56 tex 直观得多。</li>
+    </ul>
+
+    <h3>规格串解读</h3>
+    <div class="grid2">
+      <div class="card">
+        <h4><code>150 D / 48 F</code></h4>
+        <p style="margin:0"><strong>150 D</strong>：整束丝的总纤度 150 旦<br>
+        <strong>48 F</strong>：由 48 根单丝（filament）组成<br>
+        <strong>单丝纤度</strong> = 150 ÷ 48 = 3.125 D ≈ 3.47 dtex</p>
+      </div>
+      <div class="card">
+        <h4><code>20 / 22 D</code>（桑蚕丝）</h4>
+        <p style="margin:0">真丝的天然离散性导致规格写成区间：<br>
+        实际纤度在 20～22 旦之间，取公称 <strong>21 D ≈ 23.3 dtex</strong> 用于计算。</p>
+      </div>
+    </div>
+
+    <h3>短纤也用 D —— 但要分清「纤维细度」与「纱线线密度」</h3>
+    <p>棉型、毛型化学纤维的<strong>单根纤维</strong>细度也用旦表示，常与切断长度并列书写，如 <code>1.5 D × 38 mm</code>。这里的 D 描述的是<strong>一根纤维</strong>，而 <code>150 D/48F</code> 描述的是<strong>一束长丝</strong>，两者不可混谈。</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th>纤维类型</th><th class="num">D</th><th class="num">dtex</th><th>常见品种与手感特征</th></tr></thead>
+        <tbody>
+          <tr><td>超细旦</td><td class="num">0.5 ~ 0.9</td><td class="num">0.6 ~ 1.0</td><td>仿丝绸、高密防风面料、擦拭布</td></tr>
+          <tr><td>棉型细旦</td><td class="num">1.2 ~ 1.4</td><td class="num">1.3 ~ 1.6</td><td>高档仿棉、柔顺手感</td></tr>
+          <tr><td><strong>棉型标准</strong></td><td class="num"><strong>1.5</strong></td><td class="num"><strong>1.7</strong></td><td><strong>棉型涤纶/粘胶主流规格，切断 38 mm</strong></td></tr>
+          <tr><td>中长型</td><td class="num">2.0 ~ 2.5</td><td class="num">2.2 ~ 2.8</td><td>仿毛、中厚织物</td></tr>
+          <tr><td>毛型</td><td class="num">3.0 ~ 5.0</td><td class="num">3.3 ~ 5.6</td><td>仿毛呢、粗纺面料</td></tr>
+          <tr><td>地毯 / 填充</td><td class="num">6 ~ 15</td><td class="num">7 ~ 17</td><td>地毯丝、非织造填充</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== 05 支数 ========== -->
+  <section id="count">
+    <h2><span class="num">05</span>支数 —— 定重制家族</h2>
+    <p class="lead">「支」的原意是「绞（hank）的个数」，即一磅原料能拉出多少绞纱。基准长度不同，就分裂成了好几个支数体系。</p>
+
+    <h3 class="g">5.1 公制支数 Nm</h3>
+    <div class="eq g">
+      <span class="lbl">定义式</span><br>
+      <span class="big g">N<sub>m</sub> = </span>
+      <span class="frac"><span class="num">L</span><span class="den">G</span></span>
+      <span class="lbl">L 为长度（m），G 为公定回潮率下的质量（g）</span><br>
+      <span class="lbl">即：1 g 纱线有多少米长；等价于 1 kg 有多少个 1000 m</span>
+    </div>
+    <p>与 tex 的关系极其干净：</p>
+    <div class="eq g">
+      <span class="big g">N<sub>m</sub> = </span>
+      <span class="frac"><span class="num">1000</span><span class="den">T<sub>t</sub></span></span>
+      <span class="lbl">&nbsp;⟺&nbsp;</span>
+      <span class="big g">T<sub>t</sub> = </span>
+      <span class="frac"><span class="num">1000</span><span class="den">N<sub>m</sub></span></span>
+    </div>
+    <p>主要用于<strong>毛纱、麻纱、绢纺纱</strong>。<span class="tag g">Nm 60 → 16.7 tex</span></p>
+
+    <h3 class="g">5.2 英制棉纱支数 Ne</h3>
+    <div class="eq g">
+      <span class="lbl">定义式</span><br>
+      <span class="big g">N<sub>e</sub> = </span>
+      <span class="frac"><span class="num">L (yd)</span><span class="den">840 × G (lb)</span></span>
+      <span class="lbl">即：1 磅重的棉纱有多少个 840 码（1 绞 = 840 yd）</span>
+    </div>
+    <p>这是<strong>棉纺厂与服装厂最常用的口语单位</strong>：20S、21S、32S、40S、60S、JC40S（精梳）、32S/2（双股）。</p>
+    <p>1 磅 = 453.6 g，840 码 = 768.1 m，把这两个数代进定义式，纯几何换算就得到那个著名的常数：</p>
+    <div class="eq g">
+      <span class="lbl">推导</span><br>
+      <span class="big g">T<sub>t</sub> = </span>
+      <span class="frac"><span class="num">453.6 × 1000</span><span class="den">768.1 × N<sub>e</sub></span></span>
+      <span class="big g"> = </span>
+      <span class="frac"><span class="num">590.5</span><span class="den">N<sub>e</sub></span></span>
+      <br><span class="lbl">这个 590.5 就是全部换算争议的起点，第 7 节展开。</span>
+    </div>
+
+    <h3 class="g">5.3 毛纱英制支数 —— 同名的另一套尺子</h3>
+    <p>毛纺业沿用英制，但基准绞长与棉纺不同，历史上分化出多套：</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>体系</th><th class="num">1 磅对应的基准长度</th><th>换算常数</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><strong>精梳毛纱支数</strong>（worsted）</td><td class="num">560 码（512.1 m）</td><td><code>tex = 885.8 / Ne<sub>W</sub></code></td><td>精纺毛纱主流体系，ISO 1144 收录</td></tr>
+          <tr><td>粗梳毛纱 · 约克夏制</td><td class="num">256 码（234.1 m）</td><td><code>tex ≈ 1937.7 / N</code></td><td>英式传统毛纺</td></tr>
+          <tr><td>粗梳毛纱 · 美制「纶」（run）</td><td class="num">1600 码（1463.0 m）</td><td><code>tex = 310.0 / N</code></td><td>北美毛纺、地毯纱</td></tr>
+          <tr><td>粗梳毛纱 · 克特制（cut）</td><td class="num">300 码（274.3 m）</td><td><code>tex = 1653.5 / N</code></td><td>部分粗纺与地毯领域</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note r">
+      <span class="note-h">关键结论</span>
+      同为「32 支」，精梳毛纱为 <strong>27.7 tex</strong>（885.8 ÷ 32），英制棉纱为 <strong>18.5 tex</strong>（590.5 ÷ 32）。<strong>毛纱基准更长、纱也更粗</strong>。跨行业谈支数而不说明体系，等于没有信息。
+    </div>
+  </section>
+
+  <!-- ========== 06 换算 ========== -->
+  <section id="conv">
+    <h2><span class="num">06</span>换算体系与交互工具</h2>
+    <p class="lead">全部换算都围绕 tex 这一个枢纽展开——先把任意单位换成 tex，再从 tex 换出去。</p>
+
+    <h3>换算公式总表</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>由 → 至</th><th>公式</th><th>性质</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>tex → D</td><td><code>D = 9 × tex</code></td><td>精确</td><td>基准长度比 9000/1000</td></tr>
+          <tr><td>D → tex</td><td><code>tex = D × 0.1111 = D ÷ 9</code></td><td>精确</td><td>ISO 1144 推荐写法</td></tr>
+          <tr><td>tex → dtex</td><td><code>dtex = 10 × tex</code></td><td>精确</td><td>十进制倍数</td></tr>
+          <tr><td>D → dtex</td><td><code>dtex = D × 1.1111</code></td><td>精确</td><td>化纤规格表常用</td></tr>
+          <tr><td>tex → Nm</td><td><code>Nm = 1000 ÷ tex</code></td><td>精确</td><td>互为倒数×1000</td></tr>
+          <tr><td>Nm → D</td><td><code>D = 9000 ÷ Nm</code></td><td>精确</td><td>恒等式 <code>Nm × D = 9000</code></td></tr>
+          <tr><td>Ne → tex</td><td><code>tex = K ÷ Ne</code></td><td>含常数</td><td>K 见下方说明</td></tr>
+          <tr><td>Ne → D</td><td><code>D = 5315 ÷ Ne</code>（纯棉 <code>5248 ÷ Ne</code>）</td><td>含常数</td><td>即 9 × 590.5</td></tr>
+          <tr><td>Ne → Nm</td><td><code>Nm = 1.6935 × Ne</code></td><td>精确</td><td>= 1000 ÷ 590.5</td></tr>
+          <tr><td>Nm → Ne</td><td><code>Ne = 0.5905 × Nm</code></td><td>精确</td><td>反算</td></tr>
+          <tr><td>精梳毛纱 Ne<sub>W</sub> → tex</td><td><code>tex = 885.8 ÷ Ne<sub>W</sub></code></td><td>含常数</td><td>基准 560 码</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>三个恒等式（验算利器）</h3>
+    <div class="grid3">
+      <div class="card k"><h4>Ne × D = 5315</h4><p style="margin:0;font-size:14.5px">把英支与旦直接相乘，结果稳定在 5315 附近（纯棉用 5248）。算完随手一乘就能发现错误。</p></div>
+      <div class="card k"><h4>Nm × D = 9000</h4><p style="margin:0;font-size:14.5px">公支与旦的定义式互为倒数：N<sub>m</sub> = L ÷ G，D = 9000G ÷ L，相乘时长度与质量全部约去，只剩 9000。</p></div>
+      <div class="card k"><h4>Nm × tex = 1000</h4><p style="margin:0;font-size:14.5px">公支与特克斯互为倒数关系，乘积恒为 1000。</p></div>
+    </div>
+
+    <!-- 交互换算器 -->
+    <div class="tool">
+      <p class="tool-h">课堂交互工具 ①｜线密度单位换算器</p>
+      <div class="chips">
+        <button class="chip" data-preset="150,den,chem">涤纶长丝 150 D</button>
+        <button class="chip" data-preset="40,ne,cotton">纯棉 40 英支</button>
+        <button class="chip" data-preset="30,tex,chem">常规纱 30 tex</button>
+        <button class="chip" data-preset="60,nm,chem">毛纱 60 公支</button>
+        <button class="chip" data-preset="167,dtex,chem">化纤 167 dtex</button>
+        <button class="chip" data-preset="20,den,chem">氨纶 20 D</button>
+      </div>
+      <div class="frow">
+        <div class="fld">
+          <label for="cv-val">数值</label>
+          <input type="number" id="cv-val" value="150" min="0.0001" step="any">
+        </div>
+        <div class="fld">
+          <label for="cv-unit">已知单位</label>
+          <select id="cv-unit">
+            <option value="den">旦尼尔 D</option>
+            <option value="tex">特克斯 tex</option>
+            <option value="dtex">分特克斯 dtex</option>
+            <option value="nm">公制支数 Nm</option>
+            <option value="ne">英制棉纱支数 Ne</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label for="cv-mat">换算常数 K（仅影响支数）</label>
+          <select id="cv-mat">
+            <option value="590.5">纯化纤 590.5</option>
+            <option value="583.1">纯棉 583.1</option>
+            <option value="587.6">涤棉混纺 587.6</option>
+            <option value="584.8">棉粘 75/25 584.8</option>
+            <option value="587.0">维棉 50/50 587.0</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label for="cv-fil">单丝根数 F（可选）</label>
+          <input type="number" id="cv-fil" placeholder="如 48" min="1" step="1">
+        </div>
+      </div>
+      <div class="out" id="cv-out"></div>
+      <div class="err" id="cv-err"></div>
+    </div>
+
+    <!-- 克重估算 -->
+    <div class="tool">
+      <p class="tool-h g">课堂交互工具 ②｜织物平方米克重估算器</p>
+      <div class="frow">
+        <div class="fld">
+          <label for="fw-den-u">密度单位</label>
+          <select id="fw-den-u">
+            <option value="10cm">根 / 10 cm</option>
+            <option value="in">根 / inch</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label for="fw-we">经密</label>
+          <input type="number" id="fw-we" value="524" min="0" step="any">
+        </div>
+        <div class="fld">
+          <label for="fw-twe">经纱 tex</label>
+          <input type="number" id="fw-twe" value="14.6" min="0" step="any">
+        </div>
+        <div class="fld">
+          <label for="fw-cwe">经织缩率 %</label>
+          <input type="number" id="fw-cwe" value="8" min="0" step="any">
+        </div>
+      </div>
+      <div class="frow">
+        <div class="fld">
+          <label for="fw-we2">&nbsp;</label>
+          <span style="font-size:12.5px;color:var(--ink-3);padding:8px 0">— 纬向 —</span>
+        </div>
+        <div class="fld">
+          <label for="fw-wf">纬密</label>
+          <input type="number" id="fw-wf" value="283" min="0" step="any">
+        </div>
+        <div class="fld">
+          <label for="fw-twf">纬纱 tex</label>
+          <input type="number" id="fw-twf" value="14.6" min="0" step="any">
+        </div>
+        <div class="fld">
+          <label for="fw-cwf">纬织缩率 %</label>
+          <input type="number" id="fw-cwf" value="5" min="0" step="any">
+        </div>
+      </div>
+      <div class="out" id="fw-out"></div>
+      <div class="err" id="fw-err"></div>
+      <p style="font-size:13px;color:var(--ink-3);margin:12px 0 0">
+        估算式：克重 (g/m²) ≈ [ 经密 × tex<sub>经</sub> × (1+c<sub>经</sub>) + 纬密 × tex<sub>纬</sub> × (1+c<sub>纬</sub>) ] ÷ 100，
+        密度单位为「根 / 10 cm」。未计入毛羽、上浆与后整理增减重。
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== 07 常数之谜 ========== -->
+  <section id="const">
+    <h2><span class="num k">07</span>常数之谜：为什么有 583.1 和 590.5</h2>
+    <p class="lead">这是本讲最容易被跳过、也最容易在实际业务中造成纠纷的一个知识点。</p>
+
+    <p>590.5 是纯粹的几何换算结果——只用到「1 磅 = 453.6 g」和「840 码 = 768.1 m」两个换算，与纤维种类无关。但纱线称重必须指定回潮率，而<strong>英制与公制为同一种纤维规定的公定回潮率，在历史上并不相同</strong>。于是同一个「32 支」，在两种回潮率基准下折算出的 tex 就不一样。</p>
+
+    <h3>推导链</h3>
+    <p style="font-family:'SF Mono',Menlo,monospace;font-size:14.5px;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:14px 18px;overflow-x:auto">
+      英制定义（1 lb 中 840 码的倍数）<br>
+      &nbsp;&nbsp;↓ 纯几何换算<br>
+      K<sub>0</sub> = 453600 ÷ 768.096 = 590.55（常用记作 590.5）<br>
+      &nbsp;&nbsp;↓ 回潮率修正 &nbsp;(100 + 8.5) ÷ (100 + 9.89) = 0.98735<br>
+      K<sub>纯棉</sub> = 590.55 × 0.98735 = 583.08 ≈ <strong style="color:var(--warn)">583.1</strong>
+    </p>
+
+    <div class="eq k">
+      <span class="lbl">通式</span><br>
+      <span class="big" style="color:var(--gold)">T<sub>t</sub> = </span>
+      <span class="frac"><span class="num">K</span><span class="den">N<sub>e</sub></span></span>
+      <span class="lbl">&nbsp;，其中&nbsp;</span>
+      <span class="big" style="color:var(--gold)">K = 590.5 × </span>
+      <span class="frac"><span class="num">100 + W<sub>公制</sub></span><span class="den">100 + W<sub>英制</sub></span></span>
+    </div>
+    <ul>
+      <li><strong>纯棉</strong>：英制旧习惯按 9.89%，我国公制按 8.5% ⟹ K = <strong>583.1</strong></li>
+      <li><strong>纯化纤</strong>：英制与公制的公定回潮率一致 ⟹ 不修正，K = <strong>590.5</strong></li>
+      <li><strong>混纺</strong>：按各组分公定回潮率<strong>加权平均</strong>求 K</li>
+    </ul>
+    <p style="font-size:14px;color:var(--ink-3);margin:6px 0 0">注：590.5 为惯用近似值，未修约的精确值为 590.55。本讲义除特别说明外统一取 590.5，与 ISO 1144 及 GB/T 398—2018 的取法一致。</p>
+
+    <h3>常用换算常数表</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>纱线品种</th><th class="num">K 值</th><th>换算式</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td><strong>纯棉纱</strong></td><td class="num"><strong>583.1</strong></td><td><code>tex = 583.1 / Ne</code></td><td>国内棉纺厂沿用值</td></tr>
+          <tr><td><strong>纯化纤纱</strong></td><td class="num"><strong>590.5</strong></td><td><code>tex = 590.5 / Ne</code></td><td>ISO 与国际通用值，出口必用</td></tr>
+          <tr><td>涤棉混纺纱</td><td class="num">587.6</td><td><code>tex = 587.6 / Ne</code></td><td>按混比加权</td></tr>
+          <tr><td>棉粘纱 75 : 25</td><td class="num">584.8</td><td><code>tex = 584.8 / Ne</code></td><td>按混比加权</td></tr>
+          <tr><td>维棉纱 50 : 50</td><td class="num">587.0</td><td><code>tex = 587.0 / Ne</code></td><td>按混比加权</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note r">
+      <span class="note-h">实务红线</span>
+      <p style="margin:0 0 8px"><strong>双轨制是现实，不是错误。</strong>我国棉纺企业长期并行两套系数：出口产品与按 ISO 体系验收的订单用 <strong>590.5</strong>；国内贸易按老习惯用 <strong>583.1</strong>。</p>
+      <p style="margin:0">同一批报「32 支」的纱，用两个系数换算出的 tex 相差约 <strong>1.3%</strong>（K 值之比 590.5 ÷ 583.1 ≈ 1.013）——刚好落在许多产品标准的线密度偏差允差之内。因此：<strong>签合同必须写明换算系数、公定回潮率基准与试验方法标准</strong>，验收前先问清对方用哪个 K。</p>
+    </div>
+
+    <div class="note k">
+      <span class="note-h">历史成因</span>
+      1950 年代我国确定棉纱英制公定回潮率为 9.89%，并据此固定了换算常数；此后国家标准将纯棉公定回潮率统一为 8.5% 以与国际接轨，但企业已习惯按 583.1 结算，双轨制就此固化。这也是我国推行公制号数（特克斯）计量、逐步取代英制支数的政策背景。
+    </div>
+
+    <h3>公定回潮率参考值（GB/T 9994—2018）</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>纺织材料</th><th class="num">公定回潮率 %</th><th>纺织材料</th><th class="num">公定回潮率 %</th></tr></thead>
+        <tbody>
+          <tr><td>棉纤维 / 棉纱线 / 棉缝纫线</td><td class="num">8.5</td><td>桑蚕丝</td><td class="num">11.0</td></tr>
+          <tr><td>棉织物</td><td class="num">8.5</td><td>粘胶纤维 / 莫代尔 / 莱赛尔</td><td class="num">13.0</td></tr>
+          <tr><td>洗净毛（异质毛）</td><td class="num">15.0</td><td>醋酯纤维</td><td class="num">7.0</td></tr>
+          <tr><td>洗净毛（同质毛）</td><td class="num">16.0</td><td>聚酯（涤纶）纤维</td><td class="num">0.4</td></tr>
+          <tr><td>精纺毛纱</td><td class="num">16.0</td><td>聚酰胺（锦纶 6 / 66）</td><td class="num">4.5</td></tr>
+          <tr><td>毛条（干毛条）</td><td class="num">18.25</td><td>聚丙烯腈（腈纶）</td><td class="num">2.0</td></tr>
+          <tr><td>苎麻 / 亚麻</td><td class="num">12.0</td><td>聚乙烯醇（维纶）</td><td class="num">5.0</td></tr>
+          <tr><td>黄麻</td><td class="num">14.0</td><td>聚丙烯（丙纶）/ 含氯纤维</td><td class="num">0.0</td></tr>
+          <tr><td>羊绒纱</td><td class="num">15.0</td><td>聚氨酯（氨纶）</td><td class="num">1.3</td></tr>
+          <tr><td>再生毛</td><td class="num">17.0</td><td>壳聚糖纤维</td><td class="num">17.5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14px;color:var(--ink-3)">混纺材料的公定回潮率按各组分公定回潮率与其干混比的加权平均计算。</p>
+  </section>
+
+  <!-- ========== 08 速查表 ========== -->
+  <section id="table">
+    <h2><span class="num">08</span>速查表</h2>
+    <p class="lead">表 1 查长丝与纤维规格，表 2 查棉型纱线支数，表 3 用于同一根纱的多套写法互校。</p>
+
+    <h3>表 1｜旦尼尔 · 特克斯 · 分特 对照与典型品种</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th class="num">D</th><th class="num">tex</th><th class="num">dtex</th><th>典型品种</th></tr></thead>
+        <tbody>
+          <tr><td class="num">20</td><td class="num">2.2</td><td class="num">22</td><td>高弹氨纶、超薄里料</td></tr>
+          <tr><td class="num">30</td><td class="num">3.3</td><td class="num">33</td><td>氨纶、超薄锦纶</td></tr>
+          <tr><td class="num">40</td><td class="num">4.4</td><td class="num">44</td><td>丝袜、雪纺</td></tr>
+          <tr><td class="num">70</td><td class="num">7.8</td><td class="num">78</td><td>薄型锦纶里布</td></tr>
+          <tr><td class="num">75</td><td class="num">8.3</td><td class="num">83</td><td>涤纶 FDY / DTY 常规薄型</td></tr>
+          <tr><td class="num">100</td><td class="num">11.1</td><td class="num">111</td><td>中薄型长丝</td></tr>
+          <tr style="background:#f8fafc"><td class="num"><strong>150</strong></td><td class="num"><strong>16.7</strong></td><td class="num"><strong>167</strong></td><td><strong>最常见的化纤长丝规格</strong></td></tr>
+          <tr><td class="num">210</td><td class="num">23.3</td><td class="num">233</td><td>塔丝隆、牛津布</td></tr>
+          <tr><td class="num">300</td><td class="num">33.3</td><td class="num">333</td><td>粗旦长丝、弹力布</td></tr>
+          <tr><td class="num">420</td><td class="num">46.7</td><td class="num">467</td><td>箱包布、牛仔经纱</td></tr>
+          <tr><td class="num">840</td><td class="num">93.3</td><td class="num">933</td><td>工业用粗旦</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>表 2｜英制支数 · 特克斯（双常数对照）</h3>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th class="num">英支 Ne</th><th class="num">tex（化纤 590.5）</th><th class="num">tex（纯棉 583.1）</th><th class="num">D（纯棉）</th><th>典型织物</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="num">20</td><td class="num">29.5</td><td class="num">29.2</td><td class="num">262</td><td>牛仔布、帆布</td></tr>
+          <tr><td class="num">21</td><td class="num">28.1</td><td class="num">27.8</td><td class="num">250</td><td>中厚棉织物</td></tr>
+          <tr><td class="num">30</td><td class="num">19.7</td><td class="num">19.4</td><td class="num">175</td><td>常规平纹布</td></tr>
+          <tr><td class="num">32</td><td class="num">18.5</td><td class="num">18.2</td><td class="num">164</td><td>衬衫布、针织 T 恤</td></tr>
+          <tr><td class="num">40</td><td class="num">14.8</td><td class="num">14.6</td><td class="num">131</td><td>府绸、衬衫、内衣</td></tr>
+          <tr><td class="num">60</td><td class="num">9.8</td><td class="num">9.7</td><td class="num">88</td><td>高档衬衫、贡缎</td></tr>
+          <tr><td class="num">80</td><td class="num">7.4</td><td class="num">7.3</td><td class="num">66</td><td>高支贡缎、手帕</td></tr>
+          <tr><td class="num">100</td><td class="num">5.9</td><td class="num">5.8</td><td class="num">52</td><td>高支精细织物</td></tr>
+          <tr><td class="num">120</td><td class="num">4.9</td><td class="num">4.9</td><td class="num">44</td><td>极细高支</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>表 3｜同一根纱的多套写法（互校用）</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th class="num">tex</th><th class="num">D</th><th class="num">dtex</th><th class="num">Nm</th><th class="num">Ne（化纤）</th><th class="num">Ne（纯棉）</th></tr></thead>
+        <tbody>
+          <tr><td class="num">5.9</td><td class="num">53</td><td class="num">59</td><td class="num">169</td><td class="num">100</td><td class="num">99</td></tr>
+          <tr><td class="num">9.8</td><td class="num">88</td><td class="num">98</td><td class="num">102</td><td class="num">60</td><td class="num">59</td></tr>
+          <tr><td class="num">14.6</td><td class="num">131</td><td class="num">146</td><td class="num">68</td><td class="num">40</td><td class="num">40</td></tr>
+          <tr><td class="num">18.2</td><td class="num">164</td><td class="num">182</td><td class="num">55</td><td class="num">32</td><td class="num">32</td></tr>
+          <tr><td class="num">29.2</td><td class="num">263</td><td class="num">292</td><td class="num">34</td><td class="num">20</td><td class="num">20</td></tr>
+          <tr><td class="num">59.1</td><td class="num">532</td><td class="num">591</td><td class="num">17</td><td class="num">10</td><td class="num">10</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:13px;color:var(--ink-3);padding:0 13px 12px;margin:0">注：本表整数位为便于对照已作取整，精确计算见第 6 节交互工具。互为倒数关系导致取整后微小偏差属正常。</p>
+    </div>
+  </section>
+
+  <!-- ========== 09 实务应用 ========== -->
+  <section id="apply">
+    <h2><span class="num">09</span>实务应用</h2>
+    <p class="lead">从「看懂规格串」到「算准克重」，这是把知识变成生产力的两步。</p>
+
+    <h3>9.1 规格串的读法</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>写法</th><th>含义</th><th>换算要点</th></tr></thead>
+        <tbody>
+          <tr><td><code>C 14.8 tex</code></td><td>普梳棉单纱，线密度 14.8 tex</td><td>C = 普梳棉（carded cotton）代号</td></tr>
+          <tr><td><code>JC 14.8 tex × 2</code></td><td>精梳棉双股线，单纱 14.8 tex，两股</td><td>JC = 精梳棉；<code>×</code> 表示由单纱组合成股线</td></tr>
+          <tr><td><code>40S/2</code></td><td>40 英支双股线</td><td>等效单纱支数 = 40 ÷ 2 = 20S；tex ≈ 29.2 × 2</td></tr>
+          <tr><td><code>150D/48F</code></td><td>长丝总纤度 150 旦，48 根单丝</td><td>= 16.7 tex；单丝 3.13 D</td></tr>
+          <tr><td><code>167 dtex/48 f</code></td><td>同一根丝的另一套写法</td><td>= 150 D = 16.7 tex</td></tr>
+          <tr><td><code>Nm 60</code></td><td>公制支数 60</td><td>= 16.7 tex = 150 D</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note d">
+      <span class="note-h">GB/T 8693—2008 规定的两种标示法</span>
+      该标准（修改采用 ISO 1139）规定纱线标示含线密度、长丝的单丝根数、捻向捻数与股数，并提供两条路径：
+      <strong>由单纱写向股线</strong>用乘号「×」，<strong>由最终股线写回单纱</strong>用斜线「/」。
+      两种写法的符号一致，差别只在排列顺序，因此同一条股线可能出现两种合法写法——看规格书时要认准是哪一条路径。
+    </div>
+
+    <h3>9.2 百米标准质量：贸易结算的落脚点</h3>
+    <p>GB/T 398—2018《棉本色纱线》给出两个非常实用的公式（W 为公定回潮率，纯棉取 8.5%）：</p>
+    <div class="eq">
+      <span class="lbl">公定回潮率下 100 m 标准质量</span><br>
+      <span class="big">m<sub>g</sub> = </span>
+      <span class="frac"><span class="num">T<sub>t</sub></span><span class="den">10</span></span>
+      &nbsp;（g）&nbsp;&nbsp;&nbsp;
+      <span class="lbl">干燥质量</span>&nbsp;&nbsp;&nbsp;
+      <span class="big">m<sub>d</sub> = </span>
+      <span class="frac"><span class="num">T<sub>t</sub></span><span class="den">10</span></span>
+      ×
+      <span class="frac"><span class="num">100</span><span class="den">100 + W</span></span>
+      &nbsp;（g）
+    </div>
+    <div class="grid2">
+      <div class="card d">
+        <h4>标准原文示例｜纯棉 14.0 tex × 3</h4>
+        <p style="margin:0">公称线密度 = 14.0 × 3 = 42 tex<br>
+        100 m 标准质量 = 42 ÷ 10 = <strong>4.200 g</strong><br>
+        100 m 标准干燥质量 = 4.200 × 100 ÷ 108.5 = <strong>3.871 g</strong></p>
+      </div>
+      <div class="card d">
+        <h4>反向使用｜由称重推线密度</h4>
+        <p style="margin:0">取样 100 m，标准大气下调湿平衡后称得 2.96 g<br>
+        tex = 2.96 × 10 = <strong>29.6 tex</strong><br>
+        纯棉英支 = 583.1 ÷ 29.6 ≈ <strong>19.7 S</strong>（约 20 英支）</p>
+      </div>
+    </div>
+
+    <h3>9.3 由纱支估算织物克重</h3>
+    <p>这是服装材料学中最常用的一个估算。原理是：1 m² 织物中，经（纬）纱的总长度 = 密度 × 10 × 织缩系数，再乘以线密度即可。</p>
+    <div class="eq g">
+      <span class="big g">W = </span>
+      <span class="frac"><span class="num">P<sub>经</sub> × T<sub>经</sub> × (1 + c<sub>经</sub>) + P<sub>纬</sub> × T<sub>纬</sub> × (1 + c<sub>纬</sub>)</span><span class="den">100</span></span>
+      <span class="lbl">&nbsp;g/m²，P 为密度（根 / 10 cm），c 为织缩率</span>
+    </div>
+
+    <p>密度若为「根 / inch」，先换算：<code>根/10cm = 根/inch × 3.937</code>。织缩率（crimp）指纱线在织物中弯曲而多消耗的长度比例，棉平纹织物常在 3%～8% 之间，可依 ISO 7211-3 实测。</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:22%">步骤</th><th>演算</th><th class="num" style="width:22%">结果</th></tr></thead>
+        <tbody>
+          <tr><td>① 经向用纱量</td><td><code>524 × 14.6 × (1 + 8%) ÷ 100</code></td><td class="num">82.6 g/m²</td></tr>
+          <tr><td>② 纬向用纱量</td><td><code>283 × 14.6 × (1 + 5%) ÷ 100</code></td><td class="num">43.4 g/m²</td></tr>
+          <tr style="background:#f8fafc"><td><strong>合计估算克重</strong></td><td>① + ②</td><td class="num"><strong>≈ 126 g/m²</strong></td></tr>
+          <tr><td>实测校核</td><td>圆形取样器裁取 100 cm²，天平称重 × 100</td><td class="num">依 GB/T 4669 / ISO 3801</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p style="font-size:14px;color:var(--ink-3)">该估算不计毛羽、上浆增重与后整理（丝光、磨毛、涂层）带来的变化，用于报价与选料阶段的快速判断；正式验收须按 ISO 3801 / GB/T 4669 实测。</p>
+  </section>
+
+  <!-- ========== 10 测量方法 ========== -->
+  <section id="test">
+    <h2><span class="num">10</span>测量方法：数字是怎么测出来的</h2>
+    <p class="lead">定义人人会背，但「怎么称、称多长、在什么环境称」决定了数字能不能用。</p>
+
+    <h3>10.1 绞纱法（skein method）—— 国内外公认的基准方法</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:24%">项目</th><th>内容</th></tr></thead>
+        <tbody>
+          <tr><td>我国标准</td><td><strong>GB/T 4743—2009</strong>《纺织品 卷装纱 绞纱法线密度的测定》（修改采用 ISO 2060:1994）</td></tr>
+          <tr><td>国际标准</td><td><strong>ISO 2060:1994</strong> Textiles — Yarn from packages — Determination of linear density (mass per unit length) by the skein method</td></tr>
+          <tr><td>美国标准</td><td><strong>ASTM D1907/D1907M</strong>（绞纱法测定纱线线密度）、<strong>ASTM D1059</strong>（短片段试样法）</td></tr>
+          <tr><td>主要仪器</td><td>缕纱测长仪（绕取规定长度，常为 100 m）、电子天平（精度 0.001 g）、通风式烘箱（烘干法路线）</td></tr>
+          <tr><td>标准大气</td><td>温度 20 ± 2 ℃，相对湿度 65 ± 4%，调湿不少于 24 h（依 GB/T 6529）</td></tr>
+          <tr><td>程序数量</td><td>按调湿或准备方法分为 <strong>7 种程序</strong>；不同程序可能给出不同结果，须由产品标准或双方商定选用</td></tr>
+          <tr><td>适用范围</td><td>各类纱线，含单纱、并绕纱、股线、缆线</td></tr>
+          <tr><td>不适用</td><td>① 线密度大于 <strong>2000 tex</strong> 的纱线；② 张力自 0.5 cN/tex 增至 1.0 cN/tex 时伸长率大于 <strong>0.5%</strong> 的高弹纱（协议认可者除外）</td></tr>
+          <tr><td>输出指标</td><td>线密度实测值及其变异系数，另可按标准给出的公式计算<strong>线密度偏差率</strong></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="eq">
+      <span class="lbl">线密度偏差率</span><br>
+      <span class="big">δ = </span>
+      <span class="frac"><span class="num">T<sub>实测</sub> − T<sub>标称</sub></span><span class="den">T<sub>标称</sub></span></span>
+      × 100%
+      <span class="lbl">&nbsp;—— 这是产品标准判定合格与否的核心指标之一</span>
+    </div>
+
+    <h3>10.2 关键操作要点</h3>
+    <ol>
+      <li><strong>预调湿</strong>：若试样回潮率高于公定回潮率，先在低温下预烘，避免调湿过程中吸湿不匀（吸湿滞后现象）。</li>
+      <li><strong>调湿</strong>：置于标准大气中至吸湿平衡。平衡判据为相隔 25 h 连续称重质量变化不超过 2%（有争议时以此为准）。</li>
+      <li><strong>绕取</strong>：在规定的预加张力下绕取规定长度（棉纱常用 100 m，化为 10 绞各 10 m 或直接 1 绞 100 m，依所选程序）。</li>
+      <li><strong>称重</strong>：电子天平称取绞纱质量，读至 0.001 g。</li>
+      <li><strong>折算</strong>：若采用烘干路线，先得干燥质量，再按公定回潮率折算为公定质量，代入定义式求 tex。</li>
+      <li><strong>判定</strong>：与标称值比较，计算线密度偏差率，对照产品标准（如棉纱按 GB/T 398）定等。</li>
+    </ol>
+
+    <div class="note k">
+      <span class="note-h">取样数量的中外差异</span>
+      实践中 ISO 2060 与 GB/T 4743 的<strong>取样量要求并不完全相同</strong>（ISO 体系常要求不少于 20 绞，我国标准为 10 绞）。做出口检测时，须先确认对方依据的是哪一份标准的哪一条，再决定取样方案。这也是「双方商定」在标准文本中反复出现的原因。
+    </div>
+
+    <h3>10.3 为什么不用显微镜量直径？</h3>
+    <p>直径看似直观，实测却<strong>极不可靠</strong>：纱线截面被压成椭圆、边缘有毛羽干扰、捻度使表面起伏、同一根纱沿长度方向直径本身就在变化。更重要的是——纱线的绝大多数力学性能（强力、伸长、断裂长度、捻系数）都按线密度归一化，报告直径无法直接对接这些指标。因此国际体系的共识是：<strong>以称重法测线密度作为基准，直径只在特殊研究场合配合光学或激光法测量</strong>。</p>
+  </section>
+
+  <!-- ========== 11 课堂练习 ========== -->
+  <section id="quiz">
+    <h2><span class="num">11</span>课堂练习</h2>
+    <p class="lead">先独立作答，再展开对照。第 5 题是本讲的概念辨析重点。</p>
+
+    <details class="q">
+      <summary><span class="qn">1</span><span>某涤纶 DTY 规格为 <code>150 D / 48 F</code>，请写出它的 tex、dtex、Nm、Ne（按纯化纤）以及单丝纤度。</span></summary>
+      <div class="ans">
+        <p><strong>① 总纤度换算</strong></p>
+        <p>tex = 150 ÷ 9 = <span class="fin">16.67 tex</span>；dtex = 16.67 × 10 = <span class="fin">166.7 ≈ 167 dtex</span></p>
+        <p>Nm = 1000 ÷ 16.67 = <span class="fin">60.0 Nm</span>；Ne = 590.5 ÷ 16.67 = <span class="fin">35.4 S</span></p>
+        <p><strong>② 单丝纤度</strong>（把总纤度平均分给 48 根单丝）</p>
+        <p>150 ÷ 48 = 3.125 D = 3.125 × 1.1111 = 3.472 ≈ <span class="fin">3.47 dtex</span></p>
+        <p><strong>③ 验算</strong>：Ne × D = 35.4 × 150 = 5310 ≈ 5315 ✓</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">2</span><span>某纯棉纱绞纱长 100 m，烘干后质量为 2.765 g。求其公定质量、线密度（tex）、以及大致英制支数。</span></summary>
+      <div class="ans">
+        <p><strong>① 公定质量</strong>：棉的公定回潮率 W = 8.5%，故<br>
+        公定质量 = 2.765 × (1 + 8.5%) = 2.765 × 1.085 = <span class="fin">3.000 g</span></p>
+        <p><strong>② 线密度</strong>：100 m 对应 3.000 g<br>
+        T<sub>t</sub> = 3.000 ÷ 100 × 1000 = <span class="fin">30.0 tex</span></p>
+        <p><strong>③ 英制支数</strong>：Ne = 583.1 ÷ 30 = <span class="fin">19.4 S</span>，可视为约 20 英支的棉纱</p>
+        <p><strong>④ 用标准公式反向校核</strong>：GB/T 398 给出 100 m 标准质量 m<sub>g</sub> = T<sub>t</sub> ÷ 10，则 T<sub>t</sub> = m<sub>g</sub> × 10 = 3.000 × 10 = 30.0 tex ✓；标准干燥质量 m<sub>d</sub> = 3.000 × 100 ÷ 108.5 = 2.765 g ✓</p>
+        <p><strong>⑤ 顺带得到</strong>：D = 9 × 30 = 270 D；Nm = 1000 ÷ 30 = 33.3 Nm</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">3</span><span>纯棉 40 英支，分别用 583.1 与 590.5 换算 tex，两者差多少？这个差异在实务上意味着什么？</span></summary>
+      <div class="ans">
+        <p><strong>① 两种结果</strong></p>
+        <p>按国内棉纺惯用值：tex = 583.1 ÷ 40 = <span class="fin">14.58 tex</span></p>
+        <p>按 ISO / 出口值：tex = 590.5 ÷ 40 = <span class="fin">14.76 tex</span></p>
+        <p><strong>② 差异</strong>：Δ = 14.76 − 14.58 ≈ 0.18 tex；相对偏差 = 590.5 ÷ 583.1 − 1 = <span class="fin">1.27%</span></p>
+        <p><strong>③ 实务含义</strong>：约 1.3% 恰好落在许多棉纱产品标准的线密度偏差允差范围之内，因此<strong>同一批纱用不同系数换算可能都判合格，但折算成吨位与货款就会有实质差异</strong>。结论：合同必须写明换算系数与公定回潮率基准；出口按 590.5，国内按 583.1，不可混用。</p>
+        <p><strong>④ 顺带</strong>：D = 9 × 14.58 = 131 D（按 590.5 则为 133 D）</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">4</span><span>某平纹棉织物：经密 524 根/10cm、纬密 283 根/10cm，经纬纱均为 14.6 tex，经织缩率 8%、纬织缩率 5%。估算其平方米克重。</span></summary>
+      <div class="ans">
+        <p><strong>① 经向</strong>：524 × 14.6 × 1.08 ÷ 100 = <span class="fin">82.6 g/m²</span></p>
+        <p><strong>② 纬向</strong>：283 × 14.6 × 1.05 ÷ 100 = <span class="fin">43.4 g/m²</span></p>
+        <p><strong>③ 合计</strong>：82.6 + 43.4 = <span class="fin">≈ 126 g/m²</span></p>
+        <p><strong>④ 讨论</strong>：若换算成英制密度，524 根/10cm = 133 根/inch，283 根/10cm = 72 根/inch，即俗称的「40 × 40 / 133 × 72」府绸规格。实测若在 120～135 g/m² 之间属正常，差额来自毛羽、浆料与整理。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">5</span><span>有同学说：「32 支的毛纱和 32 支的棉纱一样粗。」请判断并说明理由。</span></summary>
+      <div class="ans">
+        <p><strong>结论：错误。「支」离开体系就没有意义。</strong></p>
+        <p><strong>① 32 公制支数毛纱</strong>（毛纺常用公支）：tex = 1000 ÷ 32 = <span class="fin">31.25 tex</span></p>
+        <p><strong>② 32 英支棉纱</strong>：tex = 590.5 ÷ 32 = <span class="fin">18.5 tex</span></p>
+        <p><strong>③ 32 英支精梳毛纱</strong>：tex = 885.8 ÷ 32 = <span class="fin">27.7 tex</span></p>
+        <p><strong>④ 分析</strong>：三者中 32 公支毛纱最粗（31.25 tex），32 英支棉纱最细（18.5 tex）。差异的根源是<strong>基准长度不同</strong>——棉纱以 840 码/磅为基准，精梳毛纱以 560 码/磅为基准，而公制支数以 1 g 对应多少米为基准。因此凡称「支」，必须同时给出<strong>哪个支系</strong>；只报数字属于无效信息。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">6</span><span>一纯棉股线标为 <code>60S/2</code>。求其等效单纱支数、公称线密度；若捻缩率为 1.5%，实际线密度又是多少？</span></summary>
+      <div class="ans">
+        <p><strong>① 等效单纱支数</strong>（定重制相除）：60 ÷ 2 = <span class="fin">30 S</span></p>
+        <p><strong>② 单纱线密度</strong>：583.1 ÷ 60 = 9.72 tex</p>
+        <p><strong>③ 公称股线线密度</strong>（定长制相乘）：9.72 × 2 = <span class="fin">19.4 tex</span></p>
+        <p><strong>④ 计入捻缩</strong>：合股加捻使纱线收缩，单位长度内质量增加，实际线密度略高于公称值<br>
+        19.4 × (1 + 1.5%) = <span class="fin">≈ 19.7 tex</span></p>
+        <p><strong>⑤ 要点</strong>：这就是「定长制相乘、定重制相除」口诀的来处——因为两者的数值方向相反。同时提醒：<strong>股线的最终线密度一般不等于各组分线密度之和</strong>，强捻时尤其明显，这也是 GB/T 8693 专门说明的地方。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 12 误区 ========== -->
+  <section id="pitfall">
+    <h2><span class="num r">12</span>常见误区清单</h2>
+    <p class="lead">以下十条对照可用于自查与辨析。</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:38%">错误认知</th><th>正确理解</th></tr></thead>
+        <tbody>
+          <tr>
+            <td>支数越大纱越粗</td>
+            <td><strong>恰好相反。</strong>支数是定重制，支数越大纱越细。只有定长制（tex、D）才是数值越大越粗。</td>
+          </tr>
+          <tr>
+            <td>「32 支」就是一个确定的粗细</td>
+            <td>必须带体系。32 公支 = 31.25 tex，32 英支棉纱 = 18.5 tex，32 英支精梳毛纱 = 27.7 tex，最粗与最细相差近 70%。</td>
+          </tr>
+          <tr>
+            <td>换算系数无所谓，都用 590.5 就行</td>
+            <td>纯棉国内外习惯用 583.1，出口与 ISO 体系用 590.5，差约 1.3%。<strong>合同未写明系数是纠纷源头。</strong></td>
+          </tr>
+          <tr>
+            <td>150 D 就是 150 tex</td>
+            <td>差 9 倍。150 D = 16.67 tex。<strong>这是化纤报价中最常见的事故。</strong></td>
+          </tr>
+          <tr>
+            <td>tex 与 dtex 差 10 倍，D 与 dtex 也差 10 倍</td>
+            <td>前者对（1 tex ↔ 10 dtex），后者错。<strong>1 D ↔ 1.111 dtex</strong>，两者只差 11%。</td>
+          </tr>
+          <tr>
+            <td>纱线线密度就是面料克重</td>
+            <td>完全不同。线密度描述<strong>一根纱</strong>（tex，g/km）；克重描述<strong>单位面积织物</strong>（g/m²）。二者通过经纬密度与织缩相关联，但不可等同。</td>
+          </tr>
+          <tr>
+            <td>短纤的「1.5 D」就是纱线粗细</td>
+            <td>那是<strong>单根纤维</strong>的细度（1.5 D × 38 mm 表示纤维 1.5 旦、长 38 mm）；纱线线密度则是若干根纤维加捻后的整体指标，二者不是一回事。</td>
+          </tr>
+          <tr>
+            <td>股线支数 = 各股支数之和</td>
+            <td>定重制应<strong>相除</strong>（60S/2 → 30S），定长制应<strong>相乘</strong>（9.72 tex × 2 → 19.4 tex）。且实际值还受捻缩影响。</td>
+          </tr>
+          <tr>
+            <td>「号数」和「支数」是一回事</td>
+            <td>不是。号数是 tex（特克斯）的旧称，属定长制；支数属定重制，方向相反。</td>
+          </tr>
+          <tr>
+            <td>目测纱线直径就可以判断粗细</td>
+            <td>不可靠。捻度、毛羽、蓬松度、截面压扁都会干扰。行业基准是称重法测线密度。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== 13 速记 ========== -->
+  <section id="summary">
+    <h2><span class="num">13</span>一页速记</h2>
+    <p class="lead">本单元的关键数字、公式与易错点汇总。</p>
+
+    <div class="grid2">
+      <div class="card d">
+        <h4>制度与方向</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>定长制（direct）：<strong>tex、D</strong> —— 数值大 = 纱粗</li>
+          <li>定重制（indirect）：<strong>Nm、Ne</strong> —— 数值大 = 纱细</li>
+          <li>基准长度：tex 1000 m｜D 9000 m｜Nm 1 g｜Ne 1 lb 中 840 yd 的倍数</li>
+        </ul>
+      </div>
+      <div class="card k">
+        <h4>核心换算（背下来）</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li><strong>同一条纱：旦数 = 特数 × 9</strong>（即 1 tex ↔ 9 D）</li>
+          <li><strong>dtex 数 = 特数 × 10</strong>；<strong>1 D ↔ 1.111 dtex</strong></li>
+          <li><strong>tex = 1000 ÷ Nm</strong></li>
+          <li><strong>tex = K ÷ Ne</strong>（纯棉 583.1｜纯化纤 590.5｜涤棉 587.6）</li>
+          <li><strong>精梳毛纱 tex = 885.8 ÷ Ne<sub>W</sub></strong></li>
+        </ul>
+      </div>
+      <div class="card k">
+        <h4>三个验算恒等式</h4>
+        <p style="margin:0;font-size:15.5px">
+          <code>Ne × D = 5315</code>（纯棉 5248）<br>
+          <code>Nm × D = 9000</code><br>
+          <code>Nm × tex = 1000</code>
+        </p>
+      </div>
+      <div class="card g">
+        <h4>常用公定回潮率</h4>
+        <p style="margin:0;font-size:15px;line-height:1.9">
+          棉 8.5%｜桑蚕丝 11%｜粘胶 13%｜羊毛 15%～16%｜精纺毛纱 16%<br>
+          涤纶 0.4%｜锦纶 4.5%｜腈纶 2%｜维纶 5%｜丙纶 0%｜氨纶 1.3%
+        </p>
+      </div>
+      <div class="card">
+        <h4>必记的四个具体数字</h4>
+        <p style="margin:0;font-size:15.5px;line-height:1.95">
+          <strong>40 S</strong> ≈ 14.6 tex ≈ 131 D（衬衫、府绸）<br>
+          <strong>32 S</strong> ≈ 18.2 tex ≈ 164 D（针织 T 恤）<br>
+          <strong>20 S</strong> ≈ 29.2 tex ≈ 262 D（牛仔、帆布）<br>
+          <strong>150 D</strong> ≈ 16.7 tex ≈ 60 Nm ≈ 35 Ne（最常用长丝）
+        </p>
+      </div>
+      <div class="card r">
+        <h4>三个动作习惯</h4>
+        <ol style="margin:0;padding-left:20px">
+          <li>看到支数先问 <strong>哪个支系</strong></li>
+          <li>做换算先问 <strong>哪个 K 值</strong></li>
+          <li>算完随手乘一下 <strong>Ne × D</strong> 验算</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">一句话收束本讲</span>
+      三套语言描述同一件事：<strong>定长制问「一千米多重」，定重制问「一克多长」</strong>。
+      前者给出 tex（基准千米）与 D（基准九千米，正好差 9 倍），后者给出 Nm（基准 1 g）与 Ne（基准 1 磅 840 码）。
+      跨体系换算时，唯一需要小心的变量是<strong>回潮率基准</strong>——它让纯棉的质数从 590.5 变成 583.1，也让国内与出口的业务口径分成了两条轨道。
+    </div>
+  </section>
+
+  <!-- ========== 14 参考文献 ========== -->
+  <section id="ref">
+    <h2><span class="num">14</span>参考文献与标准</h2>
+    <p class="lead">按「教材与专著 / 国家与行业标准 / 国际与国外标准 / 英文延伸阅读」四类编排，便于按需取用。</p>
+
+    <p class="refs-cat">一、教材与专著（中文）<span>定义推导与体系讲解的主要依据</span></p>
+    <ol class="refs">
+      <li>姚穆. 纺织材料学[M]. 5版. 北京: 中国纺织出版社, 2020. <em>ISBN 978-7-5180-7136-4</em> <span class="src">—「十三五」普通高等教育本科部委级规划教材；纱线细度指标与换算的权威体系来源</span></li>
+      <li>于伟东. 纺织材料学[M]. 2版. 北京: 中国纺织出版社, 2018. <span class="src">— 纤维与纱线线密度的理论处理更细致，适合延伸阅读</span></li>
+      <li>郁崇文. 纺纱学[M]. 3版. 北京: 中国纺织出版社, 2019. <span class="src">— 从纺纱工艺角度解释支数系列与公定回潮率的由来</span></li>
+      <li>王革辉. 服装材料学[M]. 3版. 北京: 中国纺织出版社, 2020. <span class="src">— 服装专业主流教材，纱线段落与本节内容衔接</span></li>
+      <li>朱松文, 刘静伟. 服装材料学[M]. 北京: 中国纺织出版社, 2015. <span class="src">— 另一体系版本，可用作对照</span></li>
+      <li>吴微微. 服装材料学·基础篇[M]. 2版. 北京: 中国纺织出版社, 2016. <span class="src">— 基础篇对纤维细度与纱线规格的表述简明，适合本科低年级</span></li>
+    </ol>
+
+    <p class="refs-cat">二、国家标准与行业标准<span>术语、测定与方法依据</span></p>
+    <ol class="refs" start="7">
+      <li>GB/T 3291.1—1997 纺织 纺织材料性能和试验术语 第1部分: 纤维和纱线[S]. 北京: 中国标准出版社, 1997. <span class="src">— 本讲全部术语定义（直接制、间接制、特克斯、旦尼尔、公制支数、英制棉纱支数）的法定出处</span></li>
+      <li>GB/T 9994—2018 纺织材料公定回潮率[S]. 北京: 中国标准出版社, 2018. <span class="src">— 第 7 节公定回潮率表的依据</span></li>
+      <li>GB/T 4743—2009 纺织品 卷装纱 绞纱法线密度的测定[S]. 北京: 中国标准出版社, 2009. <span class="src">— 修改采用 ISO 2060:1994；线密度测定与偏差率计算</span></li>
+      <li>GB/T 8693—2008 纺织品 纱线的标示[S]. 北京: 中国标准出版社, 2008. <span class="src">— 修改采用 ISO 1139:1973；两种纱线标示法与「×」「/」的用法</span></li>
+      <li>FZ/T 01035—2014 纺织品 标示线密度的通用制(特克斯制)[S]. 北京: 中国标准出版社, 2015. <span class="src">— 修改采用 ISO 1144:1973；tex 制的原则、单位与换算附录</span></li>
+      <li>FZ/T 01036—2014 纺织品 以特克斯(Tex)制的约整值代替传统纱支的综合换算表[S]. 北京: 中国标准出版社, 2015. <span class="src">— 等效采用 ISO 2947:1973；推行 tex 制时的传统纱支对照表</span></li>
+      <li>GB/T 398—2018 棉本色纱线[S]. 北京: 中国标准出版社, 2018. <span class="src">— 纯棉公定回潮率 8.5%、100 m 标准质量与标准干燥质量公式、产品标示示例</span></li>
+      <li>GB/T 6529—2008 纺织品 调湿和试验用标准大气[S]. 北京: 中国标准出版社, 2008. <span class="src">— 标准大气条件与调湿程序</span></li>
+      <li>GB/T 2910（所有部分）纺织品 定量化学分析[S]. <span class="src">— 混纺比测定，进而计算加权公定回潮率与 K 值</span></li>
+      <li>GB/T 3916—2013 纺织品 卷装纱 单根纱线断裂强力和断裂伸长率的测定(CRE法)[S]. <span class="src">— 强力指标以线密度归一化（cN/tex）的计算基础</span></li>
+      <li>GB/T 2543.1—2015 纺织品 纱线捻度的测定 第1部分: 直接计数法[S]. <span class="src">— 捻度与捻系数，股线捻缩的处理依据</span></li>
+      <li>GB/T 8170 数值修约规则与极限数值的表示和判定[S]. <span class="src">— 线密度数值修约与偏差判定的规则</span></li>
+    </ol>
+
+    <p class="refs-cat">三、国际标准与国外标准<span>出口与跨体系比对的对应依据</span></p>
+    <ol class="refs" start="19">
+      <li>ISO 1144:2016 Textiles — Universal system for designating linear density (Tex System)[S]. 2nd ed. Geneva: ISO, 2016. <span class="src">— tex 制的国际母标准；附录给出 denier × 0.1111、Ne<sub>C</sub> 590.5、Ne<sub>W</sub> 885.8 等换算常数</span></li>
+      <li>ISO 2060:1994 Textiles — Yarn from packages — Determination of linear density (mass per unit length) by the skein method[S]. Geneva: ISO, 1994. <span class="src">— 绞纱法国际方法标准</span></li>
+      <li>ISO 1139 Textiles — Designation of yarns[S]. Geneva: ISO. <span class="src">— 纱线标示国际标准（GB/T 8693 的采用对象）</span></li>
+      <li>ISO 2947:1973 Textiles — Integrated conversion table for replacing traditional yarn numbers by rounded values in the Tex System[S]. Geneva: ISO, 1973. <span class="src">— 传统纱支与 tex 约整值的综合换算表</span></li>
+      <li>ISO 3801 Textiles — Woven fabrics — Determination of mass per unit length and mass per unit area[S]. Geneva: ISO. <span class="src">— 织物克重（g/m²）测定，用于校核第 9.3 节估算结果</span></li>
+      <li>ISO 7211-3 Textiles — Woven fabrics — Construction — Methods of analysis — Part 3: Determination of crimp of yarn in fabric[S]. Geneva: ISO. <span class="src">— 织缩率测定，克重估算中 c 值的来源</span></li>
+      <li>ISO 16549 Textiles — Unevenness of textile strands — Capacitance method[S]. Geneva: ISO. <span class="src">— 条干不匀（CV%）电容法，与线密度指标配套评价</span></li>
+      <li>ASTM D1907/D1907M Standard test method for linear density of yarn (yarn number) by the skein method[S]. West Conshohocken: ASTM International. <span class="src">— 北美绞纱法，ISO 2060 的同等方法</span></li>
+      <li>ASTM D2260 Standard tables of conversion factors and equivalent yarn numbers measured in various numbering systems[S]. West Conshohocken: ASTM International. <span class="src">— 各支系与 tex 的换算表，跨境报价的常用工具</span></li>
+      <li>ASTM D1059 Standard test method for yarn number based on short-length specimens[S]. West Conshohocken: ASTM International. <span class="src">— 短片段试样法，与绞纱法互为补充</span></li>
+    </ol>
+
+    <p class="refs-cat">四、英文原版专著<span>延伸阅读，适合本科毕业论文与研究生阶段</span></p>
+    <ol class="refs" start="29">
+      <li>HEARLE J W S, GROSBERG P, BACKER S. Structural mechanics of fibers, yarns, and fabrics[M]. New York: Wiley-Interscience, 1969. <span class="src">— 纱线结构力学的奠基之作，线密度作为基本状态变量的理论处理</span></li>
+      <li>GOSWAMI B C, MARTINDALE J G, SCARDINO F L. Textile yarns: technology, structure and applications[M]. New York: John Wiley &amp; Sons, 1977. <span class="src">— 纱线技术与结构的系统专著，支数体系的历史演变讲得最清楚</span></li>
+      <li>SAVILLE B P. Physical testing of textiles[M]. Cambridge: Woodhead Publishing, 1999. <span class="src">— 纺织测试权威手册，线密度、条干、捻度的测定方法详解</span></li>
+      <li>MORTON W E, HEARLE J W S. Physical properties of textile fibres[M]. 4th ed. Cambridge: Woodhead Publishing, 2008. <span class="src">— 纤维物理性能经典，细度与线密度的物理含义</span></li>
+      <li>LORD P R. Handbook of yarn production: technology, science and economics[M]. Cambridge: Woodhead Publishing, 2003. <span class="src">— 从生产与经济角度解释支数系列的商业逻辑</span></li>
+    </ol>
+
+    <div class="note k" style="margin-top:26px">
+      <span class="note-h">使用提示</span>
+      <p style="margin:0 0 6px"><strong>① 标准以现行有效版为准。</strong>我国标准使用前请在「国家标准全文公开系统」核对是否已被新版代替；ISO 与 ASTM 标准请在官方平台核对最新修订状态（例如 ISO 1144 现行版为 2016 年第 2 版，2021 年复审确认继续有效）。</p>
+      <p style="margin:0 0 6px"><strong>② 教材版次以实物版权页为准。</strong>姚穆《纺织材料学》第 5 版在不同来源中标注为 2019 或 2020 年，请以样书版权页所载为准。</p>
+      <p style="margin:0"><strong>③ 常数取值须与业务口径一致。</strong>凡涉及结算的换算，一律以合同约定的系数、公定回潮率基准与方法标准为准，不可直接套用本讲示例值。</p>
+    </div>
+  </section>
+
+  <footer>
+    <p style="margin:0 0 4px"><strong>纱线线密度的三套语言｜特克斯 · 旦尼尔 · 支数</strong> — 课堂讲解课件</p>
+    <p style="margin:0">授课：梁帅童 · 上海工程技术大学纺织服装学院　|　配套单元：服装用纱线的线密度表示与换算　|　编制日期：2026-09-23</p>
+    <p style="margin:8px 0 0" class="noprint">本页所有换算均可在浏览器内离线完成，不需网络连接。</p>
+  </footer>
+
+  </main>
+</div>
+
+<script>
+/* ================= 阅读进度 ================= */
+(function(){
+  var bar = document.getElementById('pbar');
+  function upd(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    bar.style.width = Math.max(0, Math.min(100, p)) + '%';
+  }
+  window.addEventListener('scroll', upd, {passive:true});
+  window.addEventListener('resize', upd);
+  upd();
+})();
+
+/* ================= 导航高亮 ================= */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var map = {};
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) map[id] = a;
+  });
+  var ids = Object.keys(map);
+  var secs = ids.map(function(id){ return document.getElementById(id); });
+
+  function setOn(id){
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (map[id]) map[id].classList.add('on');
+  }
+
+  // 单一判定源：按章节顶边位置确定当前节，避免多机制互相覆盖
+  var raf = null;
+  function sync(){
+    var y = window.scrollY + 150, cur = ids[0];
+    for (var i = 0; i < secs.length; i++){
+      if (secs[i].offsetTop <= y) cur = ids[i];
+    }
+    setOn(cur);
+  }
+  function onScroll(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = null; sync(); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('load', sync);
+  sync();
+})();
+
+/* ================= 工具 1：线密度换算 ================= */
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var vEl = $('cv-val'), uEl = $('cv-unit'), mEl = $('cv-mat'), fEl = $('cv-fil');
+  var out = $('cv-out'), err = $('cv-err');
+
+  function toTex(v, u, K){
+    switch(u){
+      case 'tex':  return v;
+      case 'dtex': return v / 10;
+      case 'den':  return v / 9;
+      case 'nm':   return 1000 / v;
+      case 'ne':   return K / v;
+    }
+    return NaN;
+  }
+
+  function fmt(x, d){
+    if (!isFinite(x) || isNaN(x)) return '—';
+    d = (d === undefined) ? 2 : d;
+    if (x !== 0 && Math.abs(x) < 0.01) return x.toPrecision(3);
+    if (Math.abs(x) >= 10000) return x.toFixed(0);
+    return x.toFixed(d);
+  }
+
+  function card(label, unit, value, hi){
+    return '<div class="ocard' + (hi ? ' hi' : '') + '">' +
+             '<div class="k">' + label + '</div>' +
+             '<div class="v">' + value + '</div>' +
+             '<div class="u">' + unit + '</div>' +
+           '</div>';
+  }
+
+  function calc(){
+    var v = parseFloat(vEl.value);
+    var u = uEl.value;
+    var K = parseFloat(mEl.value);
+    err.textContent = '';
+
+    if (!isFinite(v) || v <= 0){
+      out.innerHTML = '';
+      err.textContent = '请输入一个大于 0 的数值。';
+      return;
+    }
+
+    var tex = toTex(v, u, K);
+
+    if (!isFinite(tex) || tex <= 0){
+      out.innerHTML = '';
+      err.textContent = '该数值超出可换算范围，请检查输入。';
+      return;
+    }
+
+    var html = '';
+    html += card('Tex 特克斯', 'g / km', fmt(tex, 2), u === 'tex');
+    html += card('Denier 旦', 'g / 9 km', fmt(tex * 9, 1), u === 'den');
+    html += card('dtex 分特', '10⁻¹ tex', fmt(tex * 10, 1), u === 'dtex');
+    html += card('Nm 公制支数', 'm / g', fmt(1000 / tex, 2), u === 'nm');
+    html += card('Ne 英制支数', 'K = ' + K, fmt(K / tex, 2), u === 'ne');
+
+    var notes = [];
+    notes.push('恒等式校核：Ne × D = ' + fmt((K / tex) * (tex * 9), 0) +
+               '（理论值 ' + (K === 583.1 ? '5248' : '5315') + '）');
+    notes.push('Nm × D = ' + fmt((1000 / tex) * (tex * 9), 0) + '（理论值 9000）');
+
+    var f = parseFloat(fEl.value);
+    if (isFinite(f) && f >= 1){
+      var sD = (tex * 9) / f;
+      html += card('单丝纤度', f + ' 根单丝', fmt(sD, 2) + ' D', false);
+      html += card('单丝纤度', f + ' 根单丝', fmt(sD * 1.1111, 2) + ' dtex', false);
+      notes.push('单丝纤度 = 总旦数 ' + fmt(tex * 9, 1) + ' D ÷ ' + f + ' 根');
+    }
+
+    out.innerHTML = html;
+    err.textContent = notes.join('　｜　');
+    err.style.color = '#6b7a8d';
+  }
+
+  ['input', 'change'].forEach(function(ev){
+    vEl.addEventListener(ev, calc);
+    uEl.addEventListener(ev, calc);
+    mEl.addEventListener(ev, calc);
+    fEl.addEventListener(ev, calc);
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('.chip'), function(b){
+    b.addEventListener('click', function(){
+      var p = b.getAttribute('data-preset').split(',');
+      vEl.value = p[0];
+      uEl.value = p[1];
+      mEl.value = p[2] === 'cotton' ? '583.1' : '590.5';
+      fEl.value = '';
+      calc();
+    });
+  });
+
+  calc();
+})();
+
+/* ================= 工具 2：织物克重估算 ================= */
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var duEl = $('fw-den-u');
+  var els = ['fw-we','fw-twe','fw-cwe','fw-wf','fw-twf','fw-cwf'].map($);
+  var out = $('fw-out'), err = $('fw-err');
+
+  function f(x, d){ return isFinite(x) ? x.toFixed(d === undefined ? 1 : d) : '—'; }
+
+  function calc(){
+    var du = duEl.value;
+    var k = (du === 'in') ? 3.937 : 1;   // 根/inch -> 根/10cm
+    var we  = parseFloat($('fw-we').value)  * k;
+    var twe = parseFloat($('fw-twe').value);
+    var cwe = parseFloat($('fw-cwe').value);
+    var wf  = parseFloat($('fw-wf').value)  * k;
+    var twf = parseFloat($('fw-twf').value);
+    var cwf = parseFloat($('fw-cwf').value);
+
+    var ok = [we, twe, cwe, wf, twf, cwf].every(function(x){ return isFinite(x) && x >= 0; });
+    if (!ok){
+      out.innerHTML = '';
+      err.textContent = '请填写全部非负数值。';
+      err.style.color = '#b5342a';
+      return;
+    }
+
+    var m1 = we * twe * (1 + cwe / 100) / 100;
+    var m2 = wf * twf * (1 + cwf / 100) / 100;
+    var tot = m1 + m2;
+
+    function card(label, unit, value, hi){
+      return '<div class="ocard' + (hi ? ' hi' : '') + '">' +
+               '<div class="k">' + label + '</div>' +
+               '<div class="v">' + value + '</div>' +
+               '<div class="u">' + unit + '</div></div>';
+    }
+
+    out.innerHTML =
+      card('经向用纱', 'g / m²', f(m1), false) +
+      card('纬向用纱', 'g / m²', f(m2), false) +
+      card('估算克重', 'g / m²', f(tot), true);
+
+    err.style.color = '#6b7a8d';
+    err.textContent = '经向密度已折合 ' + f(we, 1) + ' 根/10cm，纬向 ' + f(wf, 1) +
+                      ' 根/10cm。实测须按 ISO 3801 / GB/T 4669 用圆形取样器校核。';
+  }
+
+  duEl.addEventListener('change', calc);
+  els.forEach(function(e){ e.addEventListener('input', calc); });
+  calc();
+})();
+</script>
+</body>
+</html>

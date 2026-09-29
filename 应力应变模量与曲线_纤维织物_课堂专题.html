@@ -1,0 +1,2352 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>应力 · 应变 · 模量与应力-应变曲线 — 纤维与织物｜课堂讲义</title>
+<style>
+:root{
+  --ink:#1c2733;
+  --ink-2:#455468;
+  --ink-3:#6b7a8d;
+  --line:#dde3ea;
+  --line-2:#eef1f5;
+  --bg:#f2f4f7;
+  --paper:#ffffff;
+
+  --direct:#1f4e79;      /* 定长制 蓝 */
+  --direct-bg:#eef4fa;
+  --direct-soft:#c8d8e8;
+
+  --indirect:#1a6f5a;    /* 定重制 绿 */
+  --indirect-bg:#ecf6f2;
+  --indirect-soft:#bfe0d5;
+
+  --warn:#b5342a;        /* 重点/警示 红 */
+  --warn-bg:#fdf1ef;
+
+  --gold:#8a6d1f;        /* 常数 金 */
+  --gold-bg:#fdf8ec;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:96px}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+  font-size:17px;
+  line-height:1.78;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ 顶部条 ============ */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1320px; margin:0 auto; padding:10px 24px;
+  display:flex; align-items:center; gap:16px;
+}
+.topbar-title{font-size:15px; font-weight:700; letter-spacing:.02em; color:var(--direct)}
+.topbar-sub{font-size:12.5px; color:var(--ink-3); border-left:1px solid var(--line); padding-left:14px}
+.topbar-actions{margin-left:auto; display:flex; gap:8px}
+.btn{
+  font:inherit; font-size:12.5px; padding:5px 13px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-2);
+  cursor:pointer; transition:.16s;
+}
+.btn:hover{border-color:var(--direct); color:var(--direct); background:var(--direct-bg)}
+.progress{height:3px; background:var(--line-2)}
+.progress-bar{height:100%; width:0; background:linear-gradient(90deg,var(--direct),var(--indirect)); transition:width .1s linear}
+
+/* ============ 布局 ============ */
+.shell{max-width:1320px; margin:0 auto; padding:0 24px 80px; display:grid; grid-template-columns:236px 1fr; gap:36px; align-items:start}
+
+/* ============ 侧栏导航 ============ */
+.nav{position:sticky; top:74px; padding:22px 0; max-height:calc(100vh - 90px); overflow-y:auto}
+.nav-h{font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; margin:0 0 10px 12px}
+.nav a{
+  display:block; font-size:14px; color:var(--ink-2); text-decoration:none;
+  padding:7px 12px; border-radius:8px; border-left:2px solid transparent;
+  transition:.14s; line-height:1.45;
+}
+.nav a:hover{background:#fff; color:var(--direct)}
+.nav a.on{background:#fff; color:var(--direct); font-weight:600; border-left-color:var(--direct); box-shadow:0 1px 3px rgba(31,78,121,.09)}
+.nav a .n{display:inline-block; width:20px; color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:12px}
+.nav a.on .n{color:var(--direct)}
+
+/* ============ 正文 ============ */
+main{min-width:0; padding-top:26px}
+section{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:32px 38px 36px; margin-bottom:26px; scroll-margin-top:96px;
+}
+h2{
+  font-size:23px; margin:0 0 6px; letter-spacing:.01em; line-height:1.4;
+  display:flex; align-items:baseline; gap:12px;
+}
+h2 .num{
+  font-size:13px; font-weight:700; color:#fff; background:var(--direct);
+  border-radius:6px; padding:2px 9px; letter-spacing:.04em; position:relative; top:-2px;
+  font-variant-numeric:tabular-nums;
+}
+h2.g .num{background:var(--indirect)}
+h2.r .num{background:var(--warn)}
+h2.k .num{background:var(--gold)}
+.lead{color:var(--ink-2); font-size:15.5px; margin:0 0 24px; padding-bottom:16px; border-bottom:1px dashed var(--line)}
+h3{font-size:18px; margin:30px 0 10px; color:var(--direct); letter-spacing:.01em}
+h3.g{color:var(--indirect)}
+h3::before{content:""; display:inline-block; width:4px; height:15px; background:currentColor; border-radius:2px; margin-right:9px; position:relative; top:1px}
+h4{font-size:16px; margin:22px 0 8px; color:var(--ink)}
+p{margin:10px 0}
+ul,ol{margin:10px 0; padding-left:24px}
+li{margin:6px 0}
+strong{color:var(--ink); font-weight:700}
+code{
+  font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.88em;
+  background:#f3f5f8; border:1px solid var(--line); border-radius:4px;
+  padding:1px 5px; color:#25476e;
+}
+
+/* ============ 公式 ============ */
+.eq{
+  display:block; margin:16px 0; padding:15px 20px;
+  background:#f8fafc; border:1px solid var(--line); border-left:3px solid var(--direct);
+  border-radius:8px; font-size:16.5px; line-height:2.1; overflow-x:auto;
+}
+.eq.g{border-left-color:var(--indirect)}
+.eq.k{border-left-color:var(--gold)}
+.eq .lbl{font-size:12.5px; color:var(--ink-3); margin-left:10px}
+.frac{display:inline-block; vertical-align:-0.55em; text-align:center; font-size:.86em; line-height:1.18; margin:0 .18em}
+.frac .num{display:block; border-bottom:1.2px solid currentColor; padding:0 .3em}
+.frac .den{display:block; padding:0 .3em}
+.big{font-size:20px; font-weight:700; color:var(--direct)}
+.big.g{color:var(--indirect)}
+
+/* ============ 表格 ============ */
+.tw{overflow-x:auto; margin:16px 0; border:1px solid var(--line); border-radius:10px}
+table{border-collapse:collapse; width:100%; font-size:14.5px; background:#fff}
+th,td{padding:9px 13px; text-align:left; border-bottom:1px solid var(--line-2); vertical-align:top}
+thead th{
+  background:#f6f8fb; font-weight:700; font-size:13.5px; color:var(--direct);
+  border-bottom:1px solid var(--line); white-space:nowrap; position:sticky; top:0;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafcfe}
+td.num,th.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+.tc{text-align:center}
+caption{caption-side:top; text-align:left; font-size:13px; color:var(--ink-3); padding:10px 13px 8px; background:#fff}
+
+/* ============ 卡片/提示 ============ */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:#fcfdfe}
+.card h4{margin:0 0 8px; font-size:15.5px}
+.card p:last-child{margin-bottom:0}
+.card.d{border-color:var(--direct-soft); background:var(--direct-bg)}
+.card.g{border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.card.k{border-color:#ecdcb0; background:var(--gold-bg)}
+.card.r{border-color:#f0cfca; background:var(--warn-bg)}
+
+.note{
+  border-radius:10px; padding:14px 18px; margin:18px 0; font-size:15.5px;
+  border:1px solid var(--line); background:#f8fafc;
+}
+.note.d{border-left:3px solid var(--direct); background:var(--direct-bg)}
+.note.g{border-left:3px solid var(--indirect); background:var(--indirect-bg)}
+.note.k{border-left:3px solid var(--gold); background:var(--gold-bg)}
+.note.r{border-left:3px solid var(--warn); background:var(--warn-bg)}
+.note-h{font-weight:700; font-size:14px; letter-spacing:.03em; margin-bottom:5px; display:block}
+.note.d .note-h{color:var(--direct)}
+.note.g .note-h{color:var(--indirect)}
+.note.k .note-h{color:var(--gold)}
+.note.r .note-h{color:var(--warn)}
+
+.tag{
+  display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-3); margin:0 5px 5px 0;
+  font-variant-numeric:tabular-nums;
+}
+.tag.d{color:var(--direct); border-color:var(--direct-soft); background:var(--direct-bg)}
+.tag.g{color:var(--indirect); border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.tag.r{color:var(--warn); border-color:#f0cfca; background:var(--warn-bg)}
+
+.kbd-f{font-family:"SF Mono",Menlo,monospace; font-size:14px; background:#fff; border:1px solid var(--line); border-radius:6px; padding:3px 8px}
+
+/* ============ 交互工具 ============ */
+.tool{border:1px solid var(--direct-soft); border-radius:12px; background:linear-gradient(180deg,#f7fafd,#fff); padding:20px 22px; margin:20px 0}
+.tool-h{font-size:15px; font-weight:700; color:var(--direct); margin:0 0 14px; display:flex; align-items:center; gap:8px}
+.tool-h::before{content:"▸"; color:var(--direct)}
+.tool-h.g{color:var(--indirect)} .tool-h.g::before{color:var(--indirect)}
+.frow{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:14px}
+.fld{display:flex; flex-direction:column; gap:5px}
+.fld label{font-size:12.5px; color:var(--ink-3); font-weight:600; letter-spacing:.02em}
+input[type=number],select{
+  font:inherit; font-size:15px; padding:8px 11px; border:1px solid var(--line);
+  border-radius:8px; background:#fff; color:var(--ink); min-width:118px;
+  font-variant-numeric:tabular-nums;
+}
+input[type=number]:focus,select:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.chips{display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 14px}
+.chip{
+  font:inherit; font-size:12.5px; padding:4px 11px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--direct-soft); background:#fff; color:var(--direct); transition:.14s;
+}
+.chip:hover{background:var(--direct); color:#fff}
+.out{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px; margin-top:6px}
+.ocard{border:1px solid var(--line); border-radius:9px; background:#fff; padding:11px 13px; text-align:center}
+.ocard .k{font-size:11.5px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase; font-weight:700}
+.ocard .v{font-size:21px; font-weight:700; color:var(--direct); font-variant-numeric:tabular-nums; line-height:1.3; word-break:break-all}
+.ocard .u{font-size:12px; color:var(--ink-3)}
+.ocard.hi{background:var(--direct); border-color:var(--direct)}
+.ocard.hi .k{color:#b8d0e6} .ocard.hi .v{color:#fff} .ocard.hi .u{color:#b8d0e6}
+.err{color:var(--warn); font-size:13.5px; min-height:20px; margin-top:6px}
+
+/* ============ 练习 ============ */
+details.q{border:1px solid var(--line); border-radius:10px; background:#fff; margin:12px 0; overflow:hidden}
+details.q>summary{
+  cursor:pointer; padding:14px 18px; font-size:15.5px; font-weight:600;
+  list-style:none; display:flex; gap:11px; align-items:flex-start; transition:.14s;
+}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary:hover{background:#f8fafc}
+details.q>summary .qn{
+  flex:0 0 auto; width:24px; height:24px; border-radius:50%; background:var(--direct);
+  color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; margin-top:2px;
+  font-variant-numeric:tabular-nums;
+}
+details.q[open]>summary{border-bottom:1px solid var(--line-2); background:#f8fafc}
+details.q .ans{padding:15px 18px 18px 53px; font-size:15px; color:var(--ink-2); background:#fcfdfe}
+details.q .ans .fin{color:var(--warn); font-weight:700}
+
+/* ============ 参考文献 ============ */
+.refs{counter-reset:r; list-style:none; padding:0; margin:14px 0 0}
+.refs li{
+  counter-increment:r; position:relative; padding:9px 0 9px 42px;
+  border-bottom:1px dashed var(--line-2); font-size:14.5px; line-height:1.72;
+}
+.refs li:last-child{border-bottom:none}
+.refs li::before{
+  content:"[" counter(r) "]"; position:absolute; left:0; top:9px;
+  font-size:12.5px; color:var(--direct); font-weight:700; font-variant-numeric:tabular-nums;
+}
+.refs li em{font-style:normal; color:var(--ink-3)}
+.refs li .src{color:var(--ink-3); font-size:13px}
+.refs-cat{font-size:14px; font-weight:700; color:var(--ink); margin:26px 0 6px; padding:6px 0 6px 0; border-bottom:2px solid var(--line)}
+.refs-cat:first-of-type{margin-top:8px}
+.refs-cat span{color:var(--ink-3); font-weight:400; font-size:12.5px; margin-left:8px}
+
+/* ============ 封面 ============ */
+.cover{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:46px 46px 40px; margin-bottom:26px; position:relative; overflow:hidden;
+}
+.cover::after{
+  content:""; position:absolute; right:-80px; top:-80px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 70%,rgba(31,78,121,.09),rgba(26,111,90,.05) 55%,transparent 72%);
+}
+.cover .kicker{font-size:12.5px; letter-spacing:.2em; color:var(--indirect); font-weight:700; text-transform:uppercase}
+.cover h1{font-size:35px; margin:14px 0 4px; letter-spacing:.01em; line-height:1.32}
+.cover h1 .a{color:var(--direct)} .cover h1 .b{color:var(--indirect)}
+.cover .sub{font-size:16.5px; color:var(--ink-2); margin:12px 0 0; max-width:660px}
+.cover .meta{
+  margin-top:26px; padding-top:18px; border-top:1px solid var(--line);
+  display:flex; flex-wrap:wrap; gap:10px 26px; font-size:13.5px; color:var(--ink-3);
+}
+.cover .meta b{color:var(--ink-2); font-weight:600}
+.cover .tags{margin-top:20px}
+.academic-note{margin-top:18px; font-size:13px; color:var(--ink-3); line-height:1.7}
+
+footer{
+  max-width:1320px; margin:0 auto; padding:22px 24px 60px;
+  font-size:13px; color:var(--ink-3); border-top:1px solid var(--line);
+}
+
+/* ============ 响应式 ============ */
+@media (max-width:1000px){
+  .shell{grid-template-columns:1fr; gap:0}
+  .nav{position:static; max-height:none; border-bottom:1px solid var(--line); padding:14px 0 18px}
+  .nav a{display:inline-block; margin:0 6px 6px 0}
+  .grid2,.grid3{grid-template-columns:1fr}
+  section{padding:24px 20px 28px}
+  .cover{padding:32px 24px}
+  .cover h1{font-size:27px}
+  .topbar-sub{display:none}
+}
+@media (min-width:1001px) and (max-width:1200px){
+  .grid3{grid-template-columns:1fr 1fr}
+}
+
+/* ============ 打印 ============ */
+@media print{
+  :root{--bg:#fff}
+  body{font-size:11.5pt; background:#fff}
+  .topbar,.nav,.tool .chips,.topbar-actions,footer .noprint{display:none !important}
+  .shell{display:block; max-width:none; padding:0}
+  section,.cover{border:none; border-radius:0; padding:0 0 18px; margin:0 0 20px; break-inside:auto; box-shadow:none}
+  h2,h3{break-after:avoid}
+  table,.card,.note,.eq,details.q{break-inside:avoid}
+  details.q{display:block} details.q>summary{cursor:default} details.q .ans{display:block !important}
+  details.q:not([open]) .ans{display:block !important}
+  a{color:inherit; text-decoration:none}
+  .cover::after{display:none}
+  .refs li{break-inside:avoid}
+}
+
+/* ============ 本讲新增 ============ */
+.fig{border:1px solid var(--line); border-radius:12px; background:#fff; padding:14px 16px 10px; margin:20px 0; overflow-x:auto}
+.fig svg{display:block; width:100%; height:auto; min-width:620px}
+.figcap{font-size:13px; color:var(--ink-3); margin:8px 2px 4px; line-height:1.68}
+.figcap b{color:var(--ink-2)}
+.chain{display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; margin:18px 0}
+.chain .node{flex:1 1 158px; border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:#fcfdfe}
+.chain .node h5{margin:0 0 6px; font-size:14.5px; color:var(--direct)}
+.chain .node p{margin:0; font-size:13px; color:var(--ink-2); line-height:1.62}
+.chain .arw{display:flex; align-items:center; color:var(--ink-3); font-size:17px; padding:0 1px}
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0}
+.step{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fcfdfe; font-size:13.8px; line-height:1.62}
+.step .sn{display:inline-block; width:20px; height:20px; border-radius:50%; background:var(--direct); color:#fff; font-size:11.5px; text-align:center; line-height:20px; margin-right:6px; font-weight:700; vertical-align:1px}
+.pill{display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px; background:#f3f5f8; border:1px solid var(--line); color:var(--ink-2); margin:0 6px 6px 0; font-variant-numeric:tabular-nums}
+.hl{background:linear-gradient(transparent 61%, #fbeec0 61%); font-weight:600}
+.fml{font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.92em; color:#25476e; background:#f3f5f8; border:1px solid var(--line); border-radius:4px; padding:1px 5px; white-space:nowrap}
+.small{font-size:13px; color:var(--ink-3); line-height:1.68}
+.ansvg{margin:8px 0 14px; overflow-x:auto}
+.ansvg svg{display:block; width:100%; max-width:760px; height:auto; min-width:520px; margin:0 auto}
+input[type=range]{width:200px; accent-color:var(--direct); vertical-align:middle; margin-top:4px}
+.fld .rngv{font-variant-numeric:tabular-nums; font-weight:700; color:var(--direct)}
+@media (max-width:1000px){ .grid4{grid-template-columns:1fr 1fr} }
+@media (max-width:640px){ .grid4{grid-template-columns:1fr} .chain .arw{display:none} }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-title">应力 · 应变 · 模量与应力-应变曲线</div>
+    <div class="topbar-sub">以纤维与织物为例｜课堂讲解课件</div>
+    <div class="topbar-actions">
+      <button class="btn" onclick="window.print()">打印 / 导出 PDF</button>
+      <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">回到顶部</button>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="pbar"></div></div>
+</div>
+
+<div class="shell">
+
+  <!-- ================= 侧栏 ================= -->
+  <nav class="nav" id="nav">
+    <p class="nav-h">本讲目录</p>
+    <a href="#obj"><span class="n">01</span>学习目标与课时</a>
+    <a href="#frame"><span class="n">02</span>从分子链到一件衣服</a>
+    <a href="#stress"><span class="n">03</span>应力：纺织的单位语言</a>
+    <a href="#strain"><span class="n">04</span>应变与弹性回复</a>
+    <a href="#modulus"><span class="n">05</span>模量：材料的性格</a>
+    <a href="#curve"><span class="n">06</span>应力-应变曲线</a>
+    <a href="#index"><span class="n">07</span>曲线上的关键指标</a>
+    <a href="#micro"><span class="n">08</span>分子机理与黏弹性</a>
+    <a href="#fabric"><span class="n">09</span>从纤维到织物</a>
+    <a href="#lowload"><span class="n">10</span>织物低负荷力学</a>
+    <a href="#tools"><span class="n">11</span>交互工具</a>
+    <a href="#table"><span class="n">12</span>速查表</a>
+    <a href="#quiz"><span class="n">13</span>课堂练习</a>
+    <a href="#pitfall"><span class="n">14</span>常见误区</a>
+    <a href="#summary"><span class="n">15</span>一页速记</a>
+    <a href="#ref"><span class="n">16</span>参考文献与标准</a>
+  </nav>
+
+  <!-- ================= 正文 ================= -->
+  <main>
+
+  <!-- ========== 封面 ========== -->
+  <div class="cover" id="cover">
+    <div class="kicker">Textile Materials · 补充讲义</div>
+    <h1><span class="a">应力 · 应变 · 模量</span><br>与那条决定一切的 <span class="b">应力-应变曲线</span></h1>
+    <p class="sub">
+      为什么棉布挺括却易皱、锦纶弹而不挺、涤纶免烫、羊毛柔软、氨纶能拉长一倍还弹回来？
+      答案都写在同一张图里。本讲从最基础的两个量出发，把单位语言、曲线形态、分子机理一直串到织物的手感和服装的保形性。
+    </p>
+    <div class="tags">
+      <span class="tag d">应力 σ 与应变 ε</span>
+      <span class="tag d">模量 E 与初始模量</span>
+      <span class="tag g">应力-应变曲线五型</span>
+      <span class="tag g">弹性回复率 · 塑性变形</span>
+      <span class="tag r">织物低负荷力学</span>
+    </div>
+    <div class="meta">
+      <span><b>配套单元：</b>纤维与织物的力学性能</span>
+      <span><b>建议课时：</b>2 学时（90 min）</span>
+      <span><b>授课：</b>梁帅童 · 上海工程技术大学纺织服装学院</span>
+    </div>
+    <p class="academic-note">
+      本讲术语依 GB/T 3291.1—1997（纤维和纱线）与 GB/T 3291.2—1997（织物）；
+      纤维拉伸性能依 GB/T 14337—2022 与 GB/T 14344—2022，织物拉伸依 GB/T 3923.1—2013，
+      织物弯曲依 GB/T 18318.1—2009，拉伸弹性依 FZ/T 01034—2008 与 FZ/T 70006—2022。
+      完整出处见第 16 节。
+    </p>
+  </div>
+
+  <!-- ========== 01 学习目标 ========== -->
+  <section id="obj">
+    <h2><span class="num">01</span>学习目标与课时安排</h2>
+    <p class="lead">本讲的落点不是背公式，而是建立一条反射：<strong>看到任何一条力学数据，先问它属于哪个层级、用了哪套单位、是在什么条件下测的。</strong></p>
+
+    <div class="grid3">
+      <div class="card d">
+        <h4>知识目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>准确写出应力、应变、模量的定义式与单位</li>
+          <li>说明为什么纺织不用 Pa，而用 cN/dtex、N/tex</li>
+          <li>识别纤维应力-应变曲线的五种基本形态</li>
+          <li>说出普弹、高弹、塑性三种形变的分子机制</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <h4>能力目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>在 cN/dtex、N/tex、g/d、GPa 之间任意换算</li>
+          <li>由曲线读出初始模量、屈服点、断裂强度与断裂功</li>
+          <li>由纤维模量推断织物的挺括、柔软与保形性</li>
+          <li>计算弹性回复率、塑性变形率与断裂强度</li>
+        </ul>
+      </div>
+      <div class="card r">
+        <h4>素养目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>意识到「模量大 ≠ 强度高」「刚度 ≠ 韧性」</li>
+          <li>养成换算前先确认单位、密度与测试条件的习惯</li>
+          <li>理解同一材料的力学性能随湿度、温度、速率而变</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>课时分配建议（90 min）</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:54%">环节</th><th class="num" style="width:16%">时长</th><th>教学方式</th></tr></thead>
+        <tbody>
+          <tr><td>力学层级：从分子链到一件衣服</td><td class="num">8 min</td><td>讲授 + 板书五级链条</td></tr>
+          <tr><td>应力与纺织特有的单位语言</td><td class="num">12 min</td><td>讲授 + 单位换算练习</td></tr>
+          <tr><td>应变、三种形变与弹性回复</td><td class="num">12 min</td><td>讲授 + 回弹率数据讨论</td></tr>
+          <tr><td>模量：谁决定挺括与柔软</td><td class="num">13 min</td><td>案例对比（棉／涤纶／锦纶／羊毛）</td></tr>
+          <tr><td>应力-应变曲线逐条解读（第 6 节图）</td><td class="num">15 min</td><td>读图训练，学生指认关键点</td></tr>
+          <tr><td>分子机理、黏弹性与温湿度效应</td><td class="num">10 min</td><td>提问式推导</td></tr>
+          <tr><td>从纤维到织物：曲线如何被改写</td><td class="num">12 min</td><td>机织／针织／非织造对比</td></tr>
+          <tr><td>交互工具实操 + 练习讲评</td><td class="num">8 min</td><td>学生上台操作，小组作答</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">本讲的主线</span>
+      <p style="margin:0">一条主线贯穿全场：<strong>分子链的刚性 → 纤维的模量与强度 → 纱线的结构与织缩 → 织物的低负荷力学 → 服装的挺括、悬垂、弹性与保形。</strong>每一级都换了一套单位和一套测试标准，但物理量本身一脉相承。</p>
+    </div>
+  </section>
+
+  <!-- ========== 02 核心框架 ========== -->
+  <section id="frame">
+    <h2><span class="num">02</span>核心框架：从分子链到一件衣服</h2>
+    <p class="lead">同一个「力学量」，在五个层级上有五种面孔。搞清层级，单位就不再是负担。</p>
+
+    <div class="chain">
+      <div class="node">
+        <h5>① 大分子链</h5>
+        <p>主链键的旋转、链段的构象、分子间作用力。这里只有键能与势能曲线。</p>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <h5>② 纤维</h5>
+        <p>取向度与结晶度把分子链排成束。<strong>单位用 cN/dtex</strong>，本质是比强度。</p>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <h5>③ 纱线</h5>
+        <p>捻度把纤维抱合。受力时纤维先后断裂，存在<strong>弱节效应</strong>，强度低于单纤维。</p>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <h5>④ 织物</h5>
+        <p>纱线屈曲交织，存在<strong>织缩率</strong>。单位变成 N/5cm，力学高度各向异性。</p>
+      </div>
+      <div class="arw">→</div>
+      <div class="node">
+        <h5>⑤ 服装</h5>
+        <p>挺括、悬垂、弹性、免烫、保形——用户唯一能用语言描述的一层。</p>
+      </div>
+    </div>
+
+    <h3>为什么纺织要用「单位线密度的力」</h3>
+    <p>织物与纤维是细长的柔性体，截面既不是圆形也不均匀：棉纤维有天然转曲、中腔与腰圆形截面；羊毛有鳞片；化学纤维有异形截面与空腔；纱线表面还有毛羽。用卡尺量直径，误差常常达到 10% 以上，再平方一次就是 20% 的应力误差。</p>
+    <p>更可靠的做法是<strong>绕开直径</strong>——直接称量单位长度的质量，也就是线密度（tex、dtex、denier），用「线密度」当作「截面积的替身」。因为 <span class="fml">线密度 = 截面积 × 密度</span>，所以：</p>
+
+    <div class="eq">
+      σ 的「纺织写法」 <span class="lbl">应力被折算成“单位线密度承受的力”</span><br>
+      <span class="big">σ = <span class="frac"><span class="num">F</span><span class="den">T</span></span> = <span class="frac"><span class="num">F</span><span class="den">A · ρ</span></span></span>
+      <span class="lbl">F 为力，T 为线密度，A 为截面积，ρ 为密度</span>
+    </div>
+
+    <div class="note k">
+      <span class="note-h">本讲最重要的一句话</span>
+      <p style="margin:0">因为分母里含密度，<strong>cN/dtex、N/tex、g/d 这一族单位衡量的其实是「比强度」（强度 ÷ 密度）</strong>——即“以重量论强弱”的强度。这既是纺织行业必须用它的原因，也是初学者最容易读错的地方：它和 MPa、GPa 不是同一个量，不能直接比大小。</p>
+    </div>
+
+    <div class="grid3">
+      <div class="card d">
+        <h4>模量 E：结构不敏感</h4>
+        <p style="margin:0">主要由<strong>大分子链的刚性</strong>与<strong>取向度</strong>决定。同一种纤维不同批次之间，模量波动相对小。</p>
+      </div>
+      <div class="card g">
+        <h4>强度 σ<sub>b</sub>：结构敏感</h4>
+        <p style="margin:0">强烈依赖分子链规整性、结晶度、<strong>缺陷与弱节</strong>。同一批纤维的强度离散系数常有 10%～20%。</p>
+      </div>
+      <div class="card r">
+        <h4>织物刚度：几何说了算</h4>
+        <p style="margin:0">织物抗弯刚度 <strong>G ∝ 面密度 × 弯曲长度³</strong>，与截面几何的高次方相关，材质只是其中一个因子。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 03 应力 ========== -->
+  <section id="stress">
+    <h2><span class="num">03</span>应力：概念与纺织特有的单位语言</h2>
+    <p class="lead">应力不是「多大的力」，而是「单位面积上有多少力」。单位换算的精确值，是这一节的硬功夫。</p>
+
+    <h3>定义与基本形式</h3>
+    <div class="eq">
+      <span class="big">σ = <span class="frac"><span class="num">F</span><span class="den">A<sub>0</sub></span></span></span>
+      <span class="lbl">F 为载荷（N），A₀ 为原始截面积（mm² 或 m²），σ 单位为 Pa</span>
+    </div>
+    <p>1 MPa = 1 N/mm² 是工程上最顺手的换算。对纺织材料，更常用的是「单位线密度的力」：</p>
+
+    <div class="tw">
+      <table>
+        <caption>纺织力学常用应力单位的换算关系（左列为 1 个该单位，右列为等效值）</caption>
+        <thead><tr><th>单位</th><th class="num">= N/tex</th><th class="num">= cN/dtex</th><th class="num">= mN/tex</th><th class="num">= g/d（克力/旦）</th></tr></thead>
+        <tbody>
+          <tr><td><strong>1 cN/dtex</strong>（最常用）</td><td class="num">0.1</td><td class="num">1</td><td class="num">100</td><td class="num">1.1330</td></tr>
+          <tr><td><strong>1 N/tex</strong>（SI 推荐）</td><td class="num">1</td><td class="num">10</td><td class="num">1000</td><td class="num">11.330</td></tr>
+          <tr><td><strong>1 g/d</strong>（英美惯用）</td><td class="num">0.08826</td><td class="num">0.8826</td><td class="num">88.26</td><td class="num">1</td></tr>
+          <tr><td><strong>1 mN/tex</strong></td><td class="num">0.001</td><td class="num">0.01</td><td class="num">1</td><td class="num">0.011330</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">换算之锚：1 g 力 = 9.80665 mN；1 dtex = 1 g/10 000 m；1 denier = 1 g/9000 m，故 1 den = 1.1111 dtex。于是 1 g/d = 9.80665 mN ÷ 1.1111 dtex ≈ <strong>0.8826 cN/dtex</strong>。</p>
+
+    <h3>与 Pa、GPa 的桥：需要密度</h3>
+    <p>两类单位之间的换算必须引入密度 ρ（g/cm³）。推导一次，学生就再不会记错：</p>
+    <div class="eq k">
+      <span class="big">σ / GPa = 0.1 × ρ / (g·cm⁻³) × σ / (cN·dtex⁻¹)</span><br>
+      <span class="big g">σ / (N·tex⁻¹) = <span class="frac"><span class="num">σ / GPa</span><span class="den">ρ / (g·cm⁻³)</span></span></span>
+      <span class="lbl">两式互为逆运算，第二式说明 N/tex 就是比强度</span>
+    </div>
+    <p>用法示例——同一根涤纶纤维（ρ = 1.38 g/cm³）的断裂应力，用两套语言说：</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th>材料</th><th class="num">ρ / (g·cm⁻³)</th><th class="num">σ<sub>b</sub> / (cN·dtex⁻¹)</th><th class="num">σ<sub>b</sub> / GPa</th><th class="num">比强度 / (kN·m·kg⁻¹)</th></tr></thead>
+        <tbody>
+          <tr><td>涤纶长丝</td><td class="num">1.38</td><td class="num">4.5</td><td class="num">0.62</td><td class="num">450</td></tr>
+          <tr><td>钢丝（高强）</td><td class="num">7.85</td><td class="num">1.274</td><td class="num">1.00</td><td class="num">127</td></tr>
+          <tr><td>碳纤维 T300</td><td class="num">1.76</td><td class="num">20.06</td><td class="num">3.53</td><td class="num">2006</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note r">
+      <span class="note-h">反直觉但必须记住</span>
+      <p style="margin:0 0 6px">按绝对应力（GPa），钢（1.00）比涤纶（0.62）高；<strong>按比强度（kN·m/kg），涤纶（450）是钢（127）的 3.5 倍</strong>。</p>
+      <p style="margin:0">这就是纺织用 cN/dtex 的深层理由：衣服和绳索关心的是「每一公斤材料能承受多少力」，而不是「每一平方毫米能承受多少力」。</p>
+      <p style="margin:6px 0 0"><strong>结论对取值不敏感：</strong>钢材强度跨度很大（低碳钢丝约 0.5 GPa、本文取的高强钢丝 1 GPa、预应力钢丝约 1.86 GPa）。即使取到预应力钢丝级别，比强度约 237 kN·m/kg，仍只有涤纶（450 kN·m/kg）的约 1/2——「涤纶比强度胜过钢」并不依赖某个特定取值。</p>
+      <p style="margin:6px 0 0"><strong>与粗细无关：</strong>两个结论的差别<strong>全部来自密度</strong>。应力是强度量，与试样截面大小无关——把两根丝取成同样直径，钢丝的绝对断裂强力反而约为涤纶的 1.61 倍；它输在「同样长度沉 5.69 倍」。完整算例见第 6 节图 1 后的说明框。</p>
+    </div>
+
+    <h3>四种常见的「应力」提法</h3>
+    <div class="grid4">
+      <div class="step"><span class="sn">1</span><strong>工程应力</strong><br>用原始面积 A₀ 计算，方便、可复现，纺织标准默认。<br><span class="small">σ = F / A₀</span></div>
+      <div class="step"><span class="sn">2</span><strong>真应力</strong><br>用瞬时面积。纤维拉长后截面收缩，真应力高于工程应力。<br><span class="small">σ<sub>t</sub> = σ (1 + ε)</span></div>
+      <div class="step"><span class="sn">3</span><strong>公定应力</strong><br>以公定回潮率下的线密度为基准（GB/T 9994）。纺织结算专用，不注明的数据要追问基准。</div>
+      <div class="step"><span class="sn">4</span><strong>织物应力</strong><br>不折算面积，直接报「单位宽度的力」：N/5cm（条样法）、N（抓样法）。</div>
+    </div>
+
+    <h3>应力集中：破坏总是从最弱处开始</h3>
+    <p>纱线与织物的破坏几乎从不均匀发生。三个常见的集中源：</p>
+    <ul>
+      <li><strong>纤维弱节</strong>——棉纤维的中腔与转曲处、化学纤维的纺丝缺陷，强力只有正常段的 60%～80%（同时细度并无变化）。</li>
+      <li><strong>织物上的破洞与切口</strong>——撕裂时纱线逐根断裂，受力三角形底边第一根纱线承受最大张力，这就是撕破强力的力学本质。</li>
+      <li><strong>缝纫针孔与钳口</strong>——条样法试样若在距钳口 5 mm 内断裂，视为钳口断裂，结果应舍弃（GB/T 3923.1—2013）。</li>
+    </ul>
+  </section>
+
+  <!-- ========== 04 应变 ========== -->
+  <section id="strain">
+    <h2><span class="num">04</span>应变、三种形变与弹性回复</h2>
+    <p class="lead">应变是相对量，无量纲；但纺织更关心另一件事——<strong>变形之后还能不能回来</strong>。</p>
+
+    <h3>定义与无量纲语言</h3>
+    <div class="eq">
+      <span class="big">ε = <span class="frac"><span class="num">L − L<sub>0</sub></span><span class="den">L<sub>0</sub></span></span> = <span class="frac"><span class="num">ΔL</span><span class="den">L<sub>0</sub></span></span> &nbsp;=&nbsp; 断裂伸长率 E = <span class="frac"><span class="num">ΔL</span><span class="den">L<sub>0</sub></span></span> × 100 %</span>
+      <span class="lbl">纺织习惯把断裂时的 ε 直接叫「断裂伸长率」，单位 %</span>
+    </div>
+    <ul>
+      <li><strong>工程应变</strong>：分母固定为 L₀，纺织标准全部采用。</li>
+      <li><strong>真应变</strong>：<span class="fml">ε<sub>t</sub> = ln(1 + ε)</span>，大变形（如氨纶拉伸 500%）时必须用它，否则应变无上限而真应变有。</li>
+      <li><strong>泊松比</strong>：<span class="fml">ν = −ε<sub>横向</sub> / ε<sub>轴向</sub></span>。纤维大多近各向异性，横向模量远低于轴向；氨纶可视为接近体积不可压（ν ≈ 0.5）。</li>
+    </ul>
+
+    <h3>拉伸中的三种形变——本讲的核心机制</h3>
+    <p>任何一次拉伸，材料的总变形都由三个部分叠加而成。部位不同、可逆性不同、时间尺度也不同：</p>
+    <div class="grid3">
+      <div class="card d">
+        <h4>普弹变形（键长键角）</h4>
+        <p>大分子链内键长与键角的微小改变，形变量通常 <strong>&lt; 1%</strong>。</p>
+        <p style="margin:0">特征：<strong>瞬时、完全可逆、模量高</strong>，与温度关系不大。</p>
+      </div>
+      <div class="card g">
+        <h4>高弹变形（链段构象）</h4>
+        <p>分子链由卷曲伸展到较直，形变量可达 <strong>百分之几十到几百</strong>。</p>
+        <p style="margin:0">特征：<strong>可逆但需时间、模量低、强烈依赖温度</strong>。橡胶弹性、羊毛的低初始模量都来自这里。</p>
+      </div>
+      <div class="card r">
+        <h4>塑性变形（分子链滑移）</h4>
+        <p>分子链之间发生相对滑移并形成新的结合点，形变<strong>不可逆</strong>。</p>
+        <p style="margin:0">特征：一旦发生就产生永久伸长，是织物「走样、起拱、松垮」的根源。</p>
+      </div>
+    </div>
+    <div class="note d">
+      <span class="note-h">一条判据</span>
+      <p style="margin:0">同样受 3% 的拉伸，涤纶几乎全部由普弹与高弹承担、回弹率 97%；粘胶的回弹率只有 55%～80%。<strong>差别不在“有没有变形”，而在“变形由哪一部分承担”。</strong></p>
+    </div>
+
+    <h3>弹性回复率与塑性变形率</h3>
+    <p>这两个指标把上面那句话变成一个数。织物定力法（FZ/T 01034—2008）的定义式为：</p>
+    <div class="eq">
+      R<sub>e</sub> = <span class="frac"><span class="num">L<sub>1</sub> − L<sub>2</sub></span><span class="den">L<sub>1</sub> − (L<sub>0</sub> + ΔL)</span></span> × 100 % &nbsp;&nbsp;（弹性回复率）<br>
+      P = <span class="frac"><span class="num">L<sub>2</sub> − (L<sub>0</sub> + ΔL)</span><span class="den">L<sub>0</sub> + ΔL</span></span> × 100 % &nbsp;&nbsp;（塑性变形率）
+      <span class="lbl">L₀ 隔距长度；ΔL 松式夹持达预张力时的伸长（预张力夹持时为 0）；L₁ 拉到定力保持 1 min 后的长度；L₂ 回复零位停置 3 min 后再施加预张力时的长度</span>
+    </div>
+    <div class="note r">
+      <span class="note-h">注意分母不同</span>
+      <p style="margin:0">弹性回复率以<strong>伸长量</strong>为分母，塑性变形率以<strong>原始长度</strong>为分母。因此 <strong>弹性回复率 + 塑性变形率一般不等于 100%</strong>——这是历年考题与质检纠纷的高发点，详见第 14 节误区第 6 条。</p>
+    </div>
+
+    <h3>各纤维的定伸长回弹率（同一测试条件下的横向对比）</h3>
+    <div class="tw">
+      <table>
+        <caption>定伸长弹性回复率——数值越大，变形后越能回到原状</caption>
+        <thead><tr><th>纤维</th><th class="num">定伸长条件</th><th class="num">弹性回复率 / %</th><th>对服装的含义</th></tr></thead>
+        <tbody>
+          <tr><td>锦纶 6</td><td class="num">3 %</td><td class="num">100</td><td>最好的弹性，但模量低，弹而不挺</td></tr>
+          <tr><td>丙纶</td><td class="num">3 %</td><td class="num">96 – 100</td><td>回弹优异，用于弹性织物与绳索</td></tr>
+          <tr><td>涤纶（高强低伸型）</td><td class="num">3 %</td><td class="num">97</td><td>挺括 + 抗皱，免烫整理的物理基础</td></tr>
+          <tr><td>腈纶</td><td class="num">3 %</td><td class="num">89 – 95</td><td>毛型感、蓬松回弹好，仿毛面料</td></tr>
+          <tr><td>羊毛</td><td class="num">3 %</td><td class="num">86 – 93</td><td>低负荷回弹极好 → 抗皱、保形、悬垂自然</td></tr>
+          <tr><td>醋酯纤维</td><td class="num">3 %</td><td class="num">70 – 90</td><td>悬垂好但保形性一般</td></tr>
+          <tr><td>棉</td><td class="num">2 %</td><td class="num">74</td><td>回弹差 → 易皱，需树脂整理或与涤纶混纺</td></tr>
+          <tr><td>粘胶纤维</td><td class="num">3 %</td><td class="num">55 – 80</td><td>湿态回弹更差 → 湿强低、易变形</td></tr>
+          <tr><td>生丝</td><td class="num">5 %</td><td class="num">54 – 55</td><td>小负荷柔软，大变形后褶皱明显</td></tr>
+          <tr><td>氨纶</td><td class="num">50 %</td><td class="num">95 – 99</td><td>超高伸长的优异回弹，2%～10% 掺入即赋予弹力</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">上表数值随纤维型号、测试速度、预张力与调湿条件而变，用于课堂比较「大小顺序」而非绝对判断；出处见第 16 节文献［1］［22］。</p>
+
+    <h3>时间效应：蠕变、应力松弛与滞后</h3>
+    <div class="grid3">
+      <div class="card g">
+        <h4>蠕变（Creep）</h4>
+        <p style="margin:0">应力恒定，应变随时间缓慢增大。表现为衣服在肘部、膝部、臀部被撑出鼓包回不去。</p>
+      </div>
+      <div class="card g">
+        <h4>应力松弛（Relaxation）</h4>
+        <p style="margin:0">应变恒定，应力随时间衰减。表现为弹力腰头、袜口、裤腰松紧带越穿越松。</p>
+      </div>
+      <div class="card g">
+        <h4>滞后（Hysteresis）</h4>
+        <p style="margin:0">加卸载曲线不重合，围成一个环。环的面积就是一次循环中被消耗掉的功，转化为热——这是织物「阻尼」与手感的重要来源。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 05 模量 ========== -->
+  <section id="modulus">
+    <h2><span class="num">05</span>模量：材料的「性格」</h2>
+    <p class="lead">模量是材料最本征、最稳定的力学属性之一。它不决定「结不结实」，而决定「刚不刚、挺不挺、软不软」。</p>
+
+    <h3>定义与几个「模量」</h3>
+    <div class="eq">
+      <span class="big">E = <span class="frac"><span class="num">σ</span><span class="den">ε</span></span></span>
+      <span class="lbl">弹性段（初始直线段）的斜率，即杨氏模量，亦称弹性模量</span>
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>名称</th><th>定义</th><th>纺织中的用法</th></tr></thead>
+        <tbody>
+          <tr><td><strong>初始模量</strong></td><td>应力-应变曲线起始段（很小应变处）的斜率</td><td>纺织最常用；GB/T 14337—2022 明确列为试验项目</td></tr>
+          <tr><td>割线模量</td><td>某点与原点的连线斜率</td><td>大变形材料的等效刚度</td></tr>
+          <tr><td>切线模量</td><td>曲线上某点的切线斜率</td><td>屈服点附近的瞬时刚度</td></tr>
+          <tr><td>抗弯刚度 G</td><td>Г ∝ 面密度 × 弯曲长度³</td><td>织物硬挺度（GB/T 18318.1—2009）</td></tr>
+          <tr><td>动态模量 E′ / E″</td><td>储能模量 / 损耗模量</td><td>黏弹性表征，tanδ = E″/E′ 为阻尼</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>各纤维的初始模量：一张必须记住的表</h3>
+    <p>下表把「纺织语言」与「材料语言」并列，两者之间用 <span class="fml">σ[GPa] = 0.1 ρ σ[cN/dtex]</span> 互推，可现场验算。</p>
+    <div class="tw">
+      <table>
+        <caption>纤维初始模量（室温、干态，数值随型号与测试方法而变）</caption>
+        <thead><tr><th>纤维</th><th class="num">ρ / (g·cm⁻³)</th><th class="num">初始模量 / (cN·dtex⁻¹)</th><th class="num">折算 E / GPa</th><th>手感与服用表现</th></tr></thead>
+        <tbody>
+          <tr><td>棉</td><td class="num">1.54</td><td class="num">60 – 82</td><td class="num">9.2 – 12.6</td><td>挺括、身骨好，但回弹差 → 易皱</td></tr>
+          <tr><td>苎麻</td><td class="num">1.54</td><td class="num">176 – 220</td><td class="num">27.1 – 33.9</td><td>最挺爽，凉感强，折痕与刺痒并存</td></tr>
+          <tr><td>羊毛</td><td class="num">1.31</td><td class="num">21 – 30</td><td class="num">2.8 – 3.9</td><td>柔软、有弹性、悬垂自然</td></tr>
+          <tr><td>蚕丝</td><td class="num">1.34</td><td class="num">44</td><td class="num">5.9</td><td>柔中有骨，光泽与悬垂兼得</td></tr>
+          <tr><td>粘胶纤维</td><td class="num">1.50</td><td class="num">35 – 53</td><td class="num">5.3 – 8.0</td><td>柔软、悬垂好，湿态变软易变形</td></tr>
+          <tr><td>醋酯纤维</td><td class="num">1.32</td><td class="num">22 – 35</td><td class="num">2.9 – 4.6</td><td>最柔软的一类，垂坠感强</td></tr>
+          <tr><td>涤纶</td><td class="num">1.38</td><td class="num">44 – 79</td><td class="num">6.1 – 10.9</td><td>模量高 + 回弹好 → 挺括、免烫</td></tr>
+          <tr><td>锦纶 6</td><td class="num">1.14</td><td class="num">7 – 27</td><td class="num">0.8 – 3.1</td><td>模量最低的常见服用纤维 → 软、弹、不挺</td></tr>
+          <tr><td>腈纶</td><td class="num">1.17</td><td class="num">27 – 53</td><td class="num">3.2 – 6.2</td><td>蓬松、毛感，挺度介于涤纶与羊毛之间</td></tr>
+          <tr><td>丙纶</td><td class="num">0.91</td><td class="num">18 – 49</td><td class="num">1.6 – 4.5</td><td>密度最低（可浮于水），柔软轻盈</td></tr>
+          <tr><td>芳纶 1414</td><td class="num">1.44</td><td class="num">420 – 780</td><td class="num">60.5 – 112.3</td><td>高强高模，防弹与防护；几乎不可拉伸</td></tr>
+          <tr><td>玻璃纤维 E</td><td class="num">2.54</td><td class="num">~285</td><td class="num">~72</td><td>刚性高、脆、不耐屈曲疲劳</td></tr>
+          <tr><td>超高分子量聚乙烯</td><td class="num">0.97</td><td class="num">~1050</td><td class="num">~102</td><td>比强度与比模量均极高，密度小于水</td></tr>
+          <tr><td>碳纤维 T300</td><td class="num">1.76</td><td class="num">~1307</td><td class="num">~230</td><td>超高比模量，断裂伸长仅 1.5%</td></tr>
+          <tr><td>钢丝（高强，对比）</td><td class="num">7.85</td><td class="num">~254.8</td><td class="num">~200</td><td>绝对刚度最高的常见材料，但比模量低</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note g">
+      <span class="note-h">课堂归纳：一句话记住四个量</span>
+      <p style="margin:0 0 6px"><strong>模量管「挺不挺」</strong>（初始模量高 → 硬挺有身骨）；<strong>强度管「结不结实」</strong>（断裂强度高 → 耐穿耐久）。</p>
+      <p style="margin:0"><strong>伸长管「舒不舒服」</strong>（断裂伸长率高 → 贴身、活动自如）；<strong>回弹管「保不保形」</strong>（弹性回复率高 → 抗皱、不走样）。四个量各自独立，缺一不可。</p>
+    </div>
+
+    <h3>模量的三个反直觉之处</h3>
+    <ol>
+      <li><strong>模量大不等于强度高。</strong>玻璃纤维的模量（~285 cN/dtex）远高于涤纶（44–79），但它的断裂伸长只有 3% 左右，织成织物后一折就断纱——刚而脆。反之氨纶模量极低（&lt; 1 cN/dtex），却能拉长 500% 不断。</li>
+      <li><strong>模量不随「加工历史」大幅变化，强度会。</strong>改变牵伸倍数可以把涤纶的强度提高一档，但模量只在小范围内变动。所以同一纤维的不同批次，强度波动常达 10%～20%，模量却相对稳定。</li>
+      <li><strong>「材料模量」不等于「制品刚度」。</strong>织物的硬挺度由 <span class="fml">Г ∝ m · C³</span> 决定——面密度和弯曲长度（几何因素）占主导。同一块面料，改变组织与纱线排列，手感可以相差甚远。</li>
+    </ol>
+
+    <h3>温湿度是模量的隐藏开关</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>因素</th><th>作用机理</th><th>典型表现</th></tr></thead>
+        <tbody>
+          <tr><td>温度升高</td><td>分子链段活动性增强；越过玻璃化转变温度 T<sub>g</sub> 后高弹变形占主导</td><td>纤维变软、模量下降；涤纶在 T<sub>g</sub> 以上可热定型</td></tr>
+          <tr><td>吸湿（棉、粘胶、羊毛）</td><td>水分子进入非晶区起「增塑」作用，削弱分子间作用力</td><td>湿态变软、初始模量下降、伸长增大；粘胶湿强大幅下降</td></tr>
+          <tr><td>吸湿（涤纶、丙纶）</td><td>回潮率低（涤纶 0.4%、丙纶 0），水分子进不去</td><td>干湿态力学几乎不变，尺寸稳定、免烫</td></tr>
+          <tr><td>加载速率增快</td><td>链段来不及响应，表观模量升高、断裂伸长减小</td><td>同一根纤维，拉得快显得「更刚更脆」</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note k">
+      <span class="note-h">实测提醒</span>
+      <p style="margin:0">所有力学试验必须在 GB/T 6529—2008 规定的标准大气下调湿平衡后测定；比较数据前先核对温湿度、试验速度与试样尺寸。<strong>脱离测试条件谈力学数值没有意义。</strong></p>
+    </div>
+  </section>
+
+  <!-- ========== 06 应力-应变曲线 ========== -->
+  <section id="curve">
+    <h2><span class="num">06</span>应力-应变曲线：纤维的经典曲线族</h2>
+    <p class="lead">一张图同时给出三个答案：<strong>斜率</strong>是模量，<strong>高度</strong>是强度，<strong>最右端</strong>是伸长。会读这张图，后面的内容就都串起来了。</p>
+
+    <div class="fig">
+      <svg viewBox="0 0 680 664" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, Helvetica Neue, sans-serif" role="img" aria-label="纤维与钢丝的应力-应变曲线、起始段放大与加卸载环">
+<rect x="58" y="54" width="264" height="232" fill="#ffffff" stroke="#455468" stroke-width="0.9"/>
+<line x1="58.0" y1="286" x2="58.0" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="58.0" y="302.0" font-size="10" fill="#455468" text-anchor="middle">0</text>
+<line x1="95.7" y1="286" x2="95.7" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="95.7" y="302.0" font-size="10" fill="#455468" text-anchor="middle">5</text>
+<line x1="133.4" y1="286" x2="133.4" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="133.4" y="302.0" font-size="10" fill="#455468" text-anchor="middle">10</text>
+<line x1="171.1" y1="286" x2="171.1" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="171.1" y="302.0" font-size="10" fill="#455468" text-anchor="middle">15</text>
+<line x1="208.9" y1="286" x2="208.9" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="208.9" y="302.0" font-size="10" fill="#455468" text-anchor="middle">20</text>
+<line x1="246.6" y1="286" x2="246.6" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="246.6" y="302.0" font-size="10" fill="#455468" text-anchor="middle">25</text>
+<line x1="284.3" y1="286" x2="284.3" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="284.3" y="302.0" font-size="10" fill="#455468" text-anchor="middle">30</text>
+<line x1="322.0" y1="286" x2="322.0" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="322.0" y="302.0" font-size="10" fill="#455468" text-anchor="middle">35</text>
+<line x1="54" y1="286.0" x2="58" y2="286.0" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="289.4" font-size="10" fill="#455468" text-anchor="end">0</text>
+<line x1="54" y1="247.3" x2="58" y2="247.3" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="250.7" font-size="10" fill="#455468" text-anchor="end">1</text>
+<line x1="54" y1="208.7" x2="58" y2="208.7" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="212.1" font-size="10" fill="#455468" text-anchor="end">2</text>
+<line x1="54" y1="170.0" x2="58" y2="170.0" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="173.4" font-size="10" fill="#455468" text-anchor="end">3</text>
+<line x1="54" y1="131.3" x2="58" y2="131.3" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="134.7" font-size="10" fill="#455468" text-anchor="end">4</text>
+<line x1="54" y1="92.7" x2="58" y2="92.7" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="96.1" font-size="10" fill="#455468" text-anchor="end">5</text>
+<line x1="54" y1="54.0" x2="58" y2="54.0" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="57.4" font-size="10" fill="#455468" text-anchor="end">6</text>
+<text x="190.0" y="318.0" font-size="11" fill="#1c2733" text-anchor="middle">应变 / %</text>
+<text x="18" y="170.0" font-size="11" fill="#1c2733" text-anchor="middle" transform="rotate(-90 18 170.0)">应力 / (cN·dtex⁻¹)</text>
+<text x="190.0" y="43.0" font-size="12.5" font-weight="700" fill="#1c2733" text-anchor="middle">(a) 常规服用纤维与高强钢丝</text>
+<polyline points="58.0,286.0 58.5,284.2 59.0,282.4 59.5,280.6 60.0,278.8 60.5,277.0 61.0,275.2 61.5,273.4 62.0,271.6 62.5,269.8 63.0,268.0 63.5,266.2 64.0,264.3 64.5,262.5 65.0,260.7 65.5,258.9 66.0,257.2 66.5,255.9 67.1,254.6 67.6,253.4 68.1,252.2 68.6,251.1 69.1,250.0 69.6,249.0 70.1,247.9 70.6,246.9 71.1,245.9 71.6,244.9 72.1,243.9 72.6,242.9 73.1,241.9 73.6,241.0 74.1,240.0 74.6,239.1 75.1,238.1 75.6,237.2 76.1,236.3 76.6,235.4 77.1,234.5 77.6,233.6 78.1,232.7 78.6,231.8 79.1,230.9 79.6,230.0 80.1,229.1 80.6,228.3 81.1,227.4 81.6,226.5 82.1,225.7 82.6,224.8 83.1,224.0 83.6,223.1 84.1,222.3 84.7,221.4 85.2,220.6 85.7,219.8 86.2,218.9 86.7,218.1 87.2,217.3 87.7,216.5 88.2,215.7 88.7,214.8 89.2,214.0 89.7,213.2 90.2,212.4 90.7,211.6 91.2,210.8 91.7,210.0 92.2,209.2 92.7,208.4 93.2,207.6 93.7,206.8 94.2,206.0 94.7,205.2 95.2,204.4 95.7,203.7 96.2,202.9 96.7,202.1 97.2,201.3 97.7,200.5 98.2,199.8 98.7,199.0 99.2,198.2 99.7,197.5 100.2,196.7 100.7,195.9 101.2,195.2 101.7,194.4 102.3,193.6 102.8,192.9 103.3,192.1 103.8,191.4 104.3,190.6 104.8,189.9 105.3,189.1 105.8,188.4 106.3,187.6 106.8,186.9 107.3,186.1 107.8,185.4 108.3,184.6 108.8,183.9 109.3,183.1 109.8,182.4 110.3,181.7 110.8,180.9 111.3,180.2 111.8,179.5 112.3,178.7 112.8,178.0 113.3,177.3 113.8,176.5 114.3,175.8 114.8,175.1 115.3,174.3 115.8,173.6 116.3,172.9 116.8,172.2 117.3,171.4 117.8,170.7 118.3,170.0" fill="none" stroke="#E69F00" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="118.3" cy="170.0" r="2.6" fill="#E69F00"/>
+<polyline points="58.0,286.0 59.3,283.1 60.5,280.2 61.8,277.3 63.0,274.4 64.3,271.5 65.5,268.6 66.8,265.7 68.1,262.8 69.3,259.9 70.6,258.2 71.8,257.0 73.1,256.0 74.3,255.0 75.6,254.1 76.9,253.3 78.1,252.5 79.4,251.7 80.6,250.9 81.9,250.2 83.1,249.5 84.4,248.8 85.7,248.1 86.9,247.4 88.2,246.8 89.4,246.1 90.7,245.5 91.9,244.8 93.2,244.2 94.5,243.6 95.7,243.0 97.0,242.4 98.2,241.8 99.5,241.2 100.7,240.6 102.0,240.0 103.3,239.5 104.5,238.9 105.8,238.4 107.0,237.8 108.3,237.2 109.5,236.7 110.8,236.2 112.1,235.6 113.3,235.1 114.6,234.6 115.8,234.0 117.1,233.5 118.3,233.0 119.6,232.5 120.9,232.0 122.1,231.5 123.4,230.9 124.6,230.4 125.9,229.9 127.1,229.4 128.4,228.9 129.7,228.5 130.9,228.0 132.2,227.5 133.4,227.0 134.7,226.5 135.9,226.0 137.2,225.6 138.5,225.1 139.7,224.6 141.0,224.1 142.2,223.7 143.5,223.2 144.7,222.7 146.0,222.3 147.3,221.8 148.5,221.3 149.8,220.9 151.0,220.4 152.3,220.0 153.5,219.5 154.8,219.1 156.1,218.6 157.3,218.2 158.6,217.7 159.8,217.3 161.1,216.8 162.3,216.4 163.6,216.0 164.9,215.5 166.1,215.1 167.4,214.6 168.6,214.2 169.9,213.8 171.1,213.3 172.4,212.9 173.7,212.5 174.9,212.1 176.2,211.6 177.4,211.2 178.7,210.8 179.9,210.4 181.2,209.9 182.5,209.5 183.7,209.1 185.0,208.7 186.2,208.3 187.5,207.8 188.7,207.4 190.0,207.0 191.3,206.6 192.5,206.2 193.8,205.8 195.0,205.4 196.3,205.0 197.5,204.6 198.8,204.2 200.1,203.7 201.3,203.3 202.6,202.9 203.8,202.5 205.1,202.1 206.3,201.7 207.6,201.3 208.9,200.9" fill="none" stroke="#56B4E9" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="208.9" cy="200.9" r="2.6" fill="#56B4E9"/>
+<polyline points="58.0,286.0 60.1,283.3 62.1,280.7 64.2,278.0 66.3,275.4 68.4,272.7 70.4,270.1 72.5,267.4 74.6,266.7 76.7,266.7 78.7,266.6 80.8,266.6 82.9,266.6 85.0,266.6 87.0,266.6 89.1,266.5 91.2,266.5 93.3,266.4 95.3,266.4 97.4,266.3 99.5,266.3 101.6,266.2 103.6,266.1 105.7,266.1 107.8,266.0 109.9,265.9 111.9,265.8 114.0,265.7 116.1,265.6 118.2,265.5 120.2,265.4 122.3,265.3 124.4,265.2 126.5,265.1 128.5,264.9 130.6,264.8 132.7,264.7 134.7,264.5 136.8,264.4 138.9,264.2 141.0,264.1 143.0,263.9 145.1,263.7 147.2,263.6 149.3,263.4 151.3,263.2 153.4,263.0 155.5,262.8 157.6,262.6 159.6,262.4 161.7,262.2 163.8,262.0 165.9,261.8 167.9,261.6 170.0,261.4 172.1,261.1 174.2,260.9 176.2,260.6 178.3,260.4 180.4,260.2 182.5,259.9 184.5,259.6 186.6,259.4 188.7,259.1 190.8,258.8 192.8,258.6 194.9,258.3 197.0,258.0 199.1,257.7 201.1,257.4 203.2,257.1 205.3,256.8 207.3,256.5 209.4,256.2 211.5,255.8 213.6,255.5 215.6,255.2 217.7,254.8 219.8,254.5 221.9,254.1 223.9,253.8 226.0,253.4 228.1,253.1 230.2,252.7 232.2,252.3 234.3,252.0 236.4,251.6 238.5,251.2 240.5,250.8 242.6,250.4 244.7,250.0 246.8,249.6 248.8,249.2 250.9,248.8 253.0,248.4 255.1,247.9 257.1,247.5 259.2,247.1 261.3,246.6 263.4,246.2 265.4,245.7 267.5,245.3 269.6,244.8 271.7,244.4 273.7,243.9 275.8,243.4 277.9,242.9 279.9,242.5 282.0,242.0 284.1,241.5 286.2,241.0 288.2,240.5 290.3,240.0 292.4,239.5 294.5,238.9 296.5,238.4 298.6,237.9 300.7,237.4 302.8,236.8 304.8,236.3 306.9,235.7" fill="none" stroke="#0072B2" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="306.9" cy="235.7" r="2.6" fill="#0072B2"/>
+<polyline points="58.0,286.0 59.6,279.6 61.1,273.1 62.7,266.7 64.3,260.2 65.9,253.8 67.4,247.3 69.0,240.9 70.6,234.4 72.1,228.0 73.7,221.6 75.3,215.1 76.9,208.7 78.4,202.2 80.0,195.8 81.6,191.0 83.1,188.9 84.7,187.1 86.3,185.6 87.9,184.1 89.4,182.8 91.0,181.5 92.6,180.3 94.1,179.2 95.7,178.0 97.3,177.0 98.9,175.9 100.4,174.9 102.0,173.9 103.6,172.9 105.1,171.9 106.7,171.0 108.3,170.0 109.9,169.1 111.4,168.2 113.0,167.3 114.6,166.5 116.1,165.6 117.7,164.8 119.3,163.9 120.9,163.1 122.4,162.3 124.0,161.5 125.6,160.7 127.1,159.9 128.7,159.1 130.3,158.3 131.9,157.5 133.4,156.8 135.0,156.0 136.6,155.3 138.1,154.5 139.7,153.8 141.3,153.1 142.9,152.3 144.4,151.6 146.0,150.9 147.6,150.2 149.1,149.5 150.7,148.8 152.3,148.1 153.9,147.4 155.4,146.7 157.0,146.0 158.6,145.4 160.1,144.7 161.7,144.0 163.3,143.3 164.9,142.7 166.4,142.0 168.0,141.4 169.6,140.7 171.1,140.1 172.7,139.4 174.3,138.8 175.9,138.2 177.4,137.5 179.0,136.9 180.6,136.3 182.1,135.6 183.7,135.0 185.3,134.4 186.9,133.8 188.4,133.2 190.0,132.6 191.6,131.9 193.1,131.3 194.7,130.7 196.3,130.1 197.9,129.5 199.4,128.9 201.0,128.3 202.6,127.8 204.1,127.2 205.7,126.6 207.3,126.0 208.9,125.4 210.4,124.8 212.0,124.2 213.6,123.7 215.1,123.1 216.7,122.5 218.3,122.0 219.9,121.4 221.4,120.8 223.0,120.3 224.6,119.7 226.1,119.1 227.7,118.6 229.3,118.0 230.9,117.5 232.4,116.9 234.0,116.4 235.6,115.8 237.1,115.3 238.7,114.7 240.3,114.2 241.9,113.6 243.4,113.1 245.0,112.5 246.6,112.0" fill="none" stroke="#D55E00" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="246.6" cy="112.0" r="2.6" fill="#D55E00"/>
+<polyline points="58.0,286.0 60.2,283.2 62.4,280.4 64.6,277.5 66.8,274.7 69.0,271.9 71.2,269.1 73.4,266.3 75.6,263.4 77.8,260.6 80.0,257.8 82.2,255.0 84.4,252.2 86.6,249.3 88.8,246.0 91.0,242.8 93.2,240.2 95.4,237.7 97.6,235.5 99.8,233.3 102.0,231.2 104.2,229.2 106.4,227.2 108.6,225.3 110.8,223.5 113.0,221.6 115.2,219.8 117.4,218.0 119.6,216.3 121.8,214.6 124.0,212.8 126.2,211.2 128.4,209.5 130.6,207.9 132.8,206.2 135.0,204.6 137.2,203.0 139.4,201.4 141.6,199.9 143.8,198.3 146.0,196.8 148.2,195.2 150.4,193.7 152.6,192.2 154.8,190.7 157.0,189.2 159.2,187.7 161.4,186.2 163.6,184.8 165.8,183.3 168.0,181.9 170.2,180.4 172.4,179.0 174.6,177.6 176.8,176.2 179.0,174.7 181.2,173.3 183.4,171.9 185.6,170.6 187.8,169.2 190.0,167.8 192.2,166.4 194.4,165.1 196.6,163.7 198.8,162.3 201.0,161.0 203.2,159.6 205.4,158.3 207.6,157.0 209.8,155.6 212.0,154.3 214.2,153.0 216.4,151.7 218.6,150.4 220.8,149.1 223.0,147.8 225.2,146.5 227.4,145.2 229.6,143.9 231.8,142.6 234.0,141.3 236.2,140.0 238.4,138.8 240.6,137.5 242.8,136.2 245.0,135.0 247.2,133.7 249.4,132.5 251.6,131.2 253.8,130.0 256.0,128.7 258.2,127.5 260.4,126.2 262.6,125.0 264.8,123.8 267.0,122.5 269.2,121.3 271.4,120.1 273.6,118.9 275.8,117.6 278.0,116.4 280.2,115.2 282.4,114.0 284.6,112.8 286.8,111.6 289.0,110.4 291.2,109.2 293.4,108.0 295.6,106.8 297.8,105.6 300.0,104.4 302.2,103.2 304.4,102.1 306.6,100.9 308.8,99.7 311.0,98.5 313.2,97.3 315.4,96.2 317.6,95.0 319.8,93.8 322.0,92.7" fill="none" stroke="#009E73" stroke-width="2.0" stroke-linejoin="round"/>
+<polyline points="58.0,286.0 58.0,285.6 58.1,285.2 58.1,284.8 58.1,284.4 58.2,283.9 58.2,283.5 58.2,283.1 58.3,282.7 58.3,282.3 58.3,281.9 58.3,281.5 58.4,281.1 58.4,280.7 58.4,280.3 58.5,279.8 58.5,279.4 58.5,279.0 58.6,278.6 58.6,278.2 58.6,277.8 58.7,277.4 58.7,277.0 58.7,276.6 58.8,276.1 58.8,275.7 58.8,275.3 58.8,274.9 58.9,274.5 58.9,274.1 58.9,273.7 59.0,273.3 59.0,272.9 59.0,272.5 59.1,272.0 59.1,271.6 59.1,271.2 59.2,270.8 59.2,270.4 59.2,270.0 59.3,269.6 59.3,269.2 59.3,268.8 59.4,268.3 59.4,267.9 59.4,267.5 59.4,267.1 59.5,266.7 59.5,266.3 59.5,265.9 59.6,265.5 59.6,265.1 59.6,264.7 59.7,264.2 59.7,263.8 59.7,263.4 59.8,263.0 59.8,262.6 59.8,262.2 59.9,261.8 59.9,261.4 59.9,261.0 59.9,260.5 60.0,260.1 60.0,259.7 60.0,259.3 60.1,258.9 60.1,258.5 60.1,258.1 60.2,257.7 60.2,257.3 60.2,256.9 60.3,256.4 60.3,256.0 60.3,255.6 60.4,255.2 60.4,254.8 60.4,254.4 60.5,254.0 60.5,253.6 60.5,253.2 60.5,252.7 60.6,252.3 60.6,251.9 60.6,251.5 60.7,251.1 60.7,250.7 60.7,250.3 60.8,249.9 60.8,249.5 60.8,249.1 60.9,248.6 60.9,248.2 60.9,247.8 61.0,247.4 61.0,247.0 61.0,246.6 61.0,246.2 61.1,245.8 61.1,245.4 61.1,244.9 61.2,244.5 61.2,244.1 61.2,243.7 61.3,243.3 61.3,242.9 61.3,242.5 61.4,242.1 61.4,241.7 61.4,241.3 61.5,240.8 61.5,240.4 61.5,240.0 61.6,239.6 61.6,239.2 61.6,238.8 61.6,238.4 61.7,238.0 61.7,237.6 61.7,237.1 61.8,236.7" fill="none" stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-dasharray="5,3"/>
+<circle cx="61.8" cy="236.7" r="2.6" fill="#000000"/>
+<text x="64" y="282" font-size="10" fill="#6b7a8d">虚线＝高强钢丝</text>
+<text x="123.3" y="182.0" font-size="10.5" fill="#E69F00" text-anchor="start">棉</text>
+<text x="214.9" y="204.9" font-size="10.5" fill="#56B4E9" text-anchor="start">粘胶</text>
+<text x="238.6" y="106.0" font-size="10.5" fill="#D55E00" text-anchor="end" font-weight="700">涤纶</text>
+<text x="302.9" y="247.7" font-size="10.5" fill="#0072B2" text-anchor="end">羊毛</text>
+<text x="318.0" y="94.7" font-size="10.5" fill="#009E73" text-anchor="end">锦纶</text>
+<text x="316" y="280" font-size="10" fill="#6b7a8d" text-anchor="end">锦纶断裂点超出坐标范围（45 %）</text>
+<rect x="400" y="54" width="264" height="232" fill="#ffffff" stroke="#455468" stroke-width="0.9"/>
+<line x1="400.0" y1="286" x2="400.0" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="400.0" y="302.0" font-size="10" fill="#455468" text-anchor="middle">0</text>
+<line x1="452.8" y1="286" x2="452.8" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="452.8" y="302.0" font-size="10" fill="#455468" text-anchor="middle">1</text>
+<line x1="505.6" y1="286" x2="505.6" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="505.6" y="302.0" font-size="10" fill="#455468" text-anchor="middle">2</text>
+<line x1="558.4" y1="286" x2="558.4" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="558.4" y="302.0" font-size="10" fill="#455468" text-anchor="middle">3</text>
+<line x1="611.2" y1="286" x2="611.2" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="611.2" y="302.0" font-size="10" fill="#455468" text-anchor="middle">4</text>
+<line x1="664.0" y1="286" x2="664.0" y2="290" stroke="#455468" stroke-width="0.8"/>
+<text x="664.0" y="302.0" font-size="10" fill="#455468" text-anchor="middle">5</text>
+<line x1="396" y1="286.0" x2="400" y2="286.0" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="289.4" font-size="10" fill="#455468" text-anchor="end">0</text>
+<line x1="396" y1="252.9" x2="400" y2="252.9" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="256.3" font-size="10" fill="#455468" text-anchor="end">5</text>
+<line x1="396" y1="219.7" x2="400" y2="219.7" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="223.1" font-size="10" fill="#455468" text-anchor="end">10</text>
+<line x1="396" y1="186.6" x2="400" y2="186.6" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="190.0" font-size="10" fill="#455468" text-anchor="end">15</text>
+<line x1="396" y1="153.4" x2="400" y2="153.4" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="156.8" font-size="10" fill="#455468" text-anchor="end">20</text>
+<line x1="396" y1="120.3" x2="400" y2="120.3" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="123.7" font-size="10" fill="#455468" text-anchor="end">25</text>
+<line x1="396" y1="87.1" x2="400" y2="87.1" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="90.5" font-size="10" fill="#455468" text-anchor="end">30</text>
+<line x1="396" y1="54.0" x2="400" y2="54.0" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="57.4" font-size="10" fill="#455468" text-anchor="end">35</text>
+<text x="532.0" y="318.0" font-size="11" fill="#1c2733" text-anchor="middle">应变 / %</text>
+<text x="360" y="170.0" font-size="11" fill="#1c2733" text-anchor="middle" transform="rotate(-90 360 170.0)">应力 / (cN·dtex⁻¹)</text>
+<text x="532.0" y="43.0" font-size="12.5" font-weight="700" fill="#1c2733" text-anchor="middle">(b) 高性能纤维</text>
+<polyline points="400.0,286.0 401.5,284.8 403.1,283.7 404.6,282.5 406.2,281.4 407.7,280.2 409.2,279.0 410.8,277.9 412.3,276.7 413.9,275.6 415.4,274.4 416.9,273.2 418.5,272.1 420.0,270.9 421.6,269.8 423.1,268.6 424.6,267.4 426.2,266.3 427.7,265.1 429.3,264.0 430.8,262.8 432.3,261.6 433.9,260.5 435.4,259.3 437.0,258.2 438.5,257.0 440.0,255.8 441.6,254.7 443.1,253.5 444.7,252.4 446.2,251.2 447.7,250.0 449.3,248.9 450.8,247.7 452.4,246.6 453.9,241.0 455.4,237.4 457.0,234.5 458.5,232.1 460.1,229.9 461.6,228.0 463.1,226.1 464.7,224.3 466.2,222.7 467.8,221.1 469.3,219.6 470.8,218.1 472.4,216.7 473.9,215.3 475.5,214.0 477.0,212.7 478.5,211.4 480.1,210.2 481.6,209.0 483.2,207.8 484.7,206.6 486.2,205.5 487.8,204.4 489.3,203.3 490.9,202.2 492.4,201.2 493.9,200.1 495.5,199.1 497.0,198.1 498.6,197.1 500.1,196.1 501.6,195.1 503.2,194.2 504.7,193.2 506.3,192.3 507.8,191.3 509.3,190.4 510.9,189.5 512.4,188.6 514.0,187.7 515.5,186.9 517.0,186.0 518.6,185.1 520.1,184.3 521.7,183.4 523.2,182.6 524.7,181.8 526.3,180.9 527.8,180.1 529.4,179.3 530.9,178.5 532.4,177.7 534.0,176.9 535.5,176.1 537.1,175.3 538.6,174.6 540.1,173.8 541.7,173.0 543.2,172.3 544.8,171.5 546.3,170.8 547.8,170.0 549.4,169.3 550.9,168.6 552.5,167.8 554.0,167.1 555.5,166.4 557.1,165.7 558.6,165.0 560.2,164.2 561.7,163.5 563.2,162.8 564.8,162.1 566.3,161.5 567.9,160.8 569.4,160.1 570.9,159.4 572.5,158.7 574.0,158.1 575.6,157.4 577.1,156.7 578.6,156.1 580.2,155.4 581.7,154.7 583.3,154.1 584.8,153.4" fill="none" stroke="#D55E00" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="584.8" cy="153.4" r="2.6" fill="#D55E00"/>
+<polyline points="400.0,286.0 401.3,284.3 402.6,282.6 403.9,280.9 405.2,279.2 406.5,277.4 407.8,275.7 409.1,274.0 410.4,272.3 411.7,270.6 413.0,268.9 414.3,267.2 415.6,265.5 416.9,263.8 418.2,262.0 419.5,260.3 420.8,258.6 422.1,256.9 423.4,255.2 424.7,253.5 426.0,251.8 427.3,250.1 428.6,248.4 429.9,246.6 431.2,244.9 432.4,243.2 433.7,241.5 435.0,239.8 436.3,238.1 437.6,236.4 438.9,234.7 440.2,233.0 441.5,231.2 442.8,229.5 444.1,227.8 445.4,226.1 446.7,224.4 448.0,222.7 449.3,221.0 450.6,219.3 451.9,217.6 453.2,215.8 454.5,214.1 455.8,212.4 457.1,210.7 458.4,209.0 459.7,207.3 461.0,205.6 462.3,203.9 463.6,202.2 464.9,200.4 466.2,198.7 467.5,197.0 468.8,195.3 470.1,193.6 471.4,191.9 472.7,190.2 474.0,188.5 475.3,186.8 476.6,185.1 477.9,183.3 479.2,181.6 480.5,179.9 481.8,178.2 483.1,176.5 484.4,174.8 485.7,173.1 487.0,171.4 488.3,169.7 489.6,167.9 490.9,166.2 492.2,164.5 493.5,162.8 494.8,161.1 496.1,159.4 497.4,157.7 498.6,156.0 499.9,154.3 501.2,152.5 502.5,150.8 503.8,149.1 505.1,147.4 506.4,145.7 507.7,144.0 509.0,142.3 510.3,140.6 511.6,138.9 512.9,137.1 514.2,135.4 515.5,133.7 516.8,132.0 518.1,130.3 519.4,128.6 520.7,126.9 522.0,125.2 523.3,123.5 524.6,121.7 525.9,120.0 527.2,118.3 528.5,116.6 529.8,114.9 531.1,113.2 532.4,111.5 533.7,109.8 535.0,108.1 536.3,106.3 537.6,104.6 538.9,102.9 540.2,101.2 541.5,99.5 542.8,97.8 544.1,96.1 545.4,94.4 546.7,92.7 548.0,90.9 549.3,89.2 550.6,87.5 551.9,85.8 553.2,84.1 554.5,82.4 555.8,80.7" fill="none" stroke="#CC79A7" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="555.8" cy="80.5" r="2.6" fill="#CC79A7"/>
+<polyline points="400.0,286.0 400.7,284.9 401.3,283.8 402.0,282.7 402.7,281.6 403.4,280.5 404.0,279.4 404.7,278.3 405.4,277.2 406.1,276.1 406.7,275.0 407.4,273.8 408.1,272.7 408.8,271.6 409.4,270.5 410.1,269.4 410.8,268.3 411.4,267.2 412.1,266.1 412.8,265.0 413.5,263.9 414.1,262.8 414.8,261.7 415.5,260.6 416.2,259.5 416.8,258.4 417.5,257.3 418.2,256.2 418.8,255.1 419.5,254.0 420.2,252.9 420.9,251.8 421.5,250.7 422.2,249.5 422.9,248.4 423.6,247.3 424.2,246.2 424.9,245.1 425.6,244.0 426.3,242.9 426.9,241.8 427.6,240.7 428.3,239.6 428.9,238.5 429.6,237.4 430.3,236.3 431.0,235.2 431.6,234.1 432.3,233.0 433.0,231.9 433.7,230.8 434.3,229.7 435.0,228.6 435.7,227.5 436.4,226.4 437.0,225.2 437.7,224.1 438.4,223.0 439.0,221.9 439.7,220.8 440.4,219.7 441.1,218.6 441.7,217.5 442.4,216.4 443.1,215.3 443.8,214.2 444.4,213.1 445.1,212.0 445.8,210.9 446.5,209.8 447.1,208.7 447.8,207.6 448.5,206.5 449.1,205.4 449.8,204.3 450.5,203.2 451.2,202.1 451.8,200.9 452.5,199.8 453.2,198.7 453.9,197.6 454.5,196.5 455.2,195.4 455.9,194.3 456.5,193.2 457.2,192.1 457.9,191.0 458.6,189.9 459.2,188.8 459.9,187.7 460.6,186.6 461.3,185.5 461.9,184.4 462.6,183.3 463.3,182.2 464.0,181.1 464.6,180.0 465.3,178.9 466.0,177.7 466.6,176.6 467.3,175.5 468.0,174.4 468.7,173.3 469.3,172.2 470.0,171.1 470.7,170.0 471.4,168.9 472.0,167.8 472.7,166.7 473.4,165.6 474.1,164.5 474.7,163.4 475.4,162.3 476.1,161.2 476.7,160.1 477.4,159.0 478.1,157.9 478.8,156.8 479.4,155.7 480.1,154.6 480.8,153.4" fill="none" stroke="#000000" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="480.8" cy="153.4" r="2.6" fill="#000000"/>
+<polyline points="400.0,286.0 401.5,285.5 402.9,285.0 404.4,284.4 405.9,283.9 407.3,283.4 408.8,282.9 410.3,282.3 411.7,281.8 413.2,281.3 414.7,280.8 416.1,280.2 417.6,279.7 419.0,279.2 420.5,278.7 422.0,278.1 423.4,277.6 424.9,277.1 426.4,276.6 427.8,276.0 429.3,275.5 430.8,275.0 432.2,274.5 433.7,273.9 435.2,273.4 436.6,272.9 438.1,272.4 439.6,271.8 441.0,271.3 442.5,270.8 444.0,270.3 445.4,269.7 446.9,269.2 448.4,268.7 449.8,268.2 451.3,267.7 452.7,267.1 454.2,266.6 455.7,266.1 457.1,265.6 458.6,265.0 460.1,264.5 461.5,264.0 463.0,263.5 464.5,262.9 465.9,262.4 467.4,261.9 468.9,261.4 470.3,260.8 471.8,260.3 473.3,259.8 474.7,259.3 476.2,258.7 477.7,258.2 479.1,257.7 480.6,257.2 482.1,256.6 483.5,256.1 485.0,255.6 486.4,255.1 487.9,254.5 489.4,254.0 490.8,253.5 492.3,253.0 493.8,252.4 495.2,251.9 496.7,251.4 498.2,250.9 499.6,250.4 501.1,249.8 502.6,249.3 504.0,248.8 505.5,248.3 507.0,247.7 508.4,247.2 509.9,246.7 511.4,246.2 512.8,245.6 514.3,245.1 515.8,244.6 517.2,244.1 518.7,243.5 520.1,243.0 521.6,242.5 523.1,242.0 524.5,241.4 526.0,240.9 527.5,240.4 528.9,239.9 530.4,239.3 531.9,238.8 533.3,238.3 534.8,237.8 536.3,237.2 537.7,236.7 539.2,236.2 540.7,235.7 542.1,235.1 543.6,234.6 545.1,234.1 546.5,233.6 548.0,233.1 549.5,232.5 550.9,232.0 552.4,231.5 553.8,231.0 555.3,230.4 556.8,229.9 558.2,229.4 559.7,228.9 561.2,228.3 562.6,227.8 564.1,227.3 565.6,226.8 567.0,226.2 568.5,225.7 570.0,225.2 571.4,224.7 572.9,224.1 574.4,223.6 575.8,223.1" fill="none" stroke="#0072B2" stroke-width="2.0" stroke-linejoin="round"/>
+<circle cx="575.8" cy="223.0" r="2.6" fill="#0072B2"/>
+<text x="486.8" y="157.4" font-size="10.5" fill="#000000" text-anchor="start">碳纤维 T300</text>
+<text x="561.8" y="77.5" font-size="10.5" fill="#CC79A7" text-anchor="start">UHMWPE</text>
+<text x="579.8" y="147.4" font-size="10.5" fill="#D55E00" text-anchor="end" font-weight="700">芳纶 1414</text>
+<text x="581.8" y="227.0" font-size="10.5" fill="#0072B2" text-anchor="start">玻纤 E</text>
+<text x="658" y="280" font-size="10" fill="#6b7a8d" text-anchor="end">斜率 = 比模量　高度 = 比强度</text>
+<rect x="58" y="372" width="264" height="232" fill="#ffffff" stroke="#455468" stroke-width="0.9"/>
+<line x1="58.0" y1="604" x2="58.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="58.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">0</text>
+<line x1="102.0" y1="604" x2="102.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="102.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">0.5</text>
+<line x1="146.0" y1="604" x2="146.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="146.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">1</text>
+<line x1="190.0" y1="604" x2="190.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="190.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">1.5</text>
+<line x1="234.0" y1="604" x2="234.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="234.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">2</text>
+<line x1="278.0" y1="604" x2="278.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="278.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">2.5</text>
+<line x1="322.0" y1="604" x2="322.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="322.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">3</text>
+<line x1="54" y1="604.0" x2="58" y2="604.0" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="607.4" font-size="10" fill="#455468" text-anchor="end">0</text>
+<line x1="54" y1="557.6" x2="58" y2="557.6" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="561.0" font-size="10" fill="#455468" text-anchor="end">0.5</text>
+<line x1="54" y1="511.2" x2="58" y2="511.2" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="514.6" font-size="10" fill="#455468" text-anchor="end">1</text>
+<line x1="54" y1="464.8" x2="58" y2="464.8" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="468.2" font-size="10" fill="#455468" text-anchor="end">1.5</text>
+<line x1="54" y1="418.4" x2="58" y2="418.4" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="421.8" font-size="10" fill="#455468" text-anchor="end">2</text>
+<line x1="54" y1="372.0" x2="58" y2="372.0" stroke="#455468" stroke-width="0.8"/>
+<text x="51" y="375.4" font-size="10" fill="#455468" text-anchor="end">2.5</text>
+<text x="190.0" y="636.0" font-size="11" fill="#1c2733" text-anchor="middle">应变 / %（放大）</text>
+<text x="18" y="488.0" font-size="11" fill="#1c2733" text-anchor="middle" transform="rotate(-90 18 488.0)">应力 / (cN·dtex⁻¹)</text>
+<text x="190.0" y="361.0" font-size="12.5" font-weight="700" fill="#1c2733" text-anchor="middle">(c) 起始段放大：读初始模量</text>
+<polyline points="58.0,604.0 60.2,602.4 62.4,600.8 64.6,599.1 66.8,597.5 69.0,595.9 71.2,594.3 73.4,592.6 75.6,591.0 77.8,589.4 80.0,587.8 82.2,586.1 84.4,584.5 86.6,582.9 88.8,581.3 91.0,579.6 93.2,578.0 95.4,576.4 97.6,574.8 99.8,573.1 102.0,571.5 104.2,569.9 106.4,568.3 108.6,566.6 110.8,565.0 113.0,563.4 115.2,561.8 117.4,560.2 119.6,558.5 121.8,556.9 124.0,555.3 126.2,553.7 128.4,552.0 130.6,550.4 132.8,548.8 135.0,547.2 137.2,545.5 139.4,543.9 141.6,542.3 143.8,540.7 146.0,539.0 148.2,537.3 150.4,535.8 152.6,534.5 154.8,533.3 157.0,532.1 159.2,530.9 161.4,529.8 163.6,528.6 165.8,527.6 168.0,526.5 170.2,525.4 172.4,524.4 174.6,523.3 176.8,522.3 179.0,521.3 181.2,520.3 183.4,519.3 185.6,518.3 187.8,517.4 190.0,516.4 192.2,515.4 194.4,514.5 196.6,513.5 198.8,512.6 201.0,511.7 203.2,510.7 205.4,509.8 207.6,508.9 209.8,508.0 212.0,507.1 214.2,506.2 216.4,505.3 218.6,504.4 220.8,503.5 223.0,502.6 225.2,501.7 227.4,500.8 229.6,500.0 231.8,499.1 234.0,498.2 236.2,497.3 238.4,496.5 240.6,495.6 242.8,494.8 245.0,493.9 247.2,493.1 249.4,492.2 251.6,491.4 253.8,490.5 256.0,489.7 258.2,488.8 260.4,488.0 262.6,487.2 264.8,486.4 267.0,485.5 269.2,484.7 271.4,483.9 273.6,483.1 275.8,482.2 278.0,481.4 280.2,480.6 282.4,479.8 284.6,479.0 286.8,478.2 289.0,477.4 291.2,476.6 293.4,475.7 295.6,474.9 297.8,474.1 300.0,473.3 302.2,472.5 304.4,471.8 306.6,471.0 308.8,470.2 311.0,469.4 313.2,468.6 315.4,467.8 317.6,467.0 319.8,466.2 322.0,465.5" fill="none" stroke="#E69F00" stroke-width="2.2" stroke-linejoin="round"/>
+<polyline points="58.0,604.0 60.2,603.0 62.4,601.9 64.6,600.9 66.8,599.8 69.0,598.8 71.2,597.7 73.4,596.7 75.6,595.6 77.8,594.6 80.0,593.6 82.2,592.5 84.4,591.5 86.6,590.4 88.8,589.4 91.0,588.3 93.2,587.3 95.4,586.3 97.6,585.2 99.8,584.2 102.0,583.1 104.2,582.1 106.4,581.0 108.6,580.0 110.8,578.9 113.0,577.9 115.2,576.9 117.4,575.8 119.6,574.8 121.8,573.7 124.0,572.7 126.2,571.6 128.4,570.6 130.6,569.5 132.8,568.5 135.0,567.5 137.2,566.4 139.4,565.4 141.6,564.3 143.8,563.3 146.0,562.2 148.2,561.2 150.4,560.2 152.6,559.1 154.8,558.1 157.0,557.0 159.2,556.0 161.4,554.9 163.6,553.9 165.8,552.8 168.0,551.8 170.2,550.8 172.4,549.7 174.6,548.7 176.8,547.6 179.0,546.6 181.2,545.5 183.4,544.5 185.6,543.4 187.8,542.4 190.0,541.4 192.2,540.4 194.4,539.7 196.6,539.1 198.8,538.5 201.0,538.0 203.2,537.5 205.4,537.1 207.6,536.6 209.8,536.2 212.0,535.8 214.2,535.3 216.4,534.9 218.6,534.5 220.8,534.1 223.0,533.8 225.2,533.4 227.4,533.0 229.6,532.6 231.8,532.3 234.0,531.9 236.2,531.6 238.4,531.2 240.6,530.9 242.8,530.5 245.0,530.2 247.2,529.9 249.4,529.5 251.6,529.2 253.8,528.9 256.0,528.6 258.2,528.3 260.4,527.9 262.6,527.6 264.8,527.3 267.0,527.0 269.2,526.7 271.4,526.4 273.6,526.1 275.8,525.8 278.0,525.5 280.2,525.2 282.4,524.9 284.6,524.6 286.8,524.3 289.0,524.0 291.2,523.7 293.4,523.5 295.6,523.2 297.8,522.9 300.0,522.6 302.2,522.3 304.4,522.0 306.6,521.8 308.8,521.5 311.0,521.2 313.2,520.9 315.4,520.7 317.6,520.4 319.8,520.1 322.0,519.9" fill="none" stroke="#56B4E9" stroke-width="2.2" stroke-linejoin="round"/>
+<polyline points="58.0,604.0 60.2,603.4 62.4,602.8 64.6,602.3 66.8,601.7 69.0,601.1 71.2,600.5 73.4,599.9 75.6,599.4 77.8,598.8 80.0,598.2 82.2,597.6 84.4,597.0 86.6,596.5 88.8,595.9 91.0,595.3 93.2,594.7 95.4,594.1 97.6,593.6 99.8,593.0 102.0,592.4 104.2,591.8 106.4,591.2 108.6,590.7 110.8,590.1 113.0,589.5 115.2,588.9 117.4,588.3 119.6,587.8 121.8,587.2 124.0,586.6 126.2,586.0 128.4,585.4 130.6,584.9 132.8,584.3 135.0,583.7 137.2,583.1 139.4,582.5 141.6,582.0 143.8,581.4 146.0,580.8 148.2,580.2 150.4,579.6 152.6,579.1 154.8,578.5 157.0,577.9 159.2,577.3 161.4,576.7 163.6,576.2 165.8,575.6 168.0,575.0 170.2,574.4 172.4,573.8 174.6,573.3 176.8,572.7 179.0,572.1 181.2,571.5 183.4,570.9 185.6,570.4 187.8,569.8 190.0,569.2 192.2,568.6 194.4,568.0 196.6,567.5 198.8,566.9 201.0,566.3 203.2,565.7 205.4,565.1 207.6,564.6 209.8,564.0 212.0,563.4 214.2,562.8 216.4,562.2 218.6,561.7 220.8,561.1 223.0,560.5 225.2,559.9 227.4,559.3 229.6,558.8 231.8,558.2 234.0,557.6 236.2,557.6 238.4,557.6 240.6,557.6 242.8,557.6 245.0,557.6 247.2,557.6 249.4,557.6 251.6,557.6 253.8,557.6 256.0,557.6 258.2,557.6 260.4,557.6 262.6,557.6 264.8,557.6 267.0,557.6 269.2,557.6 271.4,557.6 273.6,557.6 275.8,557.6 278.0,557.6 280.2,557.6 282.4,557.6 284.6,557.6 286.8,557.6 289.0,557.6 291.2,557.6 293.4,557.6 295.6,557.6 297.8,557.6 300.0,557.6 302.2,557.6 304.4,557.6 306.6,557.5 308.8,557.5 311.0,557.5 313.2,557.5 315.4,557.5 317.6,557.5 319.8,557.5 322.0,557.5" fill="none" stroke="#0072B2" stroke-width="2.2" stroke-linejoin="round"/>
+<polyline points="58.0,604.0 60.2,602.1 62.4,600.3 64.6,598.4 66.8,596.6 69.0,594.7 71.2,592.9 73.4,591.0 75.6,589.2 77.8,587.3 80.0,585.4 82.2,583.6 84.4,581.7 86.6,579.9 88.8,578.0 91.0,576.2 93.2,574.3 95.4,572.4 97.6,570.6 99.8,568.7 102.0,566.9 104.2,565.0 106.4,563.2 108.6,561.3 110.8,559.5 113.0,557.6 115.2,555.7 117.4,553.9 119.6,552.0 121.8,550.2 124.0,548.3 126.2,546.5 128.4,544.6 130.6,542.8 132.8,540.9 135.0,539.0 137.2,537.2 139.4,535.3 141.6,533.5 143.8,531.6 146.0,529.8 148.2,527.9 150.4,526.0 152.6,524.2 154.8,522.3 157.0,520.5 159.2,518.6 161.4,516.8 163.6,514.9 165.8,513.1 168.0,511.2 170.2,509.3 172.4,507.5 174.6,505.6 176.8,503.8 179.0,501.9 181.2,500.1 183.4,498.2 185.6,496.4 187.8,494.5 190.0,492.6 192.2,490.8 194.4,488.9 196.6,487.1 198.8,485.2 201.0,483.4 203.2,481.5 205.4,479.6 207.6,477.8 209.8,475.9 212.0,474.1 214.2,472.2 216.4,470.4 218.6,468.5 220.8,466.7 223.0,464.8 225.2,462.9 227.4,461.1 229.6,459.2 231.8,457.4 234.0,455.5 236.2,453.7 238.4,451.8 240.6,450.0 242.8,448.1 245.0,446.2 247.2,444.4 249.4,442.5 251.6,440.7 253.8,438.8 256.0,437.0 258.2,435.1 260.4,433.2 262.6,431.4 264.8,429.5 267.0,427.7 269.2,425.8 271.4,424.0 273.6,422.1 275.8,420.3 278.0,418.4 280.2,416.5 282.4,414.7 284.6,412.8 286.8,411.0 289.0,409.1 291.2,407.3 293.4,405.4 295.6,403.6 297.8,401.7 300.0,399.8 302.2,398.0 304.4,396.1 306.6,394.3 308.8,392.4 311.0,390.6 313.2,388.7 315.4,386.8 317.6,385.0 319.8,383.1 322.0,381.3" fill="none" stroke="#D55E00" stroke-width="2.2" stroke-linejoin="round"/>
+<polyline points="58.0,604.0 60.2,603.4 62.4,602.8 64.6,602.3 66.8,601.7 69.0,601.1 71.2,600.5 73.4,599.9 75.6,599.4 77.8,598.8 80.0,598.2 82.2,597.6 84.4,597.0 86.6,596.5 88.8,595.9 91.0,595.3 93.2,594.7 95.4,594.1 97.6,593.6 99.8,593.0 102.0,592.4 104.2,591.8 106.4,591.2 108.6,590.7 110.8,590.1 113.0,589.5 115.2,588.9 117.4,588.3 119.6,587.8 121.8,587.2 124.0,586.6 126.2,586.0 128.4,585.4 130.6,584.9 132.8,584.3 135.0,583.7 137.2,583.1 139.4,582.5 141.6,582.0 143.8,581.4 146.0,580.8 148.2,580.2 150.4,579.6 152.6,579.1 154.8,578.5 157.0,577.9 159.2,577.3 161.4,576.7 163.6,576.2 165.8,575.6 168.0,575.0 170.2,574.4 172.4,573.8 174.6,573.3 176.8,572.7 179.0,572.1 181.2,571.5 183.4,570.9 185.6,570.4 187.8,569.8 190.0,569.2 192.2,568.6 194.4,568.0 196.6,567.5 198.8,566.9 201.0,566.3 203.2,565.7 205.4,565.1 207.6,564.6 209.8,564.0 212.0,563.4 214.2,562.8 216.4,562.2 218.6,561.7 220.8,561.1 223.0,560.5 225.2,559.9 227.4,559.3 229.6,558.8 231.8,558.2 234.0,557.6 236.2,557.0 238.4,556.4 240.6,555.9 242.8,555.3 245.0,554.7 247.2,554.1 249.4,553.5 251.6,553.0 253.8,552.4 256.0,551.8 258.2,551.2 260.4,550.6 262.6,550.1 264.8,549.5 267.0,548.9 269.2,548.3 271.4,547.7 273.6,547.2 275.8,546.6 278.0,546.0 280.2,545.4 282.4,544.8 284.6,544.3 286.8,543.7 289.0,543.1 291.2,542.5 293.4,541.9 295.6,541.4 297.8,540.8 300.0,540.2 302.2,539.6 304.4,539.0 306.6,538.5 308.8,537.9 311.0,537.3 313.2,536.7 315.4,536.1 317.6,535.6 319.8,535.0 322.0,534.4" fill="none" stroke="#009E73" stroke-width="2.2" stroke-linejoin="round"/>
+<polyline points="58.0,604.0 58.4,603.0 58.7,602.0 59.1,601.0 59.5,600.1 59.8,599.1 60.2,598.1 60.6,597.1 60.9,596.1 61.3,595.1 61.7,594.1 62.0,593.2 62.4,592.2 62.8,591.2 63.1,590.2 63.5,589.2 63.9,588.2 64.2,587.3 64.6,586.3 65.0,585.3 65.3,584.3 65.7,583.3 66.1,582.3 66.4,581.3 66.8,580.4 67.2,579.4 67.5,578.4 67.9,577.4 68.3,576.4 68.6,575.4 69.0,574.4 69.4,573.5 69.7,572.5 70.1,571.5 70.5,570.5 70.8,569.5 71.2,568.5 71.6,567.5 71.9,566.6 72.3,565.6 72.7,564.6 73.0,563.6 73.4,562.6 73.8,561.6 74.1,560.7 74.5,559.7 74.9,558.7 75.2,557.7 75.6,556.7 76.0,555.7 76.3,554.7 76.7,553.8 77.1,552.8 77.4,551.8 77.8,550.8 78.2,549.8 78.5,548.8 78.9,547.8 79.3,546.9 79.6,545.9 80.0,544.9 80.4,543.9 80.7,542.9 81.1,541.9 81.5,540.9 81.8,540.0 82.2,539.0 82.6,538.0 82.9,537.0 83.3,536.0 83.7,535.0 84.0,534.0 84.4,533.1 84.8,532.1 85.1,531.1 85.5,530.1 85.9,529.1 86.2,528.1 86.6,527.2 87.0,526.2 87.3,525.2 87.7,524.2 88.1,523.2 88.4,522.2 88.8,521.2 89.2,520.3 89.5,519.3 89.9,518.3 90.3,517.3 90.6,516.3 91.0,515.3 91.4,514.3 91.7,513.4 92.1,512.4 92.5,511.4 92.8,510.4 93.2,509.4 93.6,508.4 93.9,507.4 94.3,506.5 94.7,505.5 95.0,504.5 95.4,503.5 95.8,502.5 96.1,501.5 96.5,500.6 96.9,499.6 97.2,498.6 97.6,497.6 98.0,496.6 98.3,495.6 98.7,494.6 99.1,493.7 99.4,492.7 99.8,491.7 100.2,490.7 100.5,489.7 100.9,488.7 101.3,487.7 101.6,486.8 102.0,485.8" fill="none" stroke="#000000" stroke-width="2.0" stroke-linejoin="round" stroke-dasharray="5,3"/>
+<text x="316.0" y="376.3" font-size="10.5" fill="#D55E00" text-anchor="end" font-weight="700">涤纶 (80)</text>
+<text x="316.0" y="460.5" font-size="10.5" fill="#E69F00" text-anchor="end">棉 (70)</text>
+<text x="316.0" y="514.9" font-size="10.5" fill="#56B4E9" text-anchor="end">粘胶 (45)</text>
+<text x="316.0" y="546.4" font-size="10.5" fill="#009E73" text-anchor="end">锦纶 (25)</text>
+<text x="316.0" y="570.5" font-size="10.5" fill="#0072B2" text-anchor="end">羊毛 (25)</text>
+<text x="107.0" y="489.8" font-size="10.5" fill="#000000" text-anchor="start">钢丝 (254.8)</text>
+<text x="64" y="392" font-size="10" fill="#6b7a8d">括号内为初始模量 / (cN·dtex⁻¹)：起始越陡，模量越大</text>
+<rect x="400" y="372" width="264" height="232" fill="#ffffff" stroke="#455468" stroke-width="0.9"/>
+<line x1="400.0" y1="604" x2="400.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="400.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">0</text>
+<line x1="444.0" y1="604" x2="444.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="444.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">2</text>
+<line x1="488.0" y1="604" x2="488.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="488.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">4</text>
+<line x1="532.0" y1="604" x2="532.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="532.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">6</text>
+<line x1="576.0" y1="604" x2="576.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="576.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">8</text>
+<line x1="620.0" y1="604" x2="620.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="620.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">10</text>
+<line x1="664.0" y1="604" x2="664.0" y2="608" stroke="#455468" stroke-width="0.8"/>
+<text x="664.0" y="620.0" font-size="10" fill="#455468" text-anchor="middle">12</text>
+<line x1="396" y1="604.0" x2="400" y2="604.0" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="607.4" font-size="10" fill="#455468" text-anchor="end">0</text>
+<line x1="396" y1="565.3" x2="400" y2="565.3" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="568.7" font-size="10" fill="#455468" text-anchor="end">1</text>
+<line x1="396" y1="526.7" x2="400" y2="526.7" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="530.1" font-size="10" fill="#455468" text-anchor="end">2</text>
+<line x1="396" y1="488.0" x2="400" y2="488.0" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="491.4" font-size="10" fill="#455468" text-anchor="end">3</text>
+<line x1="396" y1="449.3" x2="400" y2="449.3" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="452.7" font-size="10" fill="#455468" text-anchor="end">4</text>
+<line x1="396" y1="410.7" x2="400" y2="410.7" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="414.1" font-size="10" fill="#455468" text-anchor="end">5</text>
+<line x1="396" y1="372.0" x2="400" y2="372.0" stroke="#455468" stroke-width="0.8"/>
+<text x="393" y="375.4" font-size="10" fill="#455468" text-anchor="end">6</text>
+<text x="532.0" y="636.0" font-size="11" fill="#1c2733" text-anchor="middle">应变 / %</text>
+<text x="360" y="488.0" font-size="11" fill="#1c2733" text-anchor="middle" transform="rotate(-90 360 488.0)">应力 / (cN·dtex⁻¹)</text>
+<text x="532.0" y="361.0" font-size="12.5" font-weight="700" fill="#1c2733" text-anchor="middle">(d) 加卸载环与弹性回复</text>
+<polygon points="532.0,488.0 530.7,489.7 529.4,491.5 528.0,493.2 526.7,494.9 525.4,496.6 524.1,498.4 522.8,500.1 521.4,501.8 520.1,503.5 518.8,505.2 517.5,506.9 516.2,508.6 514.8,510.2 513.5,511.9 512.2,513.6 510.9,515.3 509.6,516.9 508.2,518.6 506.9,520.2 505.6,521.9 504.3,523.5 503.0,525.1 501.6,526.8 500.3,528.4 499.0,530.0 497.7,531.6 496.4,533.2 495.0,534.8 493.7,536.4 492.4,538.0 491.1,539.6 489.8,541.2 488.4,542.7 487.1,544.3 485.8,545.8 484.5,547.4 483.2,548.9 481.8,550.5 480.5,552.0 479.2,553.5 477.9,555.0 476.6,556.5 475.2,558.0 473.9,559.5 472.6,561.0 471.3,562.5 470.0,563.9 468.6,565.4 467.3,566.8 466.0,568.2 464.7,569.7 463.4,571.1 462.0,572.5 460.7,573.9 459.4,575.3 458.1,576.6 456.8,578.0 455.4,579.4 454.1,580.7 452.8,582.0 451.5,583.3 450.2,584.6 448.8,585.9 447.5,587.2 446.2,588.4 444.9,589.7 443.6,590.9 442.2,592.1 440.9,593.3 439.6,594.4 438.3,595.6 437.0,596.7 435.6,597.8 434.3,598.8 433.0,599.8 431.7,600.8 430.4,601.7 429.0,602.6 427.7,603.4 426.4,604.0 532.0,488.0 530.7,489.5 529.4,491.0 528.0,492.6 526.7,494.1 525.4,495.6 524.1,497.1 522.8,498.6 521.4,500.1 520.1,501.7 518.8,503.2 517.5,504.7 516.2,506.2 514.8,507.7 513.5,509.2 512.2,510.7 510.9,512.2 509.6,513.7 508.2,515.2 506.9,516.7 505.6,518.2 504.3,519.7 503.0,521.2 501.6,522.7 500.3,524.2 499.0,525.7 497.7,527.2 496.4,528.7 495.0,530.2 493.7,531.7 492.4,533.2 491.1,534.7 489.8,536.2 488.4,537.6 487.1,539.1 485.8,540.6 484.5,542.1 483.2,543.6 481.8,545.0 480.5,546.5 479.2,548.0 477.9,549.4 476.6,550.9 475.2,552.4 473.9,553.8 472.6,555.3 471.3,556.8 470.0,558.2 468.6,559.7 467.3,561.1 466.0,562.6 464.7,564.0 463.4,565.5 462.0,566.9 460.7,568.4 459.4,569.8 458.1,571.2 456.8,572.7 455.4,574.1 454.1,575.5 452.8,576.9 451.5,578.4 450.2,579.8 448.8,581.2 447.5,582.6 446.2,584.0 444.9,585.4 443.6,586.8 442.2,588.2 440.9,589.6 439.6,590.9 438.3,592.3 437.0,593.7 435.6,595.0 434.3,596.4 433.0,597.7 431.7,599.0 430.4,600.3 429.0,601.6 427.7,602.8 426.4,604.0" fill="#f3d9cd" fill-opacity="0.75" stroke="none"/>
+<polyline points="400.0,604.0 401.6,602.3 403.3,600.5 404.9,598.8 406.6,597.0 408.2,595.3 409.9,593.6 411.6,591.8 413.2,590.1 414.9,588.3 416.5,586.6 418.1,584.9 419.8,583.1 421.4,581.4 423.1,577.1 424.8,573.8 426.4,571.1 428.1,568.6 429.7,566.4 431.4,564.3 433.0,562.3 434.6,560.4 436.3,558.6 437.9,556.8 439.6,555.1 441.2,553.4 442.9,551.8 444.6,550.2 446.2,548.6 447.9,547.1 449.5,545.6 451.1,544.2 452.8,542.7 454.4,541.3 456.1,539.9 457.8,538.5 459.4,537.2 461.1,535.9 462.7,534.5 464.4,533.2 466.0,531.9 467.6,530.7 469.3,529.4 470.9,528.1 472.6,526.9 474.2,525.7 475.9,524.5 477.6,523.3 479.2,522.1 480.9,520.9 482.5,519.7 484.1,518.6 485.8,517.4 487.4,516.3 489.1,515.1 490.8,514.0 492.4,512.9 494.1,511.8 495.7,510.7 497.4,509.6 499.0,508.5 500.6,507.4 502.3,506.3 503.9,505.3 505.6,504.2 507.2,503.2 508.9,502.1 510.6,501.1 512.2,500.0 513.9,499.0 515.5,498.0 517.1,497.0 518.8,495.9 520.5,494.9 522.1,493.9 523.8,492.9 525.4,491.9 527.0,490.9 528.7,490.0 530.4,489.0 532.0,488.0" fill="none" stroke="#1f4e79" stroke-width="2.2" stroke-linejoin="round"/>
+<polyline points="532.0,488.0 530.7,489.7 529.4,491.5 528.0,493.2 526.7,494.9 525.4,496.6 524.1,498.4 522.8,500.1 521.4,501.8 520.1,503.5 518.8,505.2 517.5,506.9 516.2,508.6 514.8,510.2 513.5,511.9 512.2,513.6 510.9,515.3 509.6,516.9 508.2,518.6 506.9,520.2 505.6,521.9 504.3,523.5 503.0,525.1 501.6,526.8 500.3,528.4 499.0,530.0 497.7,531.6 496.4,533.2 495.0,534.8 493.7,536.4 492.4,538.0 491.1,539.6 489.8,541.2 488.4,542.7 487.1,544.3 485.8,545.8 484.5,547.4 483.2,548.9 481.8,550.5 480.5,552.0 479.2,553.5 477.9,555.0 476.6,556.5 475.2,558.0 473.9,559.5 472.6,561.0 471.3,562.5 470.0,563.9 468.6,565.4 467.3,566.8 466.0,568.2 464.7,569.7 463.4,571.1 462.0,572.5 460.7,573.9 459.4,575.3 458.1,576.6 456.8,578.0 455.4,579.4 454.1,580.7 452.8,582.0 451.5,583.3 450.2,584.6 448.8,585.9 447.5,587.2 446.2,588.4 444.9,589.7 443.6,590.9 442.2,592.1 440.9,593.3 439.6,594.4 438.3,595.6 437.0,596.7 435.6,597.8 434.3,598.8 433.0,599.8 431.7,600.8 430.4,601.7 429.0,602.6 427.7,603.4 426.4,604.0" fill="none" stroke="#D55E00" stroke-width="2.2" stroke-linejoin="round"/>
+<polyline points="426.4,604.0 427.7,602.8 429.0,601.6 430.4,600.3 431.7,599.0 433.0,597.7 434.3,596.4 435.6,595.0 437.0,593.7 438.3,592.3 439.6,590.9 440.9,589.6 442.2,588.2 443.6,586.8 444.9,585.4 446.2,584.0 447.5,582.6 448.8,581.2 450.2,579.8 451.5,578.4 452.8,576.9 454.1,575.5 455.4,574.1 456.8,572.7 458.1,571.2 459.4,569.8 460.7,568.4 462.0,566.9 463.4,565.5 464.7,564.0 466.0,562.6 467.3,561.1 468.6,559.7 470.0,558.2 471.3,556.8 472.6,555.3 473.9,553.8 475.2,552.4 476.6,550.9 477.9,549.4 479.2,548.0 480.5,546.5 481.8,545.0 483.2,543.6 484.5,542.1 485.8,540.6 487.1,539.1 488.4,537.6 489.8,536.2 491.1,534.7 492.4,533.2 493.7,531.7 495.0,530.2 496.4,528.7 497.7,527.2 499.0,525.7 500.3,524.2 501.6,522.7 503.0,521.2 504.3,519.7 505.6,518.2 506.9,516.7 508.2,515.2 509.6,513.7 510.9,512.2 512.2,510.7 513.5,509.2 514.8,507.7 516.2,506.2 517.5,504.7 518.8,503.2 520.1,501.7 521.4,500.1 522.8,498.6 524.1,497.1 525.4,495.6 526.7,494.1 528.0,492.6 529.4,491.0 530.7,489.5 532.0,488.0" fill="none" stroke="#009E73" stroke-width="1.9" stroke-linejoin="round" stroke-dasharray="5,3"/>
+<circle cx="532.0" cy="488.0" r="2.6" fill="#1f4e79"/>
+<circle cx="426.4" cy="601.3" r="2.6" fill="#D55E00"/>
+<line x1="426.4" y1="604.0" x2="426.4" y2="584.7" stroke="#6b7a8d" stroke-width="0.9" stroke-dasharray="3,3"/>
+<line x1="532.0" y1="604.0" x2="532.0" y2="488.0" stroke="#6b7a8d" stroke-width="0.9" stroke-dasharray="3,3"/>
+<line x1="400" y1="601.3" x2="426.4" y2="601.3" stroke="#D55E00" stroke-width="3"/>
+<text x="532.0" y="620.0" font-size="10.5" fill="#455468" text-anchor="middle">ε₁ = 6 %</text>
+<text x="426.4" y="620.0" font-size="10.5" fill="#D55E00" text-anchor="middle">ε₂ = 1.2 %</text>
+<text x="496.8" y="505.4" font-size="10.5" fill="#1f4e79">加载</text>
+<text x="545.2" y="532.5" font-size="10.5" fill="#D55E00">卸载</text>
+<text x="470.4" y="576.2" font-size="10.5" fill="#009E73">再加载</text>
+<text x="658" y="397.1" font-size="11" font-weight="700" fill="#1c2733" text-anchor="end">弹性回复率 = (6.0 − 1.2) ÷ 6.0 = 80 %</text>
+<text x="658" y="425.4" font-size="10.5" fill="#455468" text-anchor="end">塑性变形率 = 1.2 %（残余应变）</text>
+<text x="658" y="453.2" font-size="10.5" fill="#6b7a8d" text-anchor="end">环面积＝一次循环中被耗散的功</text>
+</svg>
+      <p class="figcap">
+        <b>图 1　纤维的应力-应变曲线（示意图，按典型参数绘制）。</b>
+        <b>(a)</b> 常规服用纤维与钢丝在同一纵轴单位下比较——注意钢丝的斜率（模量）最陡，但断裂点又低又靠左，说明它<strong>刚度极高而「以重量论强度」很低</strong>。
+        <b>(b)</b> 高性能纤维：曲线几乎是一条直线，说明其变形基本是可回复的普弹变形，几乎没有塑性段。
+        <b>(c)</b> 把应变轴放大到 0～3 %，起始段立刻分开——括号内为初始模量（cN/dtex），起始越陡模量越大，这正是「读模量」的正确区间。
+        <b>(d)</b> 加卸载环（静态示意，其<strong>可播放版见下方动态演示</strong>）：加载到 ε₁ 后卸载，应力归零时仍保留 ε₂ 的应变，弹性回复率 = (6.0 − 1.2) ÷ 6.0 = 80 %；环的面积是一次循环中被耗散（发热）的功。
+        纵轴统一用 cN/dtex，因此高度即比强度，四张子图可直接比较。<b>斜率的读法要注意</b>：横轴以「%」为单位，所以图上量得的斜率，其数值是初始模量的 <b>1/100</b>——涤纶初始模量 80 cN/dtex，在图上读出的斜率是 0.80（cN/dtex 每 1 % 应变）。<br>图中虚线为<b>高强钢丝</b>（σ<sub>b</sub> 取 1 GPa，相当于预应力钢丝的下限；普通低碳钢丝仅 0.4～0.6 GPa），作为「以重量论强度」的对照基准。<b>图上的曲线与试样粗细无关</b>，钢丝为何显得「强度低」见下方说明框。
+      </p>
+    </div>
+
+    <div class="note g">
+      <span class="note-h">常见疑问：钢丝在图 1 上的强度为什么这么低？——不是因为它细</span>
+      <p style="margin:0 0 8px"><strong>先明确一点：图 1 上的曲线与试样的粗细、截面大小完全无关。</strong>横轴应变是「变形量 ÷ 原长」，无量纲；纵轴应力是「力 ÷ 截面积」或「力 ÷ 线密度」。两者都是<strong>强度量</strong>（intensive quantity），由材料本身决定，不随试样做得多大而变。同一根钢丝，无论直径做成 20 µm 还是 2 mm，在这张图上的曲线完全重合；反过来，纤维的直径也不进入坐标。<strong>所以「钢丝强度低」与它细不细无关，真正的自变量是密度。</strong></p>
+
+      <p style="margin:0 0 8px">把两根丝取成<strong>同样的直径</strong>（0.1 mm，截面积 0.007854 mm²）、同样的长度（1 m），代进 F = σ<sub>b</sub> · A：</p>
+
+      <div class="tw">
+        <table>
+          <thead><tr><th>同样直径 0.1 mm、同样长 1 m</th><th class="num">σ<sub>b</sub> / GPa</th><th class="num">断裂强力 F / N</th><th class="num">每米质量 / g</th><th class="num">F ÷ 每米质量 / (kN·m·kg⁻¹)</th></tr></thead>
+          <tbody>
+            <tr><td>涤纶长丝（ρ = 1.38 g·cm⁻³）</td><td class="num">0.621</td><td class="num">4.877</td><td class="num">0.01084</td><td class="num">450</td></tr>
+            <tr><td>高强钢丝（ρ = 7.85 g·cm⁻³）</td><td class="num">1.00</td><td class="num">7.854</td><td class="num">0.06165</td><td class="num">127</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p style="margin:0 0 8px">看清楚了：<strong>同样粗细时先断的是涤纶，不是钢丝</strong>——钢丝的绝对断裂强力反而是涤纶的 1.61 倍（7.854 ÷ 4.877）。它的「弱」来自另一个分母：同样长 1 m，钢丝沉 5.69 倍（0.06165 ÷ 0.01084）。同一组数据，换一个分母就给出<strong>方向相反</strong>的结论，这正是 GPa 与 cN/dtex 必须分开讲的原因：</p>
+
+      <div class="grid2">
+        <div class="card d">
+          <h4>按「等直径」比：看 σ<sub>b</sub>（GPa）</h4>
+          <p style="margin:0">同样粗细，比谁扛得住更大的力。钢丝 1.00 &gt; 涤纶 0.621 GPa，<strong>钢丝赢 1.6 倍</strong>。这是土木、机械的视角——构件有确定的截面尺寸。</p>
+        </div>
+        <div class="card g">
+          <h4>按「等线密度」比：看 σ<sub>b</sub>/ρ（cN/dtex）</h4>
+          <p style="margin:0">同样一米重，比谁扛得住更大的力。涤纶 4.5 &gt; 钢丝 1.27 cN/dtex，<strong>涤纶赢 3.5 倍</strong>。这是纺织的视角——纱线按线密度计价、按线密度承载。</p>
+        </div>
+      </div>
+
+      <p style="margin:8px 0 0">图 1 的纵轴取的是第二种「等线密度」基准：相当于把各材料的试样都做成「同样重的一米丝」再比。<strong>曲线的形状与位置不受试样粗细影响，但基准决定了谁在上、谁在下</strong>——把纵轴换成 GPa，(a) 面板里钢丝的断裂点就会跑到涤纶之上，胜负翻转，这本身就是这张图最值得讲的一句话。<br>
+      换个更直观的说法（<strong>断裂长度</strong> L<sub>b</sub> = σ<sub>b</sub> ÷ (ρ g)，即「一根丝能吊起多长自己」）：涤纶约 <strong>45.9 km</strong>，钢丝约 <strong>13.0 km</strong>。同样粗细的两根丝，悬空极限只差一个密度。</p>
+    </div>
+
+    <div class="tool">
+      <p class="tool-h">动态演示 · 加卸载环与弹性回复（图 1(d) 的可播放版）</p>
+      <div class="frow">
+        <div class="fld">
+          <label>定伸长率 ε₁ / %　<span class="rngv" id="an-e1v">6.0</span></label>
+          <input type="range" id="an-e1" min="2" max="10" step="0.5" value="6">
+        </div>
+        <div class="fld">
+          <label>弹性回复率 Rₑ / %　<span class="rngv" id="an-rev">80</span></label>
+          <input type="range" id="an-re" min="55" max="99" step="1" value="80">
+        </div>
+        <div class="fld">
+          <label>播放速度</label>
+          <select id="an-spd">
+            <option value="0.5">0.5×（细看）</option>
+            <option value="1" selected>1×</option>
+            <option value="2">2×（快速循环）</option>
+          </select>
+        </div>
+      </div>
+      <div class="chips">
+        <button class="chip" id="an-play">▶ 播放</button>
+        <button class="chip" id="an-reset">↺ 回到完整环</button>
+        <button class="chip" data-preset="6,97">涤纶（回弹 97 %）</button>
+        <button class="chip" data-preset="6,90">羊毛（约 90 %）</button>
+        <button class="chip" data-preset="6,74">纯棉（约 74 %）</button>
+        <button class="chip" data-preset="6,60">粘胶（约 60 %）</button>
+        <button class="chip" data-preset="10,80">大变形（ε₁ = 10 %）</button>
+      </div>
+      <div class="ansvg">
+        <svg id="an-svg" viewBox="0 0 600 336" xmlns="http://www.w3.org/2000/svg" font-family="Arial, Helvetica, Helvetica Neue, sans-serif" role="img" aria-label="加卸载环动态演示：加载、卸载、残余应变与再加载">
+<rect x="62" y="26" width="500" height="240" fill="#ffffff" stroke="#455468" stroke-width="0.9"/>
+<line x1="62.0" y1="266" x2="62.0" y2="270" stroke="#455468" stroke-width="0.8"/>
+<text x="62.0" y="282.0" font-size="10" fill="#455468" text-anchor="middle">0</text>
+<line x1="145.3" y1="266" x2="145.3" y2="270" stroke="#455468" stroke-width="0.8"/>
+<text x="145.3" y="282.0" font-size="10" fill="#455468" text-anchor="middle">2</text>
+<line x1="228.7" y1="266" x2="228.7" y2="270" stroke="#455468" stroke-width="0.8"/>
+<text x="228.7" y="282.0" font-size="10" fill="#455468" text-anchor="middle">4</text>
+<line x1="312.0" y1="266" x2="312.0" y2="270" stroke="#455468" stroke-width="0.8"/>
+<text x="312.0" y="282.0" font-size="10" fill="#455468" text-anchor="middle">6</text>
+<line x1="395.3" y1="266" x2="395.3" y2="270" stroke="#455468" stroke-width="0.8"/>
+<text x="395.3" y="282.0" font-size="10" fill="#455468" text-anchor="middle">8</text>
+<line x1="478.7" y1="266" x2="478.7" y2="270" stroke="#455468" stroke-width="0.8"/>
+<text x="478.7" y="282.0" font-size="10" fill="#455468" text-anchor="middle">10</text>
+<line x1="562.0" y1="266" x2="562.0" y2="270" stroke="#455468" stroke-width="0.8"/>
+<text x="562.0" y="282.0" font-size="10" fill="#455468" text-anchor="middle">12</text>
+<line x1="58" y1="266.0" x2="62" y2="266.0" stroke="#455468" stroke-width="0.8"/>
+<text x="55" y="269.4" font-size="10" fill="#455468" text-anchor="end">0</text>
+<line x1="58" y1="206.0" x2="62" y2="206.0" stroke="#455468" stroke-width="0.8"/>
+<text x="55" y="209.4" font-size="10" fill="#455468" text-anchor="end">1</text>
+<line x1="58" y1="146.0" x2="62" y2="146.0" stroke="#455468" stroke-width="0.8"/>
+<text x="55" y="149.4" font-size="10" fill="#455468" text-anchor="end">2</text>
+<line x1="58" y1="86.0" x2="62" y2="86.0" stroke="#455468" stroke-width="0.8"/>
+<text x="55" y="89.4" font-size="10" fill="#455468" text-anchor="end">3</text>
+<line x1="58" y1="26.0" x2="62" y2="26.0" stroke="#455468" stroke-width="0.8"/>
+<text x="55" y="29.4" font-size="10" fill="#455468" text-anchor="end">4</text>
+<text x="312.0" y="314.0" font-size="11" fill="#1c2733" text-anchor="middle">应变 / %</text>
+<text x="18" y="146.0" font-size="11" fill="#1c2733" text-anchor="middle" transform="rotate(-90 18 146.0)">应力 / (cN·dtex⁻¹)</text>
+<polygon id="an-hyst" points="" fill="#f3d9cd" fill-opacity="0.75" stroke="none" opacity="0"/>
+<polyline id="an-load"   points="" fill="none" stroke="#1f4e79" stroke-width="2.4" stroke-linejoin="round"/>
+<polyline id="an-unload" points="" fill="none" stroke="#D55E00" stroke-width="2.4" stroke-linejoin="round"/>
+<polyline id="an-reload" points="" fill="none" stroke="#009E73" stroke-width="2.0" stroke-linejoin="round"/>
+<g id="an-post" opacity="0">
+<line id="an-resid" x1="62" y1="261.8" x2="62" y2="261.8" stroke="#D55E00" stroke-width="3.5"/>
+<line id="an-g1" x1="62" y1="266" x2="62" y2="266" stroke="#6b7a8d" stroke-width="0.9" stroke-dasharray="3,3"/>
+<line id="an-g2" x1="62" y1="266" x2="62" y2="266" stroke="#6b7a8d" stroke-width="0.9" stroke-dasharray="3,3"/>
+<circle id="an-d1" cx="62" cy="266" r="2.8" fill="#1f4e79"/>
+<circle id="an-d2" cx="65.2" cy="261.8" r="2.8" fill="#D55E00"/>
+<text id="an-t1" x="62" y="295.0" font-size="10.5" fill="#455468" text-anchor="middle">ε₁</text>
+<text id="an-t2" x="62" y="295.0" font-size="10.5" fill="#D55E00" text-anchor="middle">ε₂</text>
+</g>
+<text id="an-l1" x="429" y="197" font-size="10.5" fill="#1f4e79" font-weight="700">加载</text>
+<text id="an-l2" x="429" y="218" font-size="10.5" fill="#D55E00">卸载</text>
+<text id="an-l3" x="429" y="239" font-size="10.5" fill="#009E73">再加载</text>
+<text id="an-state" x="70" y="43" font-size="11" font-weight="700" fill="#6b7a8d">就绪</text>
+<text id="an-note" x="554" y="43" font-size="10.5" fill="#6b7a8d" text-anchor="end">曲线随参数实时重算</text>
+</svg>
+      </div>
+      <div class="out" id="an-out"></div>
+      <div class="err" id="an-err"></div>
+    </div>
+
+    <h3>读图三问</h3>
+    <div class="grid3">
+      <div class="card d">
+        <h4>① 起始段有多陡？</h4>
+        <p style="margin:0">→ 初始模量。<br>陡 = 挺括有身骨（棉、麻、涤纶、芳纶）；<br>平 = 柔软、易变形（羊毛、锦纶、氨纶）。</p>
+      </div>
+      <div class="card g">
+        <h4>② 最高点有多高？</h4>
+        <p style="margin:0">→ 断裂强度。<br>高 = 结实耐磨（涤纶、锦纶、芳纶）；<br>低 = 易破（羊毛、氨纶、粘胶）。</p>
+      </div>
+      <div class="card r">
+        <h4>③ 最右端有多远？</h4>
+        <p style="margin:0">→ 断裂伸长率。<br>远 = 可拉伸、抗冲击（锦纶 45 %、羊毛 33 %、氨纶 500 %+）；<br>近 = 脆、易折裂（麻 2 %、碳纤维 1.5 %）。</p>
+      </div>
+    </div>
+
+    <h3>五个形态类型</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:16%">类型</th><th style="width:20%">代表纤维</th><th>曲线特征与成因</th><th style="width:23%">服用表现</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Ⅰ 高模量低伸型</strong></td>
+            <td>棉、苎麻、亚麻</td>
+            <td>起始陡、断裂点靠左；纤维素大分子链刚性强、结晶度高，<strong>无明显屈服点</strong>（长链分子不易发生链段滑移）</td>
+            <td>挺爽、身骨好、凉感强；麻类折痕明显且易脆断</td>
+          </tr>
+          <tr>
+            <td><strong>Ⅱ 低模量高伸型</strong></td>
+            <td>羊毛、锦纶、氨纶</td>
+            <td>起始平缓、<strong>屈服点明显</strong>，屈服后有一个很长的平台段；源于 α 螺旋／无定形区链段的构象转变（高弹变形）</td>
+            <td>柔软弹性好、穿着舒适、抗皱；但挺括性差、易起拱</td>
+          </tr>
+          <tr>
+            <td><strong>Ⅲ 中等强伸型</strong></td>
+            <td>粘胶纤维、醋酯纤维、蚕丝</td>
+            <td>模量与强度都不突出，屈服点平缓；再生纤维素的聚合度与取向度低于天然棉</td>
+            <td>悬垂柔软、手感细腻；粘胶湿态力学明显劣化</td>
+          </tr>
+          <tr>
+            <td><strong>Ⅳ 强韧型</strong></td>
+            <td>涤纶、腈纶</td>
+            <td>起始陡 + 断裂点高 + 伸长适中；结晶与取向配合良好，屈服后有应变硬化段</td>
+            <td>挺括、免烫、耐穿——服用性能最均衡的纤维</td>
+          </tr>
+          <tr>
+            <td><strong>Ⅴ 高性能型</strong></td>
+            <td>芳纶、碳纤维、超高分子量聚乙烯、玻璃纤维</td>
+            <td>斜率极大、几乎直线至断裂，<strong>无塑性段</strong>；分子链刚直（液晶纺丝）或取向度极高</td>
+            <td>不作日常服用；用于防护与复合增强。缺点是脆、不耐反复屈曲</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>曲线的形状由什么决定</h3>
+    <ol>
+      <li><strong>大分子链的刚性</strong>——主链含芳环、氢键网络或强极性基团 → 模量高（麻、芳纶）；主链柔顺并带侧基 → 模量低（羊毛、氨纶）。</li>
+      <li><strong>取向度</strong>——分子链沿纤维轴排列的整齐程度。牵伸倍数提高，取向度上升 → 模量与强度同时升高、断裂伸长下降。</li>
+      <li><strong>结晶度与晶型</strong>——结晶区起物理交联作用，提高强度与模量；但过高会使纤维变脆，屈曲疲劳变差。</li>
+      <li><strong>屈服点的分子解释</strong>——屈服意味着「链段构象调整」取代「键长键角变形」成为主要变形机制。有明确屈服点的纤维（羊毛、锦纶、涤纶）回弹性通常较好，因为变形发生在可回复的链段层次。</li>
+    </ol>
+
+    <div class="note d">
+      <span class="note-h">课堂提问</span>
+      <p style="margin:0">图 (a) 中，羊毛的曲线在 2 % 附近有一个明显转折（屈服点），而棉的曲线始终平滑。<strong>同为天然纤维，为什么差别这么大？</strong>提示：羊毛是蛋白质纤维，无定形区占 50 % 以上、含 α 螺旋；棉是纤维素纤维，结晶度高达 60 %～70 %，分子链靠氢键刚性相连。</p>
+    </div>
+  </section>
+
+  <!-- ========== 07 曲线上的关键指标 ========== -->
+  <section id="index">
+    <h2><span class="num">07</span>曲线上的六个关键指标与断裂功</h2>
+    <p class="lead">曲线不只提供三条信息。把特征点读全，才是一次完整的力学评价。</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:19%">指标</th><th style="width:25%">在曲线上的位置</th><th>含义与用途</th></tr></thead>
+        <tbody>
+          <tr><td><strong>初始模量 E</strong></td><td>原点处切线的斜率</td><td>刚度／挺括性。低负荷下的抗变形能力，是织物手感的第一决定因素</td></tr>
+          <tr><td><strong>屈服点（σ<sub>y</sub>, ε<sub>y</sub>）</strong></td><td>曲线由陡变缓的转折点</td><td>弹性变形与塑性变形的分界。屈服点越高、越靠右，织物抗起拱、抗走样能力越强</td></tr>
+          <tr><td><strong>断裂强度 σ<sub>b</sub></strong></td><td>曲线最高点（对纤维即断裂点）</td><td>强度指标，报 cN/dtex；化学纤维还区分干态与湿态</td></tr>
+          <tr><td><strong>断裂伸长率</strong></td><td>断裂点对应的横坐标</td><td>延性指标。与舒适性、抗冲击性相关；毛、锦纶、氨纶高，麻、玻纤、碳纤维低</td></tr>
+          <tr><td><strong>断裂功 W</strong></td><td><strong>曲线下方的全部面积</strong></td><td>韧性（toughness）。综合了强度与伸长，直接对应耐冲击、耐疲劳、耐磨损</td></tr>
+          <tr><td><strong>弹性回复率 R<sub>e</sub></strong></td><td>加卸载曲线的靠近程度</td><td>保形性。R<sub>e</sub> 高 → 抗皱、不起拱、尺寸稳定</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>断裂功：为什么它比强度更能预测「耐穿」</h3>
+    <div class="eq">
+      W = ∫<sub>0</sub><sup>ε<sub>b</sub></sup> σ dε &nbsp;&nbsp;<span class="lbl">单位质量断裂功（比断裂功）单位为 J/g 或 mN/tex</span>
+    </div>
+    <div class="tw">
+      <table>
+        <caption>比断裂功（单位质量断裂功）——「曲线下面积」的另一种读法</caption>
+        <thead><tr><th>纤维</th><th class="num">比断裂功 / (J·g⁻¹)</th><th>解读</th></tr></thead>
+        <tbody>
+          <tr><td>涤纶</td><td class="num">60 – 119</td><td>强 + 韧，耐穿性与尺寸稳定的最佳平衡</td></tr>
+          <tr><td>锦纶</td><td class="num">77 – 100</td><td>最「耐折腾」：高伸长 + 高回复，耐磨性居纺织纤维之首</td></tr>
+          <tr><td>蚕丝</td><td class="num">~60</td><td>强度中等但伸长好，韧性优于一般纤维素纤维</td></tr>
+          <tr><td>丙纶</td><td class="num">~71</td><td>比强度高、密度低，以产业用为主</td></tr>
+          <tr><td>羊毛</td><td class="num">~38</td><td>强度低但伸长极大，故仍具备可穿的韧性</td></tr>
+          <tr><td>粘胶纤维</td><td class="num">28 – 31</td><td>湿态骤降，是湿态易破的直接原因</td></tr>
+          <tr><td>醋酯纤维</td><td class="num">~22</td><td>最不耐磨损的一类常见纤维</td></tr>
+          <tr><td>棉</td><td class="num">5 – 15</td><td>强度尚可但伸长小 → 面积小，耐冲击与耐磨性一般</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note r">
+      <span class="note-h">重要提醒：强度高 ≠ 韧性好</span>
+      <p style="margin:0 0 6px">玻璃纤维强度不低（约 8～10 cN/dtex），但断裂伸长只有 3 % 左右，<strong>曲线下面积很小 → 极脆</strong>，一折就断纱。</p>
+      <p style="margin:0">反过来，羊毛强度只有 0.9～1.5 cN/dtex，却因伸长达 33 % 而具备可穿的韧性。这就是为什么<strong>耐磨性排序（锦纶 &gt; 涤纶 &gt; 羊毛 ≈ 腈纶 &gt; 粘胶 &gt; 棉）与强度排序并不一致</strong>。</p>
+    </div>
+
+    <h3>屈服点的实用价值</h3>
+    <p>服装在穿着中承受的应力，通常只有纤维断裂强度的 <strong>2 %～5 %</strong>。也就是说，发生在服装上的变形几乎全部处在曲线的起始段与屈服点附近。因此：</p>
+    <ul>
+      <li><strong>屈服点越高</strong>，织物越不容易在肘、膝、臀等部位被撑出永久变形的鼓包。</li>
+      <li><strong>屈服点之后平台越长</strong>（羊毛），织物越能在大变形后依靠链段回复而恢复原状——这正是羊毛悬垂自然、抗皱的根本原因。</li>
+      <li>因此评价服用性能时，<strong>低负荷区的曲线形状比断裂点更重要</strong>，这直接引出第 10 节的织物低负荷力学。</li>
+    </ul>
+  </section>
+
+  <!-- ========== 08 分子机理与黏弹性 ========== -->
+  <section id="micro">
+    <h2><span class="num">08</span>分子机理：取向、结晶与黏弹性</h2>
+    <p class="lead">把曲线的每一段翻译成分子链的动作，力学就变成了结构问题。</p>
+
+    <h3>三种形变的分子图像</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:14%">形变</th><th style="width:30%">分子链发生了什么</th><th class="num" style="width:12%">量级</th><th>时间与温度依赖</th></tr></thead>
+        <tbody>
+          <tr><td><strong>普弹变形</strong></td><td>键长伸缩、键角弯曲，分子链本身没有大动作</td><td class="num">&lt; 1 %</td><td>瞬时完成（声速量级）；几乎不依赖温度</td></tr>
+          <tr><td><strong>高弹变形</strong></td><td>链段绕主链单键旋转，由卷曲构象变为伸展构象，熵减小</td><td class="num">10 %～500 %</td><td>需要时间（松弛时间谱）；<strong>温度升高反而更易发生</strong>（熵弹性特征）</td></tr>
+          <tr><td><strong>塑性变形</strong></td><td>分子链之间发生相对滑移，原有结合点被破坏并在新位置重建</td><td class="num">不可逆</td><td>不可回复；对回弹率与保形性有决定性影响</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>同一条曲线，不同区段由不同机制主导：<strong>起始陡直段</strong>主要靠普弹＋少量高弹；<strong>屈服后的平台段</strong>是高弹构象调整；<strong>接近断裂前的上升段（应变硬化）</strong>则是取向度提高后分子链被拉直、开始共同承担载荷。</p>
+
+    <h3>取向度与结晶度：两个可调的旋钮</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>结构调整</th><th class="num">模量</th><th class="num">强度</th><th class="num">断裂伸长</th><th class="num">吸湿</th><th>工艺手段</th></tr></thead>
+        <tbody>
+          <tr><td>取向度 ↑</td><td class="num">↑↑</td><td class="num">↑↑</td><td class="num">↓</td><td class="num">↓</td><td>提高拉伸（牵伸）倍数、热定型</td></tr>
+          <tr><td>结晶度 ↑</td><td class="num">↑</td><td class="num">↑</td><td class="num">↓</td><td class="num">↓</td><td>控制纺丝冷却速率、后拉伸与热处理</td></tr>
+          <tr><td>结晶度过高</td><td class="num">↑</td><td class="num">↑（但转脆）</td><td class="num">↓↓</td><td class="num">↓↓</td><td>——易脆断、屈曲疲劳变差</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>这解释了一个重要的产业事实：<strong>同一种聚合物可以做出性能完全不同的纤维</strong>。普通涤纶长丝与高强低伸型涤纶工业丝的化学组成完全一样，但强度可相差 40 % 以上、断裂伸长相差一半——差别只在取向与结晶。</p>
+
+    <h3>黏弹性：为什么纤维的力学与「时间」有关</h3>
+    <p>纺织纤维都是黏弹性体：既有弹性（储能），又有黏性（耗能）。三个典型现象在第 4 节已提到（蠕变、应力松弛、滞后），这里补上定量描述：</p>
+    <div class="eq g">
+      E′（储能模量）＋ i E″（损耗模量） &nbsp;→&nbsp; tan δ = E″ / E′ &nbsp;<span class="lbl">tan δ 越大，阻尼越大、回弹越差</span>
+    </div>
+    <ul>
+      <li><strong>时间-温度等效</strong>：提高温度与延长加载时间是等效的。所以夏天衣服更容易「走样」，而低温下纤维表现得更刚更脆。</li>
+      <li><strong>玻璃化转变温度 T<sub>g</sub></strong>：低于 T<sub>g</sub>，链段被冻结，纤维呈玻璃态——硬、脆、模量高；高于 T<sub>g</sub>，链段解冻，高弹变形成为主导——软、韧、模量骤降。涤纶的耐久压烫（热定型）正是利用 T<sub>g</sub> 以上的链段活动性。</li>
+      <li><strong>湿致塑化</strong>：水对棉、粘胶、羊毛而言是增塑剂。吸湿后链段活动性提高，纤维变软、模量与强度下降、伸长增加。涤纶回潮率仅 0.4 %，丙纶为 0，因此干湿态力学几乎不变。</li>
+    </ul>
+    <div class="note k">
+      <span class="note-h">课堂演算</span>
+      <p style="margin:0">某纤维在 20 ℃ 下松弛时间 τ = 1 s。按时间-温度等效，若升温使 τ 减小到 0.01 s，则相当于加载时间延长了 100 倍——原本「拉得快」的试验，其效果等同于在高温下慢拉。<strong>结论：比较两根纤维的力学数据，必须先确认试验速度与温湿度完全一致。</strong></p>
+    </div>
+  </section>
+
+  <!-- ========== 09 从纤维到织物 ========== -->
+  <section id="fabric">
+    <h2><span class="num">09</span>从纤维到织物：曲线如何被改写</h2>
+    <p class="lead">织物不是「纤维的简单叠加」。屈曲、交织与摩擦会系统性地改写整条曲线。</p>
+
+    <h3>三个改写机制</h3>
+    <div class="grid3">
+      <div class="card d">
+        <h4>① 织缩率：伸长被「预支」</h4>
+        <p>纱线在织物中呈波浪状屈曲。受拉时先把屈曲拉直，再才是纱线本体伸长。</p>
+        <p style="margin:0"><strong>结果：织物的断裂伸长率通常明显大于其组成纱线的断裂伸长率</strong>，且起始段更平缓（表观模量更低）。</p>
+      </div>
+      <div class="card g">
+        <h4>② 交织点摩擦：增强与削弱并存</h4>
+        <p>交织点处纱线互相抱合，邻近纱线通过摩擦参与承载（<strong>织物增强效应</strong>）；但各纱线不在同一瞬间断裂，又造成应力集中。</p>
+        <p style="margin:0"><strong>结果：织物强力 ≠ 纱线强力 × 纱线根数</strong>，净效果随组织与密度而变。</p>
+      </div>
+      <div class="card r">
+        <h4>③ 经纬双向：各向异性登场</h4>
+        <p>经向与纬向的纱线线密度、密度、捻度、织缩率都不同，受力时还互相约束。</p>
+        <p style="margin:0"><strong>结果：同一块布，经向与纬向的强度、伸长可相差 30 % 以上</strong>，必须分别测试、分别报告。</p>
+      </div>
+    </div>
+
+    <div class="eq k">
+      织缩率 &nbsp;c = <span class="frac"><span class="num">L<sub>纱</sub> − L<sub>布</sub></span><span class="den">L<sub>布</sub></span></span> × 100 %
+      <span class="lbl">L<sub>纱</sub> 为拆出的纱线真实长度，L<sub>布</sub> 为织物长度；测定依 ISO 7211-3</span>
+    </div>
+
+    <h3>三类织物的曲线对比</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:13%">织物</th><th style="width:22%">曲线形态</th><th class="num" style="width:14%">表观初始模量</th><th class="num" style="width:16%">断裂伸长率</th><th>结构原因</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>机织物（平纹）</strong></td>
+            <td>起始较陡，屈服不明显，断裂发生较早</td>
+            <td class="num">较高</td>
+            <td class="num">中（10 %～30 %）</td>
+            <td>纱线屈曲程度小、交织点多，结构稳定、尺寸稳定性好</td>
+          </tr>
+          <tr>
+            <td><strong>针织物</strong></td>
+            <td>起始平缓、伸长很大、回弹好，呈明显非线性</td>
+            <td class="num">低</td>
+            <td class="num">大（30 %～150 %）</td>
+            <td>线圈结构可大范围转动与伸直，是天然的三维可变形网络</td>
+          </tr>
+          <tr>
+            <td><strong>非织造布</strong></td>
+            <td>起始较陡但强度低、伸长小，各向差异随成网方式改变</td>
+            <td class="num">中等</td>
+            <td class="num">小到中（5 %～40 %）</td>
+            <td>纤维随机排列靠缠结／黏合点连接，缺乏连续的纱线承载体系</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>混纺：曲线是组分曲线的「加权平均」</h3>
+    <p>混纺纤维的力学性能近似服从混合法则——各组分按其体积（或质量）分数对曲线作贡献叠加。这给出一条重要的设计思路：</p>
+    <ul>
+      <li><strong>涤纶 65 / 棉 35</strong>：棉提供吸湿与手感，涤纶提供强度与回弹 → 强度提高、抗皱性大幅改善、缩水率下降。这是「的确良」以来最经典的组合。</li>
+      <li><strong>羊毛与涤纶混纺</strong>：羊毛给柔软与保暖，涤纶补强度与耐磨，同时降低纯毛织物的价格与变形倾向。</li>
+      <li><strong>氨纶 2 %～10 %</strong> 掺入任何常规纱线即可获得弹力，而不显著改变外观与手感——因为氨纶模量极低，几乎不参与承担载荷，只提供回弹。</li>
+    </ul>
+
+    <h3>织物的两种破坏方式</h3>
+    <div class="grid2">
+      <div class="card">
+        <h4>纱线断裂型</h4>
+        <p style="margin:0">纱线本身先被拉断，断口呈锯齿状。常见于<strong>高强低伸</strong>的纱线（涤纶长丝）与<strong>密实结构</strong>的织物。</p>
+      </div>
+      <div class="card">
+        <h4>纱线滑移型（纰裂）</h4>
+        <p style="margin:0">纱线之间的摩擦抱合不足，被逐根抽出，缝口处出现「纰裂」。常见于<strong>稀疏组织、光滑长丝纱、低密度织物</strong>。这也解释了为什么缝口纰裂要在定负荷下测滑移量（GB/T 13772.2—2008）。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 10 织物低负荷力学 ========== -->
+  <section id="lowload">
+    <h2><span class="num">10</span>织物的低负荷力学与各向异性</h2>
+    <p class="lead">服装几乎从不在断裂负荷下工作。真正决定手感和保形的，是<strong>低负荷区（断裂强度的 2 %～5 %）</strong>的表现。</p>
+
+    <h3>为什么要专门看「低负荷」</h3>
+    <p>一件衣服穿在身上：织物的自重、人体活动的牵拉、坐立时的起拱，对应的应力都在极低水平。而这些工况决定了三件事——<strong>挺不挺、垂不垂、回不回得来</strong>。恰恰在这个区间，纤维与织物都处于强非线性段，用断裂强度或单一模量都无法描述。于是发展出了专门的评价体系：</p>
+
+    <div class="tw">
+      <table>
+        <caption>KES-F（川端季雄体系）与 FAST（澳大利亚 CSIRO 体系）的测试维度与服装性能对应</caption>
+        <thead><tr><th style="width:11%">力学维度</th><th style="width:25%">KES-F 主要指标</th><th style="width:17%">对应服装性能</th><th>教学要点</th></tr></thead>
+        <tbody>
+          <tr><td><strong>拉伸</strong></td><td>LT 线性度、WT 拉伸功、RT 拉伸回复率、EMT 伸长率</td><td>贴身性、成形性、舒适感</td><td>对应 FAST-3 的延伸性测试；决定织物「绷得住、不变形」</td></tr>
+          <tr><td><strong>剪切</strong></td><td>G 剪切刚度、2HG／2HG5 剪切滞后</td><td>悬垂、成形性、缝纫起皱</td><td><strong>决定服装立体成形的关键量</strong>；斜向（45°）剪切刚度最低，是斜裁的物理基础</td></tr>
+          <tr><td><strong>弯曲</strong></td><td>B 弯曲刚度、2HB 弯曲滞后</td><td>硬挺度、柔软度、身骨</td><td>可用 GB/T 18318.1 斜面法单独测定</td></tr>
+          <tr><td><strong>压缩</strong></td><td>LC 压缩线性度、WC 压缩功、RC 压缩回复率</td><td>蓬松度、丰满感、保暖</td><td>与毛绒感、厚度回复相关，FAST-1 即压缩性</td></tr>
+          <tr><td><strong>表面</strong></td><td>MIU 摩擦系数、MMD 摩擦偏差、SMD 表面粗糙度</td><td>滑爽／粗糙、刺痒感</td><td>与纤维表面形态（羊毛鳞片）密切相关</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">KES-F 系统由日本川端季雄提出，其核心贡献是把客观力学量与专家手感评分建立了对应关系（手感值 HV 体系）；FAST 系统由澳大利亚 CSIRO 开发，更侧重生产现场的快速评估，包含压缩、弯曲、延伸性、剪切刚度与尺寸稳定性等项目。两者共同的思想是：<strong>手感是可测量的。</strong></p>
+
+    <h3>织物硬挺度与抗弯刚度</h3>
+    <div class="eq">
+      Г = m × C³ × 10⁻³ &nbsp;<span class="lbl">单位宽度的抗弯刚度（mN·cm）；m 为试样单位面积质量（g/m²），C 为平均弯曲长度（cm）</span>
+    </div>
+    <p>斜面法（GB/T 18318.1—2009）把矩形试样当作悬臂梁推出平台，试样在自重下下垂，前端触及 41.5° 斜面时记录伸出长度 L，弯曲长度 C ≈ L/2。这个式子有两个教学价值：</p>
+    <ul>
+      <li><strong>它是三次方关系</strong>：弯曲长度增加 10 %，抗弯刚度就增加约 33 %。所以织物的「挺」对结构参数极其敏感。</li>
+      <li><strong>它同时包含材质与几何</strong>：m 反映纱线与密度，C 反映纱线模量与组织。这印证了第 5 节的结论——<strong>制品刚度不等于材料模量</strong>。</li>
+    </ul>
+
+    <h3>各向异性：织物没有「一个」模量</h3>
+    <div class="grid2">
+      <div class="card d">
+        <h4>三个方向，三种行为</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li><strong>经向／纬向</strong>：纱线直接承载，模量与强度较高</li>
+          <li><strong>45° 斜向</strong>：纱线只能靠交织点传力，<strong>剪切刚度最低、变形最大</strong></li>
+          <li>因此斜裁（bias cut）能获得最好的垂坠感，这也是「斜丝绺」在服装工艺中被严格管束的原因</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <h4>各向异性带来的服装问题</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li><strong>纬斜</strong>：纬纱不垂直于经纱，成衣后裙摆、裤腿扭曲</li>
+          <li><strong>起拱（bagging）</strong>：肘、膝、臀在低负荷下发生不可回复的变形</li>
+          <li><strong>缝缩与波浪</strong>：剪切刚度大的面料在弧线缝合处产生波浪</li>
+          <li><strong>成形性</strong>：可成形的极限取决于低负荷剪切与拉伸的配合</li>
+        </ul>
+      </div>
+    </div>
+    <div class="note g">
+      <span class="note-h">一句话贯通</span>
+      <p style="margin:0">纤维的模量决定「这块布能有多挺」，纱线与组织决定「这块布能挺到哪里」，而穿着时真正感受得到的，是<strong>低负荷下拉伸—剪切—弯曲—压缩—表面这五个维度共同写出的手感</strong>。</p>
+    </div>
+  </section>
+
+  <!-- ========== 11 交互工具 ========== -->
+  <section id="tools">
+    <h2><span class="num">11</span>课堂交互工具（3 个计算器，离线可用）</h2>
+    <p class="lead">全部可在浏览器内离线计算，不需要网络。课堂上可直接点「预设」按钮调出真实案例，让学生对照曲线图核验。第 6 节底部的「动态演示 · 加卸载环与弹性回复」是本讲的第 4 个可交互模块，本节三个是换算与计算器。</p>
+
+    <div class="tool">
+      <p class="tool-h">工具 1 · 纤维力学指标换算器（比强度语言 ↔ 材料语言）</p>
+      <div class="frow">
+        <div class="fld">
+          <label>数值</label>
+          <input type="number" id="cv-val" value="4.5" step="any" min="0">
+        </div>
+        <div class="fld">
+          <label>单位</label>
+          <select id="cv-unit">
+            <option value="cndtex">cN/dtex</option>
+            <option value="gd">g/d（克力/旦）</option>
+            <option value="ntex">N/tex</option>
+            <option value="mntex">mN/tex</option>
+            <option value="gpa">GPa（绝对应力）</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label>密度 ρ / (g·cm⁻³)</label>
+          <input type="number" id="cv-rho" value="1.38" step="0.01" min="0">
+        </div>
+      </div>
+      <div class="chips">
+        <button class="chip" data-preset="4.5,cndtex,1.38">涤纶 断裂强度 4.5</button>
+        <button class="chip" data-preset="80,cndtex,1.38">涤纶 初始模量 80</button>
+        <button class="chip" data-preset="2.5,cndtex,1.54">棉 断裂强度 2.5</button>
+        <button class="chip" data-preset="80,cndtex,1.54">棉 初始模量 80</button>
+        <button class="chip" data-preset="1.3,cndtex,1.31">羊毛 断裂强度 1.3</button>
+        <button class="chip" data-preset="25,cndtex,1.14">锦纶 初始模量 25</button>
+        <button class="chip" data-preset="20,cndtex,1.44">芳纶1414 强度 20</button>
+        <button class="chip" data-preset="230,gpa,1.76">碳纤维 模量 230 GPa</button>
+        <button class="chip" data-preset="1,gpa,7.85">钢丝 强度 1 GPa</button>
+      </div>
+      <div class="out" id="cv-out"></div>
+      <div class="err" id="cv-err"></div>
+    </div>
+
+    <div class="tool">
+      <p class="tool-h">工具 2 · 织物条样拉伸试验计算器（GB/T 3923.1—2013）</p>
+      <div class="frow">
+        <div class="fld">
+          <label>试样有效宽度 w / mm</label>
+          <input type="number" id="fw-w" value="50" step="any" min="1">
+        </div>
+        <div class="fld">
+          <label>隔距长度 L₀ / mm</label>
+          <input type="number" id="fw-l0" value="200" step="any" min="1">
+        </div>
+        <div class="fld">
+          <label>断裂强力 F / N</label>
+          <input type="number" id="fw-f" value="420" step="any" min="0">
+        </div>
+        <div class="fld">
+          <label>断裂伸长 ΔL / mm</label>
+          <input type="number" id="fw-dl" value="24" step="any" min="0">
+        </div>
+        <div class="fld">
+          <label>单位面积质量 m / (g·m⁻²)</label>
+          <input type="number" id="fw-m" value="150" step="any" min="1">
+        </div>
+      </div>
+      <div class="chips">
+        <button class="chip" data-preset="50,200,320,16,120">纯棉平纹衬衫布</button>
+        <button class="chip" data-preset="50,200,620,42,160">涤纶长丝织物</button>
+        <button class="chip" data-preset="50,200,850,52,190">涤纶牛津布</button>
+        <button class="chip" data-preset="50,100,210,85,230">弹力织物（触发提示）</button>
+      </div>
+      <div class="out" id="fw-out"></div>
+      <div class="err" id="fw-err"></div>
+    </div>
+
+    <div class="tool">
+      <p class="tool-h g">工具 3 · 弹性回复率与塑性变形率计算器（FZ/T 01034—2008 定力法）</p>
+      <div class="frow">
+        <div class="fld">
+          <label>隔距长度 L₀ / mm</label>
+          <input type="number" id="el-l0" value="200" step="any" min="1">
+        </div>
+        <div class="fld">
+          <label>松式夹持达预张力的伸出 ΔL / mm</label>
+          <input type="number" id="el-dl" value="0" step="any" min="0">
+        </div>
+        <div class="fld">
+          <label>拉伸至定力保持 1 min 后长度 L₁ / mm</label>
+          <input type="number" id="el-l1" value="226" step="any" min="1">
+        </div>
+        <div class="fld">
+          <label>回复停放 3 min 后再施加预张力的长度 L₂ / mm</label>
+          <input type="number" id="el-l2" value="202" step="any" min="1">
+        </div>
+      </div>
+      <div class="chips">
+        <button class="chip" data-preset="200,0,226,202">涤纶织物（回弹好）</button>
+        <button class="chip" data-preset="200,0,232,208">纯棉织物</button>
+        <button class="chip" data-preset="200,0,240,216">粘胶织物</button>
+        <button class="chip" data-preset="200,0,260,206">弹性针织物</button>
+      </div>
+      <div class="out" id="el-out"></div>
+      <div class="err" id="el-err"></div>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">工具里藏着的三个教学点</span>
+      <p style="margin:0 0 6px"><strong>①</strong> 工具 1 换算出 GPa 后，让学生把「涤纶 4.5 cN/dtex」与「钢丝 1.274 cN/dtex」都换成 GPa——会发现钢的 GPa 反而更高，但比强度更低。<strong>同一个数，两套语言，两个结论。</strong></p>
+      <p style="margin:0 0 6px"><strong>②</strong> 工具 2 点「弹力织物」预设，会触发「断裂伸长率超 75 %，隔距应改用 100 mm」的提示——这正是 GB/T 3923.1—2013 的规定。</p>
+      <p style="margin:0"><strong>③</strong> 工具 3 输出的弹性回复率与塑性变形率<strong>加起来不等于 100 %</strong>，下方会给出差值来源。这是把公式看透的最好机会。</p>
+    </div>
+  </section>
+
+  <!-- ========== 12 速查表 ========== -->
+  <section id="table">
+    <h2><span class="num">12</span>速查表</h2>
+    <p class="lead">三张表：纤维强伸性能、纤维模量与韧性、织物力学试验标准。</p>
+
+    <h3>表 A1　纤维的强伸性能（室温，干态／湿态）</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>纤维</th><th class="num">断裂强度（干）/ (cN·dtex⁻¹)</th><th class="num">断裂强度（湿）/ (cN·dtex⁻¹)</th><th class="num">断裂伸长率 / %</th><th>湿态特征</th></tr></thead>
+        <tbody>
+          <tr><td>棉</td><td class="num">1.8 – 3.1</td><td class="num">2.2 – 4.0</td><td class="num">7 – 12</td><td><strong>湿态变强</strong>（水中氢键重排），湿强 &gt; 干强</td></tr>
+          <tr><td>苎麻</td><td class="num">4.9 – 5.7</td><td class="num">5.1 – 6.8</td><td class="num">1.5 – 2.3</td><td>湿态略增；伸长极小、易脆断</td></tr>
+          <tr><td>羊毛</td><td class="num">0.9 – 1.5</td><td class="num">0.7 – 1.4</td><td class="num">25 – 35</td><td>湿态变弱；需低温轻揉洗涤</td></tr>
+          <tr><td>蚕丝</td><td class="num">2.6 – 3.5</td><td class="num">1.9 – 2.5</td><td class="num">15 – 25</td><td>湿态强度下降约 20 %～30 %</td></tr>
+          <tr><td>粘胶纤维</td><td class="num">1.8 – 2.6</td><td class="num">1.1 – 1.6</td><td class="num">16 – 22</td><td><strong>湿强降幅最大</strong>（约 40 %），湿态易破的根源</td></tr>
+          <tr><td>富纤（高湿模量粘胶）</td><td class="num">3.1 – 4.0</td><td class="num">2.5 – 2.9</td><td class="num">9 – 10</td><td>改进型粘胶，湿强明显提高</td></tr>
+          <tr><td>醋酯纤维</td><td class="num">1.1 – 1.4</td><td class="num">0.7 – 0.9</td><td class="num">25 – 35</td><td>强度最低的一类常见服用纤维</td></tr>
+          <tr><td>涤纶（普通型）</td><td class="num">4.2 – 5.2</td><td class="num">4.2 – 5.2</td><td class="num">30 – 45</td><td><strong>干湿态几乎不变</strong>（回潮率 0.4 %）</td></tr>
+          <tr><td>涤纶（高强低伸型）</td><td class="num">5.3 – 6.2</td><td class="num">5.3 – 6.2</td><td class="num">18 – 28</td><td>工业丝方向，强度更高、伸长更小</td></tr>
+          <tr><td>锦纶 6</td><td class="num">3.8 – 6.2</td><td class="num">3.3 – 5.3</td><td class="num">25 – 55</td><td>湿态略降；回弹与耐磨最佳</td></tr>
+          <tr><td>腈纶</td><td class="num">2.5 – 4.0</td><td class="num">2.2 – 3.5</td><td class="num">25 – 50</td><td>湿态略降；蓬松保暖似羊毛</td></tr>
+          <tr><td>维纶</td><td class="num">4.4 – 5.1</td><td class="num">3.5 – 4.3</td><td class="num">15 – 20</td><td>强度高，民用已少见</td></tr>
+          <tr><td>丙纶</td><td class="num">4.0 – 6.2</td><td class="num">4.0 – 6.2</td><td class="num">30 – 60</td><td>密度 0.91，可浮于水面，干湿不变</td></tr>
+          <tr><td>氯纶</td><td class="num">2.2 – 3.5</td><td class="num">2.2 – 3.5</td><td class="num">20 – 40</td><td>保暖、耐酸碱，不耐热</td></tr>
+          <tr><td>氨纶</td><td class="num">0.4 – 0.9</td><td class="num">0.3 – 0.9</td><td class="num">450 – 800</td><td>强度最低、伸长最大，专供弹力</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>表 A2　初始模量、断裂功与弹性回复率</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>纤维</th><th class="num">ρ / (g·cm⁻³)</th><th class="num">初始模量 / (cN·dtex⁻¹)</th><th class="num">折算 E / GPa</th><th class="num">比断裂功 / (J·g⁻¹)</th><th class="num">定伸长回弹率 / %</th></tr></thead>
+        <tbody>
+          <tr><td>棉</td><td class="num">1.54</td><td class="num">60 – 82</td><td class="num">9.2 – 12.6</td><td class="num">5 – 15</td><td class="num">74（2 %）</td></tr>
+          <tr><td>苎麻</td><td class="num">1.54</td><td class="num">176 – 220</td><td class="num">27.1 – 33.9</td><td class="num">—</td><td class="num">48（2 %）</td></tr>
+          <tr><td>羊毛</td><td class="num">1.31</td><td class="num">21 – 30</td><td class="num">2.8 – 3.9</td><td class="num">~38</td><td class="num">86 – 93</td></tr>
+          <tr><td>蚕丝</td><td class="num">1.34</td><td class="num">44</td><td class="num">5.9</td><td class="num">~60</td><td class="num">54 – 55（5 %）</td></tr>
+          <tr><td>粘胶纤维</td><td class="num">1.50</td><td class="num">35 – 53</td><td class="num">5.3 – 8.0</td><td class="num">28 – 31</td><td class="num">55 – 80</td></tr>
+          <tr><td>醋酯纤维</td><td class="num">1.32</td><td class="num">22 – 35</td><td class="num">2.9 – 4.6</td><td class="num">~22</td><td class="num">70 – 90</td></tr>
+          <tr><td>涤纶</td><td class="num">1.38</td><td class="num">44 – 79</td><td class="num">6.1 – 10.9</td><td class="num">60 – 119</td><td class="num">97（3 %）</td></tr>
+          <tr><td>锦纶 6</td><td class="num">1.14</td><td class="num">7 – 27</td><td class="num">0.8 – 3.1</td><td class="num">77 – 100</td><td class="num">100（3 %）</td></tr>
+          <tr><td>腈纶</td><td class="num">1.17</td><td class="num">27 – 53</td><td class="num">3.2 – 6.2</td><td class="num">~47</td><td class="num">89 – 95</td></tr>
+          <tr><td>丙纶</td><td class="num">0.91</td><td class="num">18 – 49</td><td class="num">1.6 – 4.5</td><td class="num">~71</td><td class="num">96 – 100</td></tr>
+          <tr><td>芳纶 1414</td><td class="num">1.44</td><td class="num">420 – 780</td><td class="num">60.5 – 112.3</td><td class="num">—</td><td class="num">低（近纯弹性）</td></tr>
+          <tr><td>碳纤维 T300</td><td class="num">1.76</td><td class="num">~1307</td><td class="num">~230</td><td class="num">—</td><td class="num">极低</td></tr>
+          <tr><td>钢丝（高强，对比）</td><td class="num">7.85</td><td class="num">~254.8</td><td class="num">~200</td><td class="num">—</td><td class="num">—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">折算 E 一律按 <span class="fml">E[GPa] = 0.1 × ρ × E[cN/dtex]</span> 计算，可用工具 1 逐项复核。纤维力学指标随型号、纺丝工艺与测试条件差异较大，本表用于建立数量级与大小顺序的概念。</p>
+
+    <h3>表 B　应力单位换算速查</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th>换算</th><th class="num">结果</th><th>记忆锚点</th></tr></thead>
+        <tbody>
+          <tr><td>1 cN/dtex → N/tex</td><td class="num">0.1</td><td>dtex 与 tex 相差一个数量级</td></tr>
+          <tr><td>1 cN/dtex → mN/tex</td><td class="num">100</td><td>工程上最常用的整数关系</td></tr>
+          <tr><td>1 g/d → cN/dtex</td><td class="num">0.8826</td><td>9.80665 mN ÷ 1.1111 dtex</td></tr>
+          <tr><td>1 cN/dtex → g/d</td><td class="num">1.1330</td><td>上式的倒数</td></tr>
+          <tr><td>1 N/tex → kN·m/kg</td><td class="num">1000</td><td>1 N/tex 就是比强度 1000 kN·m/kg</td></tr>
+          <tr><td>σ[GPa] → σ[cN/dtex]</td><td class="num">÷ (0.1 ρ)</td><td>需密度；钢 1 GPa → 1.27 cN/dtex</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>表 C　织物力学试验标准速查</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:16%">项目</th><th style="width:18%">中国标准</th><th style="width:20%">国际／国外标准</th><th>关键参数与要点</th></tr></thead>
+        <tbody>
+          <tr><td>织物拉伸（条样法）</td><td>GB/T 3923.1—2013</td><td>ISO 13934-1:2013<br>ASTM D5035</td><td>有效宽 50 ± 0.5 mm；隔距 200 mm（伸长率 ≤ 75 %）或 100 mm；速度 20 mm/min（伸长率 &lt; 8 %）或 100 mm/min；每方向 ≥ 5 块；距钳口 5 mm 内断裂作废；强力修约 &lt;100 N→1 N、100～1000 N→10 N、&gt;1000 N→100 N</td></tr>
+          <tr><td>织物拉伸（抓样法）</td><td>GB/T 3923.2—2013</td><td>ISO 13934-2:2014<br>ASTM D5034</td><td>试样宽 100 mm；夹面 25 × 25 或 25 × 50 mm，两侧纱线自由参与承载；ASTM D5034 隔距 75 mm、速度 300 mm/min。<strong>结果一般高于条样法，且与条样法不可互换</strong></td></tr>
+          <tr><td>织物撕破（裤形单缝）</td><td>GB/T 3917.2—2009</td><td>ISO 13937-2:2000<br>ASTM D2261</td><td>200 × 50 mm，正中切口 100 mm，终点标记 25 mm，速度 100 mm/min，取 12 峰平均；不适用于针织物、弹性机织物、稀疏织物</td></tr>
+          <tr><td>织物撕破（冲击摆锤）</td><td>GB/T 3917.1—2009</td><td>ASTM D1424</td><td>摆锤能量法；牛仔服装常用</td></tr>
+          <tr><td>织物顶破</td><td>GB/T 19976—2005</td><td>—</td><td>钢球顶杆；适用于各类织物，针织物与家纺常测</td></tr>
+          <tr><td>织物弯曲／硬挺度</td><td>GB/T 18318.1—2009（斜面法）<br>GB/T 18318.2—2009（心形法）</td><td>ISO 9073-7<br>ASTM D1388</td><td>斜面倾角 41.5°；弯曲长度 C ≈ L/2；抗弯刚度 Г = m·C³ × 10⁻³（mN·cm）</td></tr>
+          <tr><td>机织物拉伸弹性</td><td>FZ/T 01034—2008</td><td>—</td><td>定力 20／25／30 N、定伸长 3 %／5 %／10 %（无约定时）；保持 1 min、回复 3 min；含弹性回复率、塑性变形率、应力松弛率共 8 种方法</td></tr>
+          <tr><td>针织物拉伸弹性</td><td>FZ/T 70006—2022</td><td>ASTM D2594<br>ASTM D2103</td><td>恒速拉伸法（速度 50～300 mm/min，未约定取 300；预加张力 0.1 N）+ 延时负荷拉伸法；含应力松弛率</td></tr>
+          <tr><td>接缝处纱线抗滑移</td><td>GB/T 13772.2—2008</td><td>—</td><td>定负荷法；对应成品标准的「纰裂程度」</td></tr>
+          <tr><td>纱线拉伸</td><td>GB/T 3916—2013</td><td>ISO 2062</td><td>试样长 500 mm，预张力 0.5 cN/tex</td></tr>
+          <tr><td>化学纤维短纤维拉伸</td><td>GB/T 14337—2022</td><td>BISFA 方法</td><td>名义长度 ≥ 20 mm；试验项目含断裂强力、断裂强度、断裂伸长率、定伸长强力、<strong>初始模量与模量</strong></td></tr>
+          <tr><td>化学纤维长丝拉伸</td><td>GB/T 14344—2022</td><td>BISFA 方法</td><td>长丝强伸与模量</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">使用标准前请在「国家标准全文公开系统」核对是否已被新版代替；ISO 与 ASTM 标准请在官方平台核对最新修订状态。</p>
+  </section>
+
+  <!-- ========== 13 课堂练习 ========== -->
+  <section id="quiz">
+    <h2><span class="num">13</span>课堂练习（6 题，点击展开答案）</h2>
+    <p class="lead">建议先小组作答 8 min，再用第 11 节的交互工具现场核验。</p>
+
+    <details class="q">
+      <summary><span class="qn">1</span><span>高强钢丝的杨氏模量为 200 GPa、密度 7.85 g/cm³，断裂强度约 1 GPa。求它的初始模量与断裂强度各为多少 cN/dtex？并解释：为什么涤纶（σ<sub>b</sub> ≈ 4.5 cN/dtex）在「比强度」上反而胜过钢？</span></summary>
+      <div class="ans">
+        <p><strong>解</strong>　用 σ[cN/dtex] = σ[GPa] ÷ (0.1 ρ)：</p>
+        <p>初始模量 = 200 ÷ (0.1 × 7.85) = 200 ÷ 0.785 ≈ <span class="fin">254.8 cN/dtex</span>（约 255）</p>
+        <p>断裂强度 = 1.0 ÷ 0.785 ≈ <span class="fin">1.27 cN/dtex</span></p>
+        <p><strong>为什么涤纶「更强」</strong>　因为 cN/dtex 的分母是线密度（= 截面积 × 密度），所以这个单位衡量的是<strong>比强度 σ/ρ</strong>。换成比强度：涤纶 4.5 cN/dtex = 450 kN·m/kg，钢 1.27 cN/dtex ≈ 127 kN·m/kg，涤纶约为钢的 3.5 倍。</p>
+        <p><strong>结论</strong>　钢的<strong>绝对刚度</strong>最高（约 255 &gt; 涤纶 80），但按重量折算后强度最低——这正是「材料语言」与「纺织语言」必须分开讲的原因。可用工具 1 的「钢丝」与「涤纶」预设按钮现场对比。</p>
+        <p><strong>常见追问：是不是因为钢丝太细？</strong>不是。应力是强度量，与试样粗细无关，直径本身不进入坐标。取同样直径 0.1 mm 的两根丝（截面积 0.007854 mm²）：钢丝断裂强力 7.854 N、涤纶 4.877 N——<strong>钢丝反而是涤纶的 1.61 倍</strong>；但每米质量 0.06165 g 对 0.01084 g，钢丝重 5.69 倍，故「单位质量的承载能力」涤纶 450 &gt; 钢丝 127 kN·m/kg。详见第 6 节图 1 后的说明框。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">2</span><span>某涤纶织物在 3 % 定伸长下的弹性回复率为 97 %。若初始标距为 100 mm、被拉伸到 103 mm，则卸载后长度约为多少？塑性变形率约为多少？两个百分数相加是多少？</span></summary>
+      <div class="ans">
+        <p><strong>解</strong>　定伸长量 Δ = 103 − 100 = 3.0 mm。</p>
+        <p>弹性回复率 = (L₁ − L₂) / (L₁ − L₀) = 97 %，即 (3.0 − 残余) ÷ 3.0 = 0.97 → 残余 = 3.0 × 0.03 = <span class="fin">0.09 mm</span></p>
+        <p>卸载后长度 = 100 + 0.09 = <span class="fin">100.09 mm</span></p>
+        <p>塑性变形率 = 残余 ÷ L₀ = 0.09 ÷ 100 = <span class="fin">0.09 %</span></p>
+        <p>两者之和 = 97 % + 0.09 % = 97.09 %，<strong>不等于 100 %</strong>。原因是弹性回复率以「伸长量」为分母、塑性变形率以「原长」为分母。<strong>只有当定伸长率恰好为 100 % 时，两者才互补为 100 %。</strong></p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">3</span><span>某纯棉织物按 GB/T 3923.1—2013 用条样法测试：试样有效宽度 50 mm、隔距 200 mm、断裂强力 420 N、断裂伸长 24 mm、单位面积质量 150 g/m²。求断裂强度（N/5cm）、断裂伸长率、单位面积断裂功（线性近似）。若试样宽度改为 25 mm，断裂强力预计约为多少？</span></summary>
+      <div class="ans">
+        <p>断裂伸长率 = 24 ÷ 200 × 100 % = <span class="fin">12 %</span>（&lt; 75 %，故采用 200 mm 隔距正确）</p>
+        <p>断裂强度 = 420 × 50 ÷ 50 = <span class="fin">420 N/5cm</span>（宽度恰为标准值，故数值不变）</p>
+        <p>断裂功（线性近似）= ½ × 420 N × 0.024 m = 5.04 J；试样面积 = 0.05 × 0.2 = 0.01 m²</p>
+        <p>单位面积断裂功 ≈ 5.04 ÷ 0.01 = <span class="fin">504 J/m²</span></p>
+        <p>宽度改为 25 mm 时，承载纱线减半，断裂强力约为 <span class="fin">210 N</span>（实际会略高于一半，因为边缘效应占比上升，但这已超出简单换算的范围）。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">4</span><span>涤纶长丝织物挺括、免烫，锦纶长丝织物柔软、发亮、易起拱。请从初始模量、回弹率与分子结构三个角度解释这一差别。</span></summary>
+      <div class="ans">
+        <p><strong>① 初始模量差异</strong>　涤纶 44～79 cN/dtex，锦纶 6 仅 7～27 cN/dtex。低负荷下涤纶的抗变形能力明显更强 → 涤纶挺括，锦纶瘫软。</p>
+        <p><strong>② 回弹率都很高</strong>　涤纶 97 %、锦纶 100 %（3 % 定伸长），两者回弹都优秀。所以锦纶的问题恰恰<strong>不是弹不回来，而是「太好弹」</strong>——模量低使其穿上就变形，回弹好又使其总能恢复。两者叠加的结果就是「软、弹性十足但缺乏身骨、易起拱」。</p>
+        <p><strong>③ 分子结构基础</strong>　涤纶分子链含刚性苯环、结构对称、易结晶取向；锦纶主链为柔性亚甲基链 + 酰胺基，链段活动性强、取向与结晶程度较低。</p>
+        <p><strong>小结</strong>　挺括性由初始模量主导，与回弹率是两个独立的量。工程上常将锦纶与涤纶或棉混纺，用高模量纤维补身骨。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">5</span><span>为什么同一块机织物的断裂伸长率通常大于其组成纱线的断裂伸长率？为什么织物断裂强力又不等于纱线强力 × 纱线根数？</span></summary>
+      <div class="ans">
+        <p><strong>① 伸长为什么更大</strong>　织物中的纱线呈波浪状屈曲，存在织缩率 c。受拉时先要把屈曲拉直（这部分是几何变形，不消耗纱线本体的伸长能力），之后才是纱线本体伸长。所以织物的断裂伸长率 ≈ 纱线断裂伸长率 + 织缩率贡献 + 交织点处的纱线滑移量。<strong>织缩率越大的组织（缎纹、针织物），织物伸长越大。</strong></p>
+        <p><strong>② 强力为什么不能简单相乘</strong>　三个方向相反的因素同时作用：</p>
+        <ul style="margin:6px 0">
+          <li><strong>织物增强效应（提高）</strong>——交织点摩擦使邻近纱线也被带动参与承载；抓样法充分利用了这一效应，所以抓样值一般高于条样值。</li>
+          <li><strong>不同时断裂（降低）</strong>——纱线强度存在离散，总有弱节先断，其后各纱线依次断裂，实测平均强度低于按平均强度计算的结果（弱节效应）。</li>
+          <li><strong>应力集中与屈曲（降低）</strong>——纱线在交织点被压扁，张力在交织点存在分量损失。</li>
+        </ul>
+        <p><strong>结论</strong>　净效果随组织、密度、捻度与纱线离散程度而异，只能实测，不能推算。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">6</span><span>一块光滑的涤纶长丝织物做衬衫，缝口处常出现纰裂（纱线被抽脱）；而同规格的加捻短纤织物不出现。请用摩擦抱合、纱线滑移与织物结构解释，并说明标准为什么要把接缝滑移单独列为一项测试。</span></summary>
+      <div class="ans">
+        <p><strong>机理</strong>　织物抵抗拉伸破坏有两条路径：<strong>纱线断裂</strong>（纱线本身先断）与<strong>纱线滑移</strong>（纱线被逐根抽脱）。长丝纱表面光滑、抱合力弱，且长丝织物常密度较低、纱线滑移阻力小，因此变形过程中纱线先发生滑移 → 缝口处纱线被抽出 → 纰裂。短纤纱表面有纤维头端与毛羽，交织点摩擦系数大，纱线滑移被锁住，只能走向断裂路径。</p>
+        <p><strong>为什么单列测试</strong>　因为它是<strong>使用性能问题而非材料强度问题</strong>：一块断裂强力完全合格的面料，缝制后仍可能因滑移而开裂。GB/T 13772.2—2008 规定在<strong>定负荷</strong>下测滑移量（例如 GB/T 2664 对男西服面料的定负荷规定），成品产品标准直接引用该滑移量作为判定依据。这说明：<strong>材料力学指标合格 ≠ 服装结构可靠。</strong></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 14 常见误区 ========== -->
+  <section id="pitfall">
+    <h2><span class="num">14</span>常见误区（10 条）</h2>
+    <p class="lead">这些是课堂上、检验报告里、贸易谈判中最常出错的地方。</p>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:4%">#</th><th style="width:33%">错误说法</th><th>为什么错 / 正确做法</th></tr></thead>
+        <tbody>
+          <tr><td class="num">1</td><td>「涤纶强度 4.5，就是 4.5 MPa。」</td><td>cN/dtex 是<strong>比强度</strong>，不是 Pa。要换成 MPa／GPa 必须乘 0.1 ρ（涤纶 4.5 cN/dtex ≈ 0.62 GPa）</td></tr>
+          <tr><td class="num">2</td><td>「模量大 = 强度高。」</td><td>两者独立。玻璃纤维模量约 285 cN/dtex，断裂伸长仅约 3 %，刚而脆；氨纶模量不到 1 cN/dtex，却能拉长 500 %</td></tr>
+          <tr><td class="num">3</td><td>「钢比纤维结实，所以纺织纤维强度不如钢。」</td><td>按绝对应力成立，按<strong>比强度</strong>不成立。涤纶 450 kN·m/kg vs 钢 127 kN·m/kg</td></tr>
+          <tr><td class="num">4</td><td>用一个数代表某种纤维的强度，不分干湿态。</td><td>棉<strong>湿态更强</strong>（氢键重排），粘胶湿态大幅变弱（约 −40 %），涤纶干湿几乎不变。混用会得出相反结论</td></tr>
+          <tr><td class="num">5</td><td>拿两个来源的「初始模量」直接比较大小。</td><td>初始模量的<strong>起始应变区间</strong>与预张力取值不同，结果可差数倍。比较前必须确认测定条件（GB/T 14337—2022 对预张力与隔距有明确规定）</td></tr>
+          <tr><td class="num">6</td><td>「弹性回复率 + 塑性变形率 = 100 %。」</td><td>错。前者分母是<strong>伸长量</strong>，后者分母是<strong>原长</strong>。仅当定伸长率为 100 % 时两者才互补。见第 13 节第 2 题</td></tr>
+          <tr><td class="num">7</td><td>「织物强力 = 纱线强力 × 纱线根数。」</td><td>忽略织物增强效应、弱节效应与屈曲，误差常达 20 % 以上。只能实测</td></tr>
+          <tr><td class="num">8</td><td>把抓样法与条样法的结果互相换算。</td><td>受力方式不同：抓样法两侧纱线自由参与承载，数值一般更高。无通用换算系数，报告必须注明测试方法</td></tr>
+          <tr><td class="num">9</td><td>只看数值，不记录调湿条件与拉伸速度。</td><td>纤维是黏弹性体：温度、湿度、加载速率都会改变结果。所有试验须在 GB/T 6529—2008 标准大气下调湿平衡</td></tr>
+          <tr><td class="num">10</td><td>用「材料模量」直接推断织物手感。</td><td>织物刚度还与面密度、弯曲长度（几何）强相关：<strong>Г ∝ m·C³</strong>。同一材料可以织出硬挺或柔软的面料</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== 15 一页速记 ========== -->
+  <section id="summary">
+    <h2><span class="num">15</span>一页速记</h2>
+    <p class="lead">考前 10 分钟，看这一页就够。</p>
+
+    <div class="grid2">
+      <div class="card d">
+        <h4>三个定义式</h4>
+        <p style="margin:0 0 6px"><span class="fml">σ = F / A₀</span>　应力</p>
+        <p style="margin:0 0 6px"><span class="fml">ε = ΔL / L₀</span>　应变</p>
+        <p style="margin:0"><span class="fml">E = σ / ε</span>　模量（弹性段斜率）</p>
+      </div>
+      <div class="card k">
+        <h4>三条单位换算</h4>
+        <p style="margin:0 0 6px"><span class="fml">1 cN/dtex = 0.1 N/tex = 100 mN/tex</span></p>
+        <p style="margin:0 0 6px"><span class="fml">1 g/d = 0.8826 cN/dtex</span></p>
+        <p style="margin:0"><span class="fml">σ[GPa] = 0.1 ρ σ[cN/dtex]</span>，<span class="fml">σ[N/tex] = σ[GPa] ÷ ρ</span></p>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card g">
+        <h4>四个量，一句话</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li><strong>模量管挺不挺</strong>（初始模量）</li>
+          <li><strong>强度管结不结实</strong>（断裂强度）</li>
+          <li><strong>伸长管舒不舒服</strong>（断裂伸长率）</li>
+          <li><strong>回弹管保不保形</strong>（弹性回复率）</li>
+        </ul>
+      </div>
+      <div class="card r">
+        <h4>两个「不等于」</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>弹性回复率 <strong>+</strong> 塑性变形率 <strong>≠ 100 %</strong>（分母不同）</li>
+          <li>织物强力 <strong>≠</strong> 纱线强力 × 根数（增强效应与弱节效应并存）</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>五型曲线速记</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:22%">类型</th><th style="width:30%">代表</th><th>一句话</th></tr></thead>
+        <tbody>
+          <tr><td>Ⅰ 高模量低伸</td><td>棉、麻</td><td>陡而短 —— 挺爽易皱，麻更脆</td></tr>
+          <tr><td>Ⅱ 低模量高伸</td><td>羊毛、锦纶、氨纶</td><td>平而长、屈服明显 —— 柔软弹性好</td></tr>
+          <tr><td>Ⅲ 中等强伸</td><td>粘胶、蚕丝、醋酯</td><td>都不突出 —— 悬垂柔软，湿态怕水</td></tr>
+          <tr><td>Ⅳ 强韧型</td><td>涤纶、腈纶</td><td>陡而高 —— 挺括免烫耐穿</td></tr>
+          <tr><td>Ⅴ 高性能</td><td>芳纶、碳纤维、UHMWPE、玻纤</td><td>近乎直线到断 —— 高比模量、脆</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>三条主线</h3>
+    <ol>
+      <li><strong>层级主线</strong>：分子链 → 纤维（cN/dtex）→ 纱线（捻度、弱节）→ 织物（织缩率、N/5cm）→ 服装（手感、保形）。</li>
+      <li><strong>机制主线</strong>：普弹（键长键角，&lt; 1 %）→ 高弹（链段构象，可回复但需时间）→ 塑性（分子链滑移，不可逆）。</li>
+      <li><strong>结构主线</strong>：取向度与结晶度是两个可调的旋钮，同一种聚合物能做出从「软而韧」到「刚而强」的全谱系纤维。</li>
+    </ol>
+
+    <div class="note d" style="margin-top:24px">
+      <span class="note-h">最后一句</span>
+      <p style="margin:0">服装从不在断裂负荷下工作，它一生都活在曲线的起点附近。所以评价一种面料，<strong>先看低负荷区的形状，再看断裂点的高度。</strong></p>
+    </div>
+  </section>
+
+  <!-- ========== 16 参考文献 ========== -->
+  <section id="ref">
+    <h2><span class="num">16</span>参考文献与标准</h2>
+    <p class="lead">按「教材与专著／国家标准与行业标准／国际与国外标准／英文原版专著与经典论文」四类编排，便于按需取用。</p>
+
+    <p class="refs-cat">一、教材与专著（中文）<span>概念体系、数据与推导的主要依据</span></p>
+    <ol class="refs">
+      <li>姚穆. 纺织材料学[M]. 5版. 北京: 中国纺织出版社, 2020. <em>ISBN 978-7-5180-7136-4</em> <span class="src">—「十三五」普通高等教育本科部委级规划教材；纤维力学性能、蠕变与应力松弛、织物力学的主要体系来源</span></li>
+      <li>于伟东. 纺织材料学[M]. 2版. 北京: 中国纺织出版社, 2018. <span class="src">— 力学篇对纤维与织物拉伸曲线的解析更细致，适合延伸阅读</span></li>
+      <li>于伟东, 储才元. 纺织物理[M]. 2版. 上海: 东华大学出版社, 2009. <em>ISBN 978-7-81111-525-3</em> <span class="src">— 教育部推荐工科研究生教材；纤维力学、纤维集合体力学行为与织物结构性能最系统的中文专著（第 1 版 2002 年）</span></li>
+      <li>高绪珊, 吴大诚. 纤维应用物理学[M]. 北京: 中国纺织出版社, 2001. <em>ISBN 978-7-5064-1794-5</em> <span class="src">— 从结构形成与表征讲到性能演变；纤维取向、结晶与力学性能关系的理论依据</span></li>
+      <li>郁崇文. 纺纱学[M]. 3版. 北京: 中国纺织出版社, 2019. <span class="src">— 纱线加捻、弱节与成纱强度的工艺解释</span></li>
+      <li>王革辉. 服装材料学[M]. 3版. 北京: 中国纺织出版社, 2020. <span class="src">— 服装专业主流教材，力学性能与服用性能的衔接章节</span></li>
+      <li>朱松文, 刘静伟. 服装材料学[M]. 北京: 中国纺织出版社, 2015. <span class="src">— 另一体系版本，可用作对照阅读</span></li>
+      <li>吴微微. 服装材料学·基础篇[M]. 2版. 北京: 中国纺织出版社, 2016. <span class="src">— 对纤维与织物力学指标的表述简明，适合本科低年级</span></li>
+    </ol>
+
+    <p class="refs-cat">二、国家标准与行业标准<span>术语、测定方法与判定依据</span></p>
+    <ol class="refs" start="9">
+      <li>GB/T 3291.1—1997 纺织 纺织材料性能和试验术语 第1部分: 纤维和纱线[S]. 北京: 中国标准出版社, 1997. <span class="src">— 纤维与纱线力学术语的法定出处</span></li>
+      <li>GB/T 3291.2—1997 纺织 纺织材料性能和试验术语 第2部分: 织物[S]. 北京: 中国标准出版社, 1997. <span class="src">— 织物力学与结构术语的法定出处（2022-01-21 复审继续有效）</span></li>
+      <li>GB/T 3291.3—1997 纺织 纺织材料性能和试验术语 第3部分: 通用[S]. 北京: 中国标准出版社, 1997. <span class="src">— 通用术语</span></li>
+      <li>GB/T 3923.1—2013 纺织品 织物拉伸性能 第1部分: 断裂强力和断裂伸长率的测定(条样法)[S]. 北京: 中国标准出版社, 2013. <span class="src">— 2013-10-10 发布、2014-05-01 实施；修改采用 ISO 13934-1:1999；第 11 节工具 2 的算法依据</span></li>
+      <li>GB/T 3923.2—2013 纺织品 织物拉伸性能 第2部分: 断裂强力的测定(抓样法)[S]. 北京: 中国标准出版社, 2013. <span class="src">— 抓样法；与条样法结果不可互换</span></li>
+      <li>GB/T 3917.1—2009 纺织品 织物撕破性能 第1部分: 冲击摆锤法撕破强力的测定[S]. 北京: 中国标准出版社, 2009. <span class="src">— 摆锤法撕破</span></li>
+      <li>GB/T 3917.2—2009 纺织品 织物撕破性能 第2部分: 裤形试样(单缝)撕破强力的测定[S]. 北京: 中国标准出版社, 2009. <span class="src">— 等同采用 ISO 13937-2:2000；1997 版为「舌形试样」，2009 版改为「裤形」；受力三角形与逐根纱线断裂的力学模型</span></li>
+      <li>GB/T 19976—2005 纺织品 顶破强力的测定 钢球法[S]. 北京: 中国标准出版社, 2005. <span class="src">— 针织物与家纺顶破强力</span></li>
+      <li>GB/T 18318.1—2009 纺织品 弯曲性能的测定 第1部分: 斜面法[S]. 北京: 中国标准出版社, 2009. <span class="src">— 弯曲长度 C ≈ L/2 与抗弯刚度 Г = m·C³×10⁻³ 的法定出处</span></li>
+      <li>GB/T 18318.2—2009 纺织品 弯曲性能的测定 第2部分: 心形法[S]. 北京: 中国标准出版社, 2009. <span class="src">— 适用于柔软织物与针织物（该系列另有第 3 部分格莱法、第 4 部分悬臂法、第 5 部分纯弯曲法、第 6 部分马鞍法）</span></li>
+      <li>FZ/T 01034—2008 纺织品 机织物拉伸弹性试验方法[S]. 北京: 中国标准出版社, 2008. <span class="src">— 代替 1993 版；第 11 节工具 3 的公式依据；含弹性回复率、塑性变形率与应力松弛率共 8 种方法</span></li>
+      <li>FZ/T 70006—2022 针织物拉伸弹性回复率试验方法[S]. 北京: 中国标准出版社, 2022. <span class="src">— 2022-04-08 发布、2022-10-01 实施，代替 2004 版；新增恒速拉伸法与延时负荷拉伸法两种原理</span></li>
+      <li>GB/T 3916—2013 纺织品 卷装纱 单根纱线断裂强力和断裂伸长率的测定(CRE法)[S]. 北京: 中国标准出版社, 2013. <span class="src">— 纱线强伸；预张力 0.5 cN/tex 的来源</span></li>
+      <li>GB/T 14337—2022 化学纤维 短纤维拉伸性能试验方法[S]. 北京: 中国标准出版社, 2022. <span class="src">— 2022-04-15 发布、2022-11-01 实施，代替 2008 版；<strong>新增模量计算体系</strong>，明确初始模量为试验项目；适用于名义长度 ≥ 20 mm</span></li>
+      <li>GB/T 14344—2022 化学纤维 长丝拉伸性能试验方法[S]. 北京: 中国标准出版社, 2022. <span class="src">— 长丝强伸与模量</span></li>
+      <li>GB/T 13772.2—2008 纺织品 机织物接缝处纱线抗滑移的测定 第2部分: 定负荷法[S]. 北京: 中国标准出版社, 2008. <span class="src">— 纰裂程度的测定依据</span></li>
+      <li>GB/T 6529—2008 纺织品 调湿和试验用标准大气[S]. 北京: 中国标准出版社, 2008. <span class="src">— 标准大气条件与调湿程序，一切力学试验的前置条件</span></li>
+      <li>GB/T 9994—2018 纺织材料公定回潮率[S]. 北京: 中国标准出版社, 2018. <span class="src">— 公定回潮率与公定质量的计算基准</span></li>
+      <li>GB/T 8170 数值修约规则与极限数值的表示和判定[S]. <span class="src">— 断裂强力与伸长率的修约规则</span></li>
+    </ol>
+
+    <p class="refs-cat">三、国际标准与国外标准<span>出口、比对与跨体系换算的依据</span></p>
+    <ol class="refs" start="28">
+      <li>ISO 13934-1:2013 Textiles — Tensile properties of fabrics — Part 1: Determination of maximum force and elongation at maximum force using the strip method[S]. Geneva: ISO, 2013. <span class="src">— 条样法国际母标准</span></li>
+      <li>ISO 13934-2:2014 Textiles — Tensile properties of fabrics — Part 2: Determination of maximum force using the grab method[S]. Geneva: ISO, 2014. <span class="src">— 抓样法国际标准</span></li>
+      <li>ISO 13937-2:2000 Textiles — Tear properties of fabrics — Part 2: Determination of tear force of trouser-shaped test specimens (Single tear method)[S]. Geneva: ISO, 2000. <span class="src">— 裤形试样单缝撕破</span></li>
+      <li>ISO 9073-7 Textiles — Test methods for nonwovens — Part 7: Determination of bending length[S]. Geneva: ISO. <span class="src">— 弯曲长度测定，斜面法标准的参照对象</span></li>
+      <li>ISO 2062 Textiles — Yarns from packages — Determination of single-end breaking force and elongation at break using constant rate of extension (CRE) tester[S]. Geneva: ISO. <span class="src">— 纱线单根强伸</span></li>
+      <li>ISO 7211-3 Textiles — Woven fabrics — Construction — Methods of analysis — Part 3: Determination of crimp of yarn in fabric[S]. Geneva: ISO. <span class="src">— 织缩率测定</span></li>
+      <li>ASTM D5035 Standard test method for breaking force and elongation of textile fabrics (strip method)[S]. West Conshohocken: ASTM International. <span class="src">— 条样法（试样宽 25 mm 拆边或 50 mm 剪切，全宽夹持）</span></li>
+      <li>ASTM D5034 Standard test method for breaking strength and elongation of textile fabrics (grab test)[S]. West Conshohocken: ASTM International. <span class="src">— 抓样法（试样 100 × 200 mm，夹面 25 × 25 或 25 × 50 mm，隔距 75 mm，速度 300 mm/min）</span></li>
+      <li>ASTM D2261 Standard test method for tearing strength of fabrics by the tongue (single rip) procedure[S]. West Conshohocken: ASTM International. <span class="src">— 舌形法撕破（对应 GB/T 3917.2 的裤形试样法）</span></li>
+      <li>ASTM D1424 Standard test method for tearing strength of fabrics by falling-pendulum (Elmendorf-type) apparatus[S]. West Conshohocken: ASTM International. <span class="src">— 摆锤法撕破</span></li>
+      <li>ASTM D1388 Standard test method for stiffness of fabrics[S]. West Conshohocken: ASTM International. <span class="src">— 织物硬挺度（斜面法）</span></li>
+      <li>ASTM D2594 Standard test method for stretch properties of knitted fabrics having low power[S]. West Conshohocken: ASTM International. <span class="src">— 低弹针织物拉伸性能，与 FZ/T 70006 新增的延时负荷拉伸法相呼应</span></li>
+      <li>ASTM D1776 Standard practice for conditioning and testing textiles[S]. West Conshohocken: ASTM International. <span class="src">— 调湿与试验条件（21 ± 1 ℃、65 ± 4 % RH）</span></li>
+    </ol>
+
+    <p class="refs-cat">四、英文原版专著与经典论文<span>延伸阅读，适合本科毕业论文与研究生阶段</span></p>
+    <ol class="refs" start="41">
+      <li>MORTON W E, HEARLE J W S. Physical properties of textile fibres[M]. 4th ed. Cambridge: Woodhead Publishing, 2008. <span class="src">— 纤维物理性能的经典专著；应力-应变曲线、黏弹性与断裂机理的权威论述</span></li>
+      <li>HEARLE J W S, GROSBERG P, BACKER S. Structural mechanics of fibers, yarns, and fabrics[M]. New York: Wiley-Interscience, 1969. <span class="src">— 纱线与织物结构力学的奠基之作</span></li>
+      <li>KAWABATA S. The standardization and analysis of hand evaluation[M]. 2nd ed. Osaka: The Textile Machinery Society of Japan, 1980. <span class="src">— 织物手感客观评价（KES-F 体系）与手感值 HV 的原始文献</span></li>
+      <li>POSTLE R, CARNABY G A, DE JONG S. The mechanics of wool structures[M]. Chichester: Ellis Horwood, 1988. <span class="src">— 羊毛集合体的力学模型，低负荷力学与屈服机制讲得最透</span></li>
+      <li>HU J. Structure and mechanics of woven fabrics[M]. Cambridge: Woodhead Publishing, 2004. <span class="src">— 机织物结构与力学性能的系统专著，含低负荷下的剪切与成形性</span></li>
+      <li>SAVILLE B P. Physical testing of textiles[M]. Cambridge: Woodhead Publishing, 1999. <span class="src">— 纺织测试权威手册，拉伸、撕破、顶破、弯曲与弹性回复的标准方法详解</span></li>
+      <li>PEIRCE F T. 26—The "handle" of cloth as a measurable quantity[J]. Journal of the Textile Institute Transactions, 1930, 21(9): T377–T416. <span class="src">— 最早提出「织物手感可测量」的经典论文，抗弯刚度与弯曲长度的理论源头</span></li>
+      <li>PEIRCE F T. The geometry of cloth structure[J]. Journal of the Textile Institute, 1937, 28: T45–T96. <span class="src">— 织物几何结构模型，织缩率与屈曲波形理论的基础</span></li>
+    </ol>
+
+    <div class="note k" style="margin-top:26px">
+      <span class="note-h">使用提示</span>
+      <p style="margin:0 0 6px"><strong>① 标准以现行有效版为准。</strong>我国标准使用前请在「国家标准全文公开系统」核对是否已被新版代替；ISO 与 ASTM 标准请在官方平台核对最新修订状态（例如 ASTM D5034 与 D5035 均为滚动修订，报告须注明所用版本年）。</p>
+      <p style="margin:0 0 6px"><strong>② 教材版次建议按藏书实物核对。</strong>姚穆《纺织材料学》第 5 版在不同来源中标注为 2019 或 2020 年，建议以手头样书的版权页为准。</p>
+      <p style="margin:0 0 6px"><strong>③ 纤维力学数据是范围而非定值。</strong>本讲表格中的强度、伸长率与初始模量均给出常见范围：同一种纤维因聚合度、纺丝工艺、牵伸倍数、纤维型号（如涤纶的普通型与高强低伸型）不同，数值可相差 30 % 以上。用于具体设计或结算时，一律以实测报告与合同约定为准。</p>
+      <p style="margin:0"><strong>④ 换算常数与公式以标准原文为最终依据。</strong>本讲的 1 g/d = 0.8826 cN/dtex 由 9.80665 mN ÷ 1.1111 dtex 推得，σ[GPa] = 0.1 ρ σ[cN/dtex] 由线密度与密度关系推得；若与所引标准附录数值有末位差异，以标准原文为准。</p>
+    </div>
+  </section>
+
+  <footer>
+    <p style="margin:0 0 4px"><strong>应力 · 应变 · 模量与应力-应变曲线｜以纤维与织物为例</strong> — 课堂讲解课件</p>
+    <p style="margin:0">授课：梁帅童 · 上海工程技术大学纺织服装学院　|　配套单元：纤维与织物的力学性能　|　编制日期：2026-09-23</p>
+    <p style="margin:8px 0 0" class="noprint">本页所有曲线为按典型参数绘制的示意图，所有换算均可在浏览器内离线完成，不需要网络连接。打印时建议使用 A4 纵向、缩放 100 %。</p>
+  </footer>
+
+  </main>
+</div>
+
+<script>
+/* ================= 阅读进度 ================= */
+(function(){
+  var bar = document.getElementById('pbar');
+  function upd(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    bar.style.width = Math.max(0, Math.min(100, p)) + '%';
+  }
+  window.addEventListener('scroll', upd, {passive:true});
+  window.addEventListener('resize', upd);
+  upd();
+})();
+
+/* ================= 导航高亮 ================= */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var map = {};
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) map[id] = a;
+  });
+  var ids = Object.keys(map);
+  var secs = ids.map(function(id){ return document.getElementById(id); });
+
+  function setOn(id){
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (map[id]) map[id].classList.add('on');
+  }
+
+  /* 单一判定源：按章节顶边位置确定当前节，避免多机制互相覆盖 */
+  var raf = null;
+  function sync(){
+    var y = window.scrollY + 150, cur = ids[0];
+    for (var i = 0; i < secs.length; i++){
+      if (secs[i].offsetTop <= y) cur = ids[i];
+    }
+    setOn(cur);
+  }
+  function onScroll(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = null; sync(); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('load', sync);
+  sync();
+})();
+
+/* ================= 公共格式化 ================= */
+function fmtNum(x, d){
+  if (!isFinite(x) || isNaN(x)) return '—';
+  if (x !== 0 && Math.abs(x) < 0.01) return x.toPrecision(3);
+  if (Math.abs(x) >= 10000) return x.toFixed(0);
+  return x.toFixed(d === undefined ? 2 : d);
+}
+function cardHTML(label, unit, value, hi){
+  return '<div class="ocard' + (hi ? ' hi' : '') + '">' +
+           '<div class="k">' + label + '</div>' +
+           '<div class="v">' + value + '</div>' +
+           '<div class="u">' + unit + '</div></div>';
+}
+function bindChips(toolEl, handler){
+  if (!toolEl) return;
+  Array.prototype.forEach.call(toolEl.querySelectorAll('.chip'), function(b){
+    var preset = b.getAttribute('data-preset');
+    if (!preset) return;                    /* 播放/重置等普通按钮不属于预设 */
+    b.addEventListener('click', function(){ handler(preset.split(',')); });
+  });
+}
+
+/* ================= 工具 1：纤维力学指标换算器 ================= */
+(function(){
+  var toolEl = document.getElementById('cv-out').closest('.tool');
+  var vEl = document.getElementById('cv-val');
+  var uEl = document.getElementById('cv-unit');
+  var rEl = document.getElementById('cv-rho');
+  var out = document.getElementById('cv-out');
+  var err = document.getElementById('cv-err');
+
+  var K_GD = 0.88265;              /* 1 g/d = 0.88265 cN/dtex */
+  var K_GD_INV = 1 / K_GD;         /* 1 cN/dtex = 1.1329 g/d */
+
+  function toCndtex(v, u, rho){
+    if (u === 'cndtex') return v;
+    if (u === 'gd')     return v * K_GD;
+    if (u === 'ntex')   return v * 10;
+    if (u === 'mntex')  return v * 0.01;
+    if (u === 'gpa')    return v / (0.1 * rho);
+    return NaN;
+  }
+
+  function calc(){
+    var v = parseFloat(vEl.value);
+    var u = uEl.value;
+    var rho = parseFloat(rEl.value);
+    err.style.color = '#b5342a';
+
+    if (!isFinite(v) || v <= 0){
+      out.innerHTML = '';
+      err.textContent = '请输入一个大于 0 的数值。';
+      return;
+    }
+    if (!isFinite(rho) || rho <= 0.5 || rho > 25){
+      out.innerHTML = '';
+      err.textContent = '请填写 0.5～25 g/cm³ 之间的密度（常规纤维 0.9～1.6，玻璃纤维 2.54，钢 7.85）。';
+      return;
+    }
+
+    var x = toCndtex(v, u, rho);
+    if (!isFinite(x) || x <= 0){
+      out.innerHTML = '';
+      err.textContent = '该数值超出可换算范围，请检查输入。';
+      return;
+    }
+
+    var gpa  = 0.1 * rho * x;
+    var ntex = x / 10;
+
+    out.innerHTML =
+      cardHTML('cN/dtex', '比强度语言', fmtNum(x, 2), u === 'cndtex') +
+      cardHTML('g/d', '克力／旦', fmtNum(x * K_GD_INV, 2), u === 'gd') +
+      cardHTML('N/tex', 'SI 推荐', fmtNum(ntex, 3), u === 'ntex') +
+      cardHTML('mN/tex', '10⁻³ N/tex', fmtNum(x * 100, 1), u === 'mntex') +
+      cardHTML('σ / GPa', '按 ρ = ' + rho, fmtNum(gpa, 3), u === 'gpa') +
+      cardHTML('比强度', 'kN·m/kg', fmtNum(ntex * 1000, 0), false);
+
+    err.style.color = '#6b7a8d';
+    err.textContent =
+      '恒等式校核：1 cN/dtex = 0.1 N/tex = 100 mN/tex；' +
+      'σ[GPa] = 0.1 × ρ × σ[cN/dtex] = 0.1 × ' + rho + ' × ' + fmtNum(x, 2) +
+      ' = ' + fmtNum(gpa, 3) + ' GPa；' +
+      'σ[N/tex] = σ[GPa] ÷ ρ = ' + fmtNum(ntex, 3) + ' N/tex。';
+  }
+
+  ['input', 'change'].forEach(function(ev){
+    vEl.addEventListener(ev, calc);
+    uEl.addEventListener(ev, calc);
+    rEl.addEventListener(ev, calc);
+  });
+
+  bindChips(toolEl, function(p){
+    if (p.length !== 3) return;
+    vEl.value = p[0];
+    uEl.value = p[1];
+    rEl.value = p[2];
+    calc();
+  });
+
+  calc();
+})();
+
+/* ================= 工具 2：织物条样拉伸试验计算器 ================= */
+(function(){
+  var toolEl = document.getElementById('fw-out').closest('.tool');
+  var wEl = document.getElementById('fw-w');
+  var lEl = document.getElementById('fw-l0');
+  var fEl = document.getElementById('fw-f');
+  var dEl = document.getElementById('fw-dl');
+  var mEl = document.getElementById('fw-m');
+  var out = document.getElementById('fw-out');
+  var err = document.getElementById('fw-err');
+
+  function calc(){
+    var w  = parseFloat(wEl.value);
+    var l0 = parseFloat(lEl.value);
+    var F  = parseFloat(fEl.value);
+    var dL = parseFloat(dEl.value);
+    var m  = parseFloat(mEl.value);
+    err.style.color = '#b5342a';
+
+    if (![w, l0, F, m].every(function(x){ return isFinite(x) && x > 0; }) ||
+        !isFinite(dL) || dL < 0){
+      out.innerHTML = '';
+      err.textContent = '请填写全部大于 0 的数值（断裂伸长 ΔL 允许为 0）。';
+      return;
+    }
+    if (w < 10 || l0 < 20){
+      out.innerHTML = '';
+      err.textContent = '试样尺寸过小：标准有效宽度为 50 mm、隔距长度为 200 mm（或 100 mm），请检查输入。';
+      return;
+    }
+
+    var strong5 = F * 50 / w;              /* N/5cm */
+    var perMM   = F / w;                   /* N/mm */
+    var elong   = dL / l0 * 100;           /* % */
+    var work    = 0.5 * F * dL / 1000;     /* J，线性近似 */
+    var area    = (w * l0) / 1e6;          /* m² */
+    var workA   = work / area;             /* J/m² */
+    var mass    = m * area;                /* g */
+    var workG   = work / mass;             /* J/g */
+    var eff     = strong5 / m;             /* (N/5cm) ÷ (g/m²) */
+
+    out.innerHTML =
+      cardHTML('断裂强度', 'N / 5cm', fmtNum(strong5, 1), true) +
+      cardHTML('断裂伸长率', '%', fmtNum(elong, 2), false) +
+      cardHTML('单位宽度强力', 'N / mm', fmtNum(perMM, 2), false) +
+      cardHTML('断裂功（线性近似）', 'J', fmtNum(work, 3), false) +
+      cardHTML('单位面积断裂功', 'J / m²', fmtNum(workA, 0), false) +
+      cardHTML('比断裂功', 'J / g', fmtNum(workG, 2), false) +
+      cardHTML('单位克重效率', '(N/5cm) ÷ (g/m²)', fmtNum(eff, 3), false);
+
+    var notes = [];
+    notes.push('校核：F × 50 ÷ w = ' + fmtNum(F, 1) + ' × 50 ÷ ' + fmtNum(w, 1) +
+               ' = ' + fmtNum(strong5, 1) + ' N/5cm（w = 50 mm 时数值等于原强力）');
+    notes.push('断裂功按 σ-ε 曲线为直线的三角形近似 ½FΔL 计算，真实曲线下面积略大');
+    if (elong > 75){
+      err.style.color = '#b5342a';
+      notes.push('⚠ 断裂伸长率 ' + fmtNum(elong, 1) + ' % > 75 %，按 GB/T 3923.1—2013 隔距长度应改用 100 mm');
+    } else {
+      notes.push('伸长率 ≤ 75 %，采用 200 mm 隔距符合 GB/T 3923.1—2013');
+    }
+    if (Math.abs(w - 50) > 0.5){
+      notes.push('⚠ 试样有效宽度应为 50 ± 0.5 mm，当前输入 ' + fmtNum(w, 1) + ' mm 仅供参考');
+    }
+    if (elong < 8){
+      notes.push('提示：伸长率 < 8 % 时，标准规定拉伸速度取 20 mm/min（≥ 8 % 时取 100 mm/min）');
+    } else {
+      notes.push('提示：伸长率 ≥ 8 %，标准规定拉伸速度取 100 mm/min');
+    }
+    err.style.color = (elong > 75 || Math.abs(w - 50) > 0.5) ? '#b5342a' : '#6b7a8d';
+    err.textContent = notes.join('　｜　');
+  }
+
+  [wEl, lEl, fEl, dEl, mEl].forEach(function(e){ e.addEventListener('input', calc); });
+
+  bindChips(toolEl, function(p){
+    if (p.length !== 5) return;
+    wEl.value = p[0]; lEl.value = p[1]; fEl.value = p[2]; dEl.value = p[3]; mEl.value = p[4];
+    calc();
+  });
+
+  calc();
+})();
+
+/* ================= 工具 3：弹性回复率与塑性变形率 ================= */
+(function(){
+  var toolEl = document.getElementById('el-out').closest('.tool');
+  var l0El = document.getElementById('el-l0');
+  var dlEl = document.getElementById('el-dl');
+  var l1El = document.getElementById('el-l1');
+  var l2El = document.getElementById('el-l2');
+  var out = document.getElementById('el-out');
+  var err = document.getElementById('el-err');
+
+  function calc(){
+    var L0 = parseFloat(l0El.value);
+    var dL = parseFloat(dlEl.value);
+    var L1 = parseFloat(l1El.value);
+    var L2 = parseFloat(l2El.value);
+    err.style.color = '#b5342a';
+
+    if (![L0, L1, L2].every(function(x){ return isFinite(x) && x > 0; }) ||
+        !isFinite(dL) || dL < 0){
+      out.innerHTML = '';
+      err.textContent = '请填写全部大于 0 的数值（ΔL 允许为 0）。';
+      return;
+    }
+
+    var L0p = L0 + dL;          /* 施加定力前的有效原长 */
+    var ext = L1 - L0p;         /* 定力下的伸长量 */
+
+    if (ext <= 0){
+      out.innerHTML = '';
+      err.textContent = 'L₁ 必须大于 L₀ + ΔL（本例为 ' + fmtNum(L0p, 1) + ' mm），否则没有发生伸长，无法计算。';
+      return;
+    }
+    if (L2 > L1 || L2 < L0p){
+      out.innerHTML = '';
+      err.textContent = 'L₂ 应满足 (L₀ + ΔL) ≤ L₂ ≤ L₁，即介于 ' + fmtNum(L0p, 1) +
+                        ' mm 与 ' + fmtNum(L1, 1) + ' mm 之间，请检查输入。';
+      return;
+    }
+
+    var elongPct = ext / L0p * 100;          /* 定力伸长率 % */
+    var Re = (L1 - L2) / ext * 100;          /* 弹性回复率 % */
+    var P  = (L2 - L0p) / L0p * 100;         /* 塑性变形率 % */
+    var e  = ext / L0p;                      /* 应变量（小数） */
+    var Pur = (L2 - L0p) / L0p;              /* 塑性变形率（小数） */
+    var sumPct = (1 + Pur * (1 - 1 / e)) * 100;
+
+    out.innerHTML =
+      cardHTML('弹性回复率 Rₑ', '%', fmtNum(Re, 2), true) +
+      cardHTML('塑性变形率 P', '%', fmtNum(P, 2), true) +
+      cardHTML('定力伸长率', '%', fmtNum(elongPct, 2), false) +
+      cardHTML('回复量 L₁ − L₂', 'mm', fmtNum(L1 - L2, 2), false) +
+      cardHTML('残余伸长 L₂ − (L₀+ΔL)', 'mm', fmtNum(L2 - L0p, 2), false);
+
+    err.style.color = '#6b7a8d';
+    err.textContent =
+      'Rₑ = (L₁ − L₂) ÷ (L₁ − L₀ − ΔL) × 100 % = (' + fmtNum(L1, 1) + ' − ' + fmtNum(L2, 1) +
+      ') ÷ ' + fmtNum(ext, 1) + ' × 100 % = ' + fmtNum(Re, 2) + ' %；' +
+      'P = (L₂ − L₀ − ΔL) ÷ (L₀ + ΔL) × 100 % = ' + fmtNum(L2 - L0p, 1) + ' ÷ ' + fmtNum(L0p, 1) +
+      ' × 100 % = ' + fmtNum(P, 2) + ' %。' +
+      '　⚠ 两者之和 = ' + fmtNum(Re + P, 2) + ' %，不等于 100 %——因为 Rₑ 的分母是伸长量 ' +
+      fmtNum(ext, 1) + ' mm，P 的分母是原长 ' + fmtNum(L0p, 1) + ' mm。' +
+      '按恒等式 Rₑ + P = 100 % × [1 + P(1 − 1/ε)] = ' + fmtNum(sumPct, 2) + ' %（ε = ' +
+      fmtNum(elongPct, 2) + ' %）。';
+  }
+
+  [l0El, dlEl, l1El, l2El].forEach(function(e){ e.addEventListener('input', calc); });
+
+  bindChips(toolEl, function(p){
+    if (p.length !== 4) return;
+    l0El.value = p[0]; dlEl.value = p[1]; l1El.value = p[2]; l2El.value = p[3];
+    calc();
+  });
+
+  calc();
+})();
+
+/* ================= 动态演示：加卸载环与弹性回复（图 1(d) 的可播放版） ================= */
+(function(){
+  var svgEl = document.getElementById('an-svg');
+  if (!svgEl) return;
+
+  var X0 = 62, Y0 = 26, X1 = 562, Y1 = 266, XMAX = 12, YMAX = 4;
+  var W = X1 - X0, H = Y1 - Y0;
+  function px(e){ return X0 + (e / XMAX) * W; }
+  function py(s){ return Y1 - (s / YMAX) * H; }
+
+  /* 织物型加载曲线：与图 1 同一两段模型。E0 单位 cN/dtex，应变以 % 计，故弹性段须 ÷100 */
+  var E0 = 60, EY = 1.0, SB = 3.6, EB = 12, PW = 0.7;
+  function sig(e){
+    if (e <= EY) return E0 * e / 100;
+    var sy = E0 * EY / 100;
+    return sy + (SB - sy) * Math.pow((e - EY) / (EB - EY), PW);
+  }
+
+  var get = function(id){ return document.getElementById(id); };
+  var el = {hyst:get('an-hyst'), load:get('an-load'), unload:get('an-unload'), reload:get('an-reload'),
+            post:get('an-post'), resid:get('an-resid'), g1:get('an-g1'), g2:get('an-g2'),
+            d1:get('an-d1'), d2:get('an-d2'), t1:get('an-t1'), t2:get('an-t2'), state:get('an-state')};
+  var e1El = get('an-e1'), reEl = get('an-re'), spdEl = get('an-spd');
+  var e1v = get('an-e1v'), rev = get('an-rev');
+  var playBtn = get('an-play'), resetBtn = get('an-reset');
+  var out = get('an-out'), err = get('an-err');
+
+  var N = 160;
+  var S = {e1: 6, R: 80, e2: 1.2, s1: 0, kU: 1, arr: {}, len: {}};
+
+  /* 卸载与再加载曲线：定义在 IIFE 作用域，build() 与 cards() 共用 */
+  function frac(e){
+    var t = (e - S.e2) / (S.e1 - S.e2);
+    return t < 0 ? 0 : (t > 1 ? 1 : t);
+  }
+  function unloadAt(e){
+    if (e <= S.e2) return 0;
+    return sig(e - S.e2) * S.kU;
+  }
+  function reloadAt(e){
+    var u = unloadAt(e);
+    return u + 0.5 * frac(e) * (sig(e) - u);
+  }
+
+  function pts(list){
+    return list.map(function(p){ return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ');
+  }
+  function pathLen(pp){
+    var L = 0;
+    for (var i = 1; i < pp.length; i++){
+      var dx = pp[i][0] - pp[i - 1][0], dy = pp[i][1] - pp[i - 1][1];
+      L += Math.sqrt(dx * dx + dy * dy);
+    }
+    return L;
+  }
+
+  function build(){
+    S.e1 = parseFloat(e1El.value);
+    S.R  = parseFloat(reEl.value);
+    if (!isFinite(S.e1) || !isFinite(S.R) || S.e1 <= 0 || S.R <= 0 || S.R >= 100) return false;
+    S.e2 = S.e1 * (1 - S.R / 100);
+    S.s1 = sig(S.e1);
+
+    /* 卸载曲线＝加载曲线「右移 ε₂ 再等比放大」：R=100 % 时与加载曲线重合，环面积趋于 0；
+       再加载曲线 ＝ 卸载与加载的几何插值（严格夹在两者之间）。已用 48 组参数验证三层曲线次序。 */
+    S.kU = S.s1 / sig(S.e1 - S.e2);
+    var aLoad = [], aUn = [], aRe = [], i, e;
+    for (i = 0; i <= N; i++){ e = S.e1 * i / N;             aLoad.push([px(e), py(sig(e))]); }
+    for (i = 0; i <= N; i++){ e = S.e1 - (S.e1 - S.e2)*i/N; aUn.push([px(e), py(unloadAt(e))]); }
+    for (i = 0; i <= N; i++){ e = S.e2 + (S.e1 - S.e2)*i/N; aRe.push([px(e), py(reloadAt(e))]); }
+
+    S.arr = {load: aLoad, unload: aUn, reload: aRe};
+    S.len = {load: pathLen(aLoad), unload: pathLen(aUn), reload: pathLen(aRe)};
+
+    el.load.setAttribute('points', pts(aLoad));
+    el.unload.setAttribute('points', pts(aUn));
+    el.reload.setAttribute('points', pts(aRe));
+    /* 滞后环 = 卸载曲线 ∪ 再加载曲线（反向）所围区域 */
+    el.hyst.setAttribute('points', pts(aUn.concat(aRe.slice().reverse())));
+
+    el.resid.setAttribute('x2', px(S.e2).toFixed(1));
+    el.resid.setAttribute('y1', py(0.07).toFixed(1));
+    el.resid.setAttribute('y2', py(0.07).toFixed(1));
+    el.g1.setAttribute('x1', px(S.e1).toFixed(1)); el.g1.setAttribute('x2', px(S.e1).toFixed(1));
+    el.g1.setAttribute('y2', py(S.s1).toFixed(1));
+    el.g2.setAttribute('x1', px(S.e2).toFixed(1)); el.g2.setAttribute('x2', px(S.e2).toFixed(1));
+    el.g2.setAttribute('y2', py(0.45).toFixed(1));
+    el.d1.setAttribute('cx', px(S.e1).toFixed(1)); el.d1.setAttribute('cy', py(S.s1).toFixed(1));
+    el.d2.setAttribute('cx', Math.max(px(S.e2), 65.2).toFixed(1));
+    el.d2.setAttribute('cy', py(0.07).toFixed(1));
+    el.t1.setAttribute('x', px(S.e1).toFixed(1));
+    el.t1.textContent = 'ε₁ = ' + S.e1.toFixed(1) + ' %';
+    el.t2.setAttribute('x', Math.max(px(S.e2), 40).toFixed(1));
+    el.t2.textContent = 'ε₂ = ' + S.e2.toFixed(2) + ' %';
+    e1v.textContent = S.e1.toFixed(1);
+    rev.textContent = S.R.toFixed(0);
+    return true;
+  }
+
+  /* 用 stroke-dasharray/dashoffset 做「画笔式」逐段显现 */
+  function apply(f, label){
+    ['load', 'unload', 'reload'].forEach(function(k){
+      var node = el[k], LC = S.len[k] * 1.02;      /* 多留 2 % 余量，避免尾端被截 */
+      if (!node || !isFinite(LC) || LC <= 0){      /* 兜底：宁可整条实线，也不要 NaN 属性 */
+        if (node){ node.removeAttribute('stroke-dasharray'); node.removeAttribute('stroke-dashoffset'); }
+        return;
+      }
+      node.setAttribute('stroke-dasharray', LC.toFixed(1) + ' ' + LC.toFixed(1));
+      node.setAttribute('stroke-dashoffset', (LC * (1 - f[k])).toFixed(1));
+    });
+    if (f.reload >= 1){                             /* 画完后再加载曲线转为虚线，便于与卸载曲线区分 */
+      el.reload.setAttribute('stroke-dasharray', '6 4');
+      el.reload.setAttribute('stroke-dashoffset', '0');
+    }
+    el.hyst.setAttribute('opacity', (0.75 * f.post).toFixed(3));
+    el.post.setAttribute('opacity', f.post.toFixed(3));
+    if (label !== undefined) el.state.textContent = label;
+  }
+
+  var TOTAL = 5400;
+  function render(t){
+    var f = {load: 0, unload: 0, reload: 0, post: 0}, label = '';
+    if (t < 1500){ f.load = t / 1500; label = '① 加载：拉伸至定伸长 ε₁'; }
+    else if (t < 1900){ f.load = 1; label = '② 保持（标准规定定力保持 1 min 后读数）'; }
+    else if (t < 3000){ f.load = 1; f.unload = (t - 1900) / 1100; label = '③ 卸载：应力回到零，留下残余应变'; }
+    else if (t < 3500){ f.load = 1; f.unload = 1; f.post = (t - 3000) / 500; label = '④ 读出 ε₂ → 弹性回复率 Rₑ'; }
+    else if (t < 4600){ f.load = 1; f.unload = 1; f.post = 1; f.reload = (t - 3500) / 1100; label = '⑤ 再加载：与卸载曲线围出滞后环'; }
+    else { f.load = 1; f.unload = 1; f.post = 1; f.reload = 1; label = '完成一次循环'; }
+    apply(f, label);
+  }
+  function staticState(){ apply({load: 1, unload: 1, reload: 1, post: 1}, '就绪（完整加卸载环）'); }
+
+  /* ---- 数值（卡片用，不参与动画） ---- */
+  function trapz(fn, a, b, n){
+    var h = (b - a) / n, s = (fn(a) + fn(b)) / 2, i;
+    for (i = 1; i < n; i++) s += fn(a + i * h);
+    return s * h;
+  }
+  function cards(){
+    var Wl = trapz(sig, 0, S.e1, 600);
+    var A  = trapz(function(e){ return Math.max(sig(e) - unloadAt(e), 0); }, S.e2, S.e1, 600);
+    var ratio = Wl > 0 ? A / Wl * 100 : 0;
+    var eps = S.e1 / 100, P = S.e2 / 100;
+    var sum = (1 + P * (1 - 1 / eps)) * 100;
+    out.innerHTML =
+      cardHTML('定伸长率 ε₁', '%', S.e1.toFixed(1), true) +
+      cardHTML('弹性回复率 Rₑ', '%', S.R.toFixed(0), true) +
+      cardHTML('残余应变 ε₂ ＝ 塑性变形率', '%', S.e2.toFixed(2), false) +
+      cardHTML('加载功 W（相对）', 'cN·dtex⁻¹·%', Wl.toFixed(2), false) +
+      cardHTML('滞后环面积 A（一次循环损耗）', 'cN·dtex⁻¹·%', A.toFixed(2), false) +
+      cardHTML('损耗比 A ÷ W', '%', ratio.toFixed(1), false);
+    err.style.color = '#6b7a8d';
+    err.textContent =
+      '恒等式校核：Rₑ = (ε₁ − ε₂) ÷ ε₁ = (' + S.e1.toFixed(1) + ' − ' + S.e2.toFixed(2) + ') ÷ ' +
+      S.e1.toFixed(1) + ' = ' + ((S.e1 - S.e2) / S.e1 * 100).toFixed(2) + ' %；' +
+      '应变以原始长度为基准，故塑性变形率的数值就等于 ε₂ = ' + S.e2.toFixed(2) + ' %。' +
+      '　⚠ 两者之和 = ' + (S.R + S.e2).toFixed(2) + ' %，不等于 100 %——按恒等式应为 100 % × [1 + P(1 − 1/ε)] = ' +
+      sum.toFixed(2) + ' %（ε = ' + S.e1.toFixed(1) + ' %，P = ' + S.e2.toFixed(2) + ' %）。' +
+      '　提示：回复率越低，ε₂ 与滞后环面积越大，织物越容易起拱、走样；再加载曲线与卸载曲线围成的二次循环环明显小于第一次，说明反复拉伸后损耗逐次减小（数据见卡片）。';
+  }
+
+  /* ---- 播放控制 ---- */
+  var tcur = 0, playing = false, raf = null, last = 0;
+  function tick(ts){
+    if (!playing) return;
+    if (!last) last = ts;
+    var dt = (ts - last) * parseFloat(spdEl.value);
+    last = ts;
+    tcur += dt;
+    while (tcur >= TOTAL) tcur -= TOTAL;
+    render(tcur);
+    raf = requestAnimationFrame(tick);
+  }
+  function play(){
+    if (playing){ pause(); return; }
+    playing = true; last = 0;
+    playBtn.textContent = '⏸ 暂停';
+    raf = requestAnimationFrame(tick);
+  }
+  function pause(){
+    playing = false;
+    if (raf) cancelAnimationFrame(raf);
+    raf = null;
+    playBtn.textContent = '▶ 播放';
+  }
+  function refresh(){ pause(); tcur = 0; if (build()){ staticState(); } cards(); }
+
+  playBtn.addEventListener('click', play);
+  resetBtn.addEventListener('click', function(){ refresh(); });
+  e1El.addEventListener('input', refresh);
+  reEl.addEventListener('input', refresh);
+
+  bindChips(out.closest('.tool'), function(p){
+    if (p.length !== 2) return;
+    e1El.value = p[0];
+    reEl.value = p[1];
+    refresh();
+  });
+
+  refresh();
+})();
+</script>
+</body>
+</html>
