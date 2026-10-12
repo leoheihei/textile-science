@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>羊毛织物的分类 — 课堂讲义</title>
+<style>
+
+:root{
+  --ink:#1c2733;
+  --ink-2:#455468;
+  --ink-3:#6b7a8d;
+  --line:#dde3ea;
+  --line-2:#eef1f5;
+  --bg:#f2f4f7;
+  --paper:#ffffff;
+
+  --direct:#1f4e79;      /* 定长制 蓝 */
+  --direct-bg:#eef4fa;
+  --direct-soft:#c8d8e8;
+
+  --indirect:#1a6f5a;    /* 定重制 绿 */
+  --indirect-bg:#ecf6f2;
+  --indirect-soft:#bfe0d5;
+
+  --warn:#b5342a;        /* 重点/警示 红 */
+  --warn-bg:#fdf1ef;
+
+  --gold:#8a6d1f;        /* 常数 金 */
+  --gold-bg:#fdf8ec;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:96px}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+  font-size:17px;
+  line-height:1.78;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ 顶部条 ============ */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1320px; margin:0 auto; padding:10px 24px;
+  display:flex; align-items:center; gap:16px;
+}
+.topbar-title{font-size:15px; font-weight:700; letter-spacing:.02em; color:var(--direct)}
+.topbar-sub{font-size:12.5px; color:var(--ink-3); border-left:1px solid var(--line); padding-left:14px}
+.topbar-actions{margin-left:auto; display:flex; gap:8px}
+.btn{
+  font:inherit; font-size:12.5px; padding:5px 13px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-2);
+  cursor:pointer; transition:.16s;
+}
+.btn:hover{border-color:var(--direct); color:var(--direct); background:var(--direct-bg)}
+.progress{height:3px; background:var(--line-2)}
+.progress-bar{height:100%; width:0; background:linear-gradient(90deg,var(--direct),var(--indirect)); transition:width .1s linear}
+
+/* ============ 布局 ============ */
+.shell{max-width:1320px; margin:0 auto; padding:0 24px 80px; display:grid; grid-template-columns:236px 1fr; gap:36px; align-items:start}
+
+/* ============ 侧栏导航 ============ */
+.nav{position:sticky; top:74px; padding:22px 0; max-height:calc(100vh - 90px); overflow-y:auto}
+.nav-h{font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; margin:0 0 10px 12px}
+.nav a{
+  display:block; font-size:14px; color:var(--ink-2); text-decoration:none;
+  padding:7px 12px; border-radius:8px; border-left:2px solid transparent;
+  transition:.14s; line-height:1.45;
+}
+.nav a:hover{background:#fff; color:var(--direct)}
+.nav a.on{background:#fff; color:var(--direct); font-weight:600; border-left-color:var(--direct); box-shadow:0 1px 3px rgba(31,78,121,.09)}
+.nav a .n{display:inline-block; width:20px; color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:12px}
+.nav a.on .n{color:var(--direct)}
+
+/* ============ 正文 ============ */
+main{min-width:0; padding-top:26px}
+section{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:32px 38px 36px; margin-bottom:26px; scroll-margin-top:96px;
+}
+h2{
+  font-size:23px; margin:0 0 6px; letter-spacing:.01em; line-height:1.4;
+  display:flex; align-items:baseline; gap:12px;
+}
+h2 .num{
+  font-size:13px; font-weight:700; color:#fff; background:var(--direct);
+  border-radius:6px; padding:2px 9px; letter-spacing:.04em; position:relative; top:-2px;
+  font-variant-numeric:tabular-nums;
+}
+h2.g .num{background:var(--indirect)}
+h2.r .num{background:var(--warn)}
+h2.k .num{background:var(--gold)}
+.lead{color:var(--ink-2); font-size:15.5px; margin:0 0 24px; padding-bottom:16px; border-bottom:1px dashed var(--line)}
+h3{font-size:18px; margin:30px 0 10px; color:var(--direct); letter-spacing:.01em}
+h3.g{color:var(--indirect)}
+h3::before{content:""; display:inline-block; width:4px; height:15px; background:currentColor; border-radius:2px; margin-right:9px; position:relative; top:1px}
+h4{font-size:16px; margin:22px 0 8px; color:var(--ink)}
+p{margin:10px 0}
+ul,ol{margin:10px 0; padding-left:24px}
+li{margin:6px 0}
+strong{color:var(--ink); font-weight:700}
+code{
+  font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.88em;
+  background:#f3f5f8; border:1px solid var(--line); border-radius:4px;
+  padding:1px 5px; color:#25476e;
+}
+
+/* ============ 公式 ============ */
+.eq{
+  display:block; margin:16px 0; padding:15px 20px;
+  background:#f8fafc; border:1px solid var(--line); border-left:3px solid var(--direct);
+  border-radius:8px; font-size:16.5px; line-height:2.1; overflow-x:auto;
+}
+.eq.g{border-left-color:var(--indirect)}
+.eq.k{border-left-color:var(--gold)}
+.eq .lbl{font-size:12.5px; color:var(--ink-3); margin-left:10px}
+.frac{display:inline-block; vertical-align:-0.55em; text-align:center; font-size:.86em; line-height:1.18; margin:0 .18em}
+.frac .num{display:block; border-bottom:1.2px solid currentColor; padding:0 .3em}
+.frac .den{display:block; padding:0 .3em}
+.big{font-size:20px; font-weight:700; color:var(--direct)}
+.big.g{color:var(--indirect)}
+
+/* ============ 表格 ============ */
+.tw{overflow-x:auto; margin:16px 0; border:1px solid var(--line); border-radius:10px}
+table{border-collapse:collapse; width:100%; font-size:14.5px; background:#fff}
+th,td{padding:9px 13px; text-align:left; border-bottom:1px solid var(--line-2); vertical-align:top}
+thead th{
+  background:#f6f8fb; font-weight:700; font-size:13.5px; color:var(--direct);
+  border-bottom:1px solid var(--line); white-space:nowrap; position:sticky; top:0;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafcfe}
+td.num,th.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+.tc{text-align:center}
+caption{caption-side:top; text-align:left; font-size:13px; color:var(--ink-3); padding:10px 13px 8px; background:#fff}
+
+/* ============ 卡片/提示 ============ */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:#fcfdfe}
+.card h4{margin:0 0 8px; font-size:15.5px}
+.card p:last-child{margin-bottom:0}
+.card.d{border-color:var(--direct-soft); background:var(--direct-bg)}
+.card.g{border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.card.k{border-color:#ecdcb0; background:var(--gold-bg)}
+.card.r{border-color:#f0cfca; background:var(--warn-bg)}
+
+.note{
+  border-radius:10px; padding:14px 18px; margin:18px 0; font-size:15.5px;
+  border:1px solid var(--line); background:#f8fafc;
+}
+.note.d{border-left:3px solid var(--direct); background:var(--direct-bg)}
+.note.g{border-left:3px solid var(--indirect); background:var(--indirect-bg)}
+.note.k{border-left:3px solid var(--gold); background:var(--gold-bg)}
+.note.r{border-left:3px solid var(--warn); background:var(--warn-bg)}
+.note-h{font-weight:700; font-size:14px; letter-spacing:.03em; margin-bottom:5px; display:block}
+.note.d .note-h{color:var(--direct)}
+.note.g .note-h{color:var(--indirect)}
+.note.k .note-h{color:var(--gold)}
+.note.r .note-h{color:var(--warn)}
+
+.tag{
+  display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-3); margin:0 5px 5px 0;
+  font-variant-numeric:tabular-nums;
+}
+.tag.d{color:var(--direct); border-color:var(--direct-soft); background:var(--direct-bg)}
+.tag.g{color:var(--indirect); border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.tag.r{color:var(--warn); border-color:#f0cfca; background:var(--warn-bg)}
+
+.kbd-f{font-family:"SF Mono",Menlo,monospace; font-size:14px; background:#fff; border:1px solid var(--line); border-radius:6px; padding:3px 8px}
+
+/* ============ 交互工具 ============ */
+.tool{border:1px solid var(--direct-soft); border-radius:12px; background:linear-gradient(180deg,#f7fafd,#fff); padding:20px 22px; margin:20px 0}
+.tool-h{font-size:15px; font-weight:700; color:var(--direct); margin:0 0 14px; display:flex; align-items:center; gap:8px}
+.tool-h::before{content:"▸"; color:var(--direct)}
+.tool-h.g{color:var(--indirect)} .tool-h.g::before{color:var(--indirect)}
+.frow{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:14px}
+.fld{display:flex; flex-direction:column; gap:5px}
+.fld label{font-size:12.5px; color:var(--ink-3); font-weight:600; letter-spacing:.02em}
+input[type=number],select{
+  font:inherit; font-size:15px; padding:8px 11px; border:1px solid var(--line);
+  border-radius:8px; background:#fff; color:var(--ink); min-width:118px;
+  font-variant-numeric:tabular-nums;
+}
+input[type=number]:focus,select:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.chips{display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 14px}
+.chip{
+  font:inherit; font-size:12.5px; padding:4px 11px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--direct-soft); background:#fff; color:var(--direct); transition:.14s;
+}
+.chip:hover{background:var(--direct); color:#fff}
+.out{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px; margin-top:6px}
+.ocard{border:1px solid var(--line); border-radius:9px; background:#fff; padding:11px 13px; text-align:center}
+.ocard .k{font-size:11.5px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase; font-weight:700}
+.ocard .v{font-size:21px; font-weight:700; color:var(--direct); font-variant-numeric:tabular-nums; line-height:1.3; word-break:break-all}
+.ocard .u{font-size:12px; color:var(--ink-3)}
+.ocard.hi{background:var(--direct); border-color:var(--direct)}
+.ocard.hi .k{color:#b8d0e6} .ocard.hi .v{color:#fff} .ocard.hi .u{color:#b8d0e6}
+.err{color:var(--warn); font-size:13.5px; min-height:20px; margin-top:6px}
+
+/* ============ 练习 ============ */
+details.q{border:1px solid var(--line); border-radius:10px; background:#fff; margin:12px 0; overflow:hidden}
+details.q>summary{
+  cursor:pointer; padding:14px 18px; font-size:15.5px; font-weight:600;
+  list-style:none; display:flex; gap:11px; align-items:flex-start; transition:.14s;
+}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary:hover{background:#f8fafc}
+details.q>summary .qn{
+  flex:0 0 auto; width:24px; height:24px; border-radius:50%; background:var(--direct);
+  color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; margin-top:2px;
+  font-variant-numeric:tabular-nums;
+}
+details.q[open]>summary{border-bottom:1px solid var(--line-2); background:#f8fafc}
+details.q .ans{padding:15px 18px 18px 53px; font-size:15px; color:var(--ink-2); background:#fcfdfe}
+details.q .ans .fin{color:var(--warn); font-weight:700}
+
+/* ============ 参考文献 ============ */
+.refs{counter-reset:r; list-style:none; padding:0; margin:14px 0 0}
+.refs li{
+  counter-increment:r; position:relative; padding:9px 0 9px 42px;
+  border-bottom:1px dashed var(--line-2); font-size:14.5px; line-height:1.72;
+}
+.refs li:last-child{border-bottom:none}
+.refs li::before{
+  content:"[" counter(r) "]"; position:absolute; left:0; top:9px;
+  font-size:12.5px; color:var(--direct); font-weight:700; font-variant-numeric:tabular-nums;
+}
+.refs li em{font-style:normal; color:var(--ink-3)}
+.refs li .src{color:var(--ink-3); font-size:13px}
+.refs-cat{font-size:14px; font-weight:700; color:var(--ink); margin:26px 0 6px; padding:6px 0 6px 0; border-bottom:2px solid var(--line)}
+.refs-cat:first-of-type{margin-top:8px}
+.refs-cat span{color:var(--ink-3); font-weight:400; font-size:12.5px; margin-left:8px}
+
+/* ============ 封面 ============ */
+.cover{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:46px 46px 40px; margin-bottom:26px; position:relative; overflow:hidden;
+}
+.cover::after{
+  content:""; position:absolute; right:-80px; top:-80px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 70%,rgba(31,78,121,.09),rgba(26,111,90,.05) 55%,transparent 72%);
+}
+.cover .kicker{font-size:12.5px; letter-spacing:.2em; color:var(--indirect); font-weight:700; text-transform:uppercase}
+.cover h1{font-size:35px; margin:14px 0 4px; letter-spacing:.01em; line-height:1.32}
+.cover h1 .a{color:var(--direct)} .cover h1 .b{color:var(--indirect)}
+.cover .sub{font-size:16.5px; color:var(--ink-2); margin:12px 0 0; max-width:660px}
+.cover .meta{
+  margin-top:26px; padding-top:18px; border-top:1px solid var(--line);
+  display:flex; flex-wrap:wrap; gap:10px 26px; font-size:13.5px; color:var(--ink-3);
+}
+.cover .meta b{color:var(--ink-2); font-weight:600}
+.cover .tags{margin-top:20px}
+.academic-note{margin-top:18px; font-size:13px; color:var(--ink-3); line-height:1.7}
+
+footer{
+  max-width:1320px; margin:0 auto; padding:22px 24px 60px;
+  font-size:13px; color:var(--ink-3); border-top:1px solid var(--line);
+}
+
+/* ============ 响应式 ============ */
+@media (max-width:1000px){
+  .shell{grid-template-columns:1fr; gap:0}
+  .nav{position:static; max-height:none; border-bottom:1px solid var(--line); padding:14px 0 18px}
+  .nav a{display:inline-block; margin:0 6px 6px 0}
+  .grid2,.grid3{grid-template-columns:1fr}
+  section{padding:24px 20px 28px}
+  .cover{padding:32px 24px}
+  .cover h1{font-size:27px}
+  .topbar-sub{display:none}
+}
+@media (min-width:1001px) and (max-width:1200px){
+  .grid3{grid-template-columns:1fr 1fr}
+}
+
+/* ============ 打印 ============ */
+@media print{
+  :root{--bg:#fff}
+  body{font-size:11.5pt; background:#fff}
+  .topbar,.nav,.tool .chips,.topbar-actions,footer .noprint{display:none !important}
+  .shell{display:block; max-width:none; padding:0}
+  section,.cover{border:none; border-radius:0; padding:0 0 18px; margin:0 0 20px; break-inside:auto; box-shadow:none}
+  h2,h3{break-after:avoid}
+  table,.card,.note,.eq,details.q{break-inside:avoid}
+  details.q{display:block} details.q>summary{cursor:default} details.q .ans{display:block !important}
+  details.q:not([open]) .ans{display:block !important}
+  a{color:inherit; text-decoration:none}
+  .cover::after{display:none}
+  .refs li{break-inside:avoid}
+}
+
+
+/* ============ 本讲新增（通用组件） ============ */
+.fig{border:1px solid var(--line); border-radius:12px; background:#fff; padding:14px 16px 10px; margin:20px 0; overflow-x:auto}
+/* 默认按 SVG 自身尺寸居中显示；需要铺满可读宽度的图加 .wide */
+.fig svg{display:block; height:auto; max-width:100%; margin:0 auto}
+.fig.wide svg{width:100%; min-width:620px; margin:0}
+.figcap{font-size:13px; color:var(--ink-3); margin:8px 2px 4px; line-height:1.68}
+.figcap b{color:var(--ink-2)}
+.chain{display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; margin:18px 0}
+.chain .node{flex:1 1 158px; border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:#fcfdfe}
+.chain .node h5{margin:0 0 6px; font-size:14.5px; color:var(--direct)}
+.chain .node p{margin:0; font-size:13px; color:var(--ink-2); line-height:1.62}
+.chain .arw{display:flex; align-items:center; color:var(--ink-3); font-size:17px; padding:0 1px}
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0}
+.step{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fcfdfe; font-size:13.8px; line-height:1.62}
+.step .sn{display:inline-block; width:20px; height:20px; border-radius:50%; background:var(--direct); color:#fff; font-size:11.5px; text-align:center; line-height:20px; margin-right:6px; font-weight:700; vertical-align:1px}
+.pill{display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px; background:#f3f5f8; border:1px solid var(--line); color:var(--ink-2); margin:0 6px 6px 0; font-variant-numeric:tabular-nums}
+.hl{background:linear-gradient(transparent 61%, #fbeec0 61%); font-weight:600}
+.fml{font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.92em; color:#25476e; background:#f3f5f8; border:1px solid var(--line); border-radius:4px; padding:1px 5px; white-space:nowrap}
+.small{font-size:13px; color:var(--ink-3); line-height:1.68}
+.ansvg{margin:8px 0 14px; overflow-x:auto}
+.ansvg svg{display:block; width:100%; max-width:760px; height:auto; min-width:520px; margin:0 auto}
+input[type=range]{width:200px; accent-color:var(--direct); vertical-align:middle; margin-top:4px}
+.fld .rngv{font-variant-numeric:tabular-nums; font-weight:700; color:var(--direct)}
+
+/* ============ 投影增强模式 ============ */
+body.proj{font-size:19px}
+body.proj .topbar-title{font-size:16px}
+body.proj .topbar-sub{font-size:13.5px}
+body.proj section{padding:38px 44px 42px}
+body.proj h2{font-size:27px}
+body.proj h3{font-size:21px}
+body.proj h4{font-size:18px}
+body.proj .lead{font-size:17px}
+body.proj p{line-height:1.85}
+body.proj table{font-size:16px}
+body.proj thead th{font-size:15px}
+body.proj th,body.proj td{padding:11px 15px}
+body.proj .note{font-size:17px}
+body.proj .card{font-size:16.5px}
+body.proj .card h4{font-size:17px}
+body.proj details.q>summary{font-size:17px}
+body.proj details.q .ans{font-size:16.5px}
+body.proj .refs li{font-size:16px}
+body.proj .figcap{font-size:14.5px}
+body.proj .nav a{font-size:15px}
+body.proj .step{font-size:15.5px}
+body.proj .chain .node p{font-size:14.5px}
+
+/* ============ 符号图例 ============ */
+.legend{display:flex; flex-wrap:wrap; gap:10px 22px; align-items:center; font-size:14.5px; color:var(--ink-2); margin:12px 0 6px; padding:11px 14px; border:1px solid var(--line); border-radius:9px; background:#fbfcfe}
+.legend .it{display:flex; align-items:center; gap:8px}
+.legend .sw{width:19px; height:19px; border:1px solid #6b7a8d; display:inline-block; border-radius:2px}
+.legend .sw.blk{background:var(--ink)}
+.legend .sw.wht{background:#fff}
+
+/* ============ 数据表工具栏 ============ */
+.datatool{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; margin:14px 0 6px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:#fbfcfe}
+.datatool input[type=search]{font:inherit; font-size:14.5px; padding:8px 11px; border:1px solid var(--line); border-radius:8px; min-width:232px; background:#fff; color:var(--ink)}
+.datatool input[type=search]:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.datatool .cnt{font-size:12.5px; color:var(--ink-3); margin-left:auto; font-variant-numeric:tabular-nums; align-self:center}
+.datatool .chip.on{background:var(--direct); color:#fff; border-color:var(--direct)}
+th.sortable{cursor:pointer; user-select:none}
+th.sortable:hover{color:var(--ink)}
+th.sortable::after{content:" ⇅"; color:var(--ink-3); font-weight:400; font-size:11px}
+th.sortable.asc::after{content:" ▲"; color:var(--direct)}
+th.sortable.desc::after{content:" ▼"; color:var(--direct)}
+tbody tr.picked{background:#f2f7fc}
+tbody tr.picked:hover{background:#eaf2fa}
+
+/* ============ 对比卡 ============ */
+.cmp{margin-top:16px}
+.cmp .card h4{font-size:15.5px; display:flex; align-items:center; gap:8px}
+.cmp .card h4 .x{margin-left:auto; font-size:12px; color:var(--ink-3); font-weight:400; cursor:pointer}
+.cmp .kv{font-size:13.8px; line-height:1.72; margin:5px 0; padding-bottom:5px; border-bottom:1px dashed var(--line-2)}
+.cmp .kv:last-child{border-bottom:none}
+.cmp .kv b{color:var(--ink-3); font-weight:600; display:inline-block; min-width:5.2em}
+.cmp .empty{font-size:14px; color:var(--ink-3); padding:12px 2px}
+
+/* ============ 组织图绘制区 ============ */
+.draftwrap{overflow-x:auto; padding:4px 0 2px}
+.draftwrap svg{display:block; background:#fff; border-radius:6px}
+.coordnote{font-size:13px; color:var(--ink-3); margin:6px 2px}
+
+@media (max-width:1000px){ .grid4{grid-template-columns:1fr 1fr} }
+@media (max-width:640px){
+  .grid4{grid-template-columns:1fr}
+  .chain .arw{display:none}
+  .datatool input[type=search]{min-width:0; width:100%}
+  .datatool .cnt{margin-left:0}
+}
+
+/* ============ 打印（扩展） ============ */
+@media print{
+  body.proj{font-size:11.5pt}
+  .fig,.ansvg,.legend,.cmp,.draftwrap{break-inside:avoid}
+  .datatool,.onlyscreen{display:none !important}
+  /* 新版 Chrome 用 ::details-content 的 content-visibility 隐藏折叠内容，
+     必须显式放开，否则练习答案不会被打印出来 */
+  details::details-content{content-visibility:visible !important; display:block !important}
+  details.q .ans{display:block !important}
+  details.q>summary{cursor:default}
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-title">羊毛织物的分类</div>
+    <div class="topbar-sub">多重维度 · 精纺与粗纺 · 护理</div>
+    <div class="topbar-actions">
+      <button class="btn" id="btnProj" onclick="document.body.classList.toggle('proj')">投影增强</button>
+      <button class="btn" onclick="window.print()">打印 / 导出 PDF</button>
+      <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">回到顶部</button>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="pbar"></div></div>
+</div>
+
+<div class="shell">
+
+  <nav class="nav" id="nav">
+    <p class="nav-h">本讲目录</p>
+    <a href="#obj"><span class="n">01</span>学习目标</a>
+    <a href="#dims"><span class="n">02</span>分类的多重维度</a>
+    <a href="#spindle"><span class="n">03</span>精纺与粗纺</a>
+    <a href="#scale"><span class="n">04</span>鳞片层与缩绒性</a>
+    <a href="#fabrics"><span class="n">05</span>代表面料表</a>
+    <a href="#care"><span class="n">06</span>洗涤与保养</a>
+    <a href="#quiz"><span class="n">07</span>自测练习</a>
+    <a href="#summary"><span class="n">08</span>一页速记</a>
+    <a href="#ref"><span class="n">09</span>参考文献与标准</a>
+  </nav>
+
+  <main>
+
+  <!-- ========== 封面 ========== -->
+  <div class="cover" id="cover">
+    <div class="kicker">Textile Materials · 补充讲义</div>
+    <h1>羊毛织物的<span class="a">分类</span><br>多重维度 · 精纺与粗纺 · <span class="b">护理</span></h1>
+    <p class="sub">
+      「羊毛面料」不是一类，而是一族。同一批羊毛，精梳还是粗梳，出来的是完全两种性格的布；
+      而在精纺与粗纺之外，还有纤维来源、细度、品质支数与后整理四条并行的分法。
+      本讲把这五条线索一次理清，并落到最基本的一件事上——它该怎么洗。
+    </p>
+    <div class="tags">
+      <span class="tag d">纤维来源</span>
+      <span class="tag g">精纺 / 粗纺</span>
+      <span class="tag k">品质支数</span>
+      <span class="tag r">缩绒与护理</span>
+    </div>
+    <div class="meta">
+      <span><b>配套单元：</b>毛织物的品种与护理</span>
+      <span><b>授课：</b>梁帅童 · 上海工程技术大学纺织服装学院</span>
+      <span><b>适用对象：</b>纺织与服装类专业本科生</span>
+    </div>
+    <p class="academic-note">
+      本讲纤维细度对应的品质支数依美国农业部（USDA）羊毛分级标准与国际毛纺织组织（IWTO）
+      公布的换算关系；毛纺工艺的用毛长度与纱线线密度范围依毛纺行业通用工艺资料；
+      洗涤与护理符号依 GB/T 8685—2008《纺织品 维护标签规范 符号法》。完整出处见第 9 节。
+    </p>
+  </div>
+
+  <!-- ========== 01 学习目标 ========== -->
+  <section id="obj">
+    <h2><span class="num">01</span>学习目标</h2>
+    <p class="lead">「这是羊毛面料」只是第一句话。真正要能回答的是：哪一种羊毛、用什么纺法、什么整理、该怎么洗。</p>
+
+    <div class="grid3">
+      <div class="card d">
+        <h4>知识目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>说出羊毛分类的五条并行维度</li>
+          <li>说明精梳毛纺与粗梳毛纺在原料、流程、纱线结构上的根本差别</li>
+          <li>复述品质支数的定义，并说明支数与纤维细度的关系</li>
+          <li>解释羊毛为什么能够缩绒，以及为什么缩绒不可逆</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <h4>能力目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>由织物的外观、手感与克重，判断它属于精纺还是粗纺</li>
+          <li>见到「64 支全毛哔叽」这类规格串，能读懂其含义</li>
+          <li>针对一块羊毛面料，给出可执行的洗涤与保养建议</li>
+          <li>举例说明同一种面料名（如法兰绒、啥味呢）为何会横跨精粗两系</li>
+        </ul>
+      </div>
+      <div class="card r">
+        <h4>素养目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>认识到「分类不分对错，只看按哪把尺子」——口径先行</li>
+          <li>理解护理不当造成的毡缩是不可逆损伤，属使用责任</li>
+          <li>养成看洗标、看成分、看支数的消费习惯</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>本讲的知识链条</h3>
+    <div class="chain">
+      <div class="node"><h5>五条维度</h5><p>来源 · 细度长度 · 品质支数 · 纺纱系统 · 后整理。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>一个分水岭</h5><p>精梳去掉短毛、纱线光洁；粗梳保留短毛、纱线蓬松。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>一条机理</h5><p>鳞片层 → 定向摩擦效应 → 缩绒；一旦毡化不可逆。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>一个结论</h5><p>精纺可轻手洗，粗纺宜干洗、忌热水与搓揉。</p></div>
+    </div>
+  </section>
+
+  <!-- ========== 02 分类的多重维度 ========== -->
+  <section id="dims">
+    <h2><span class="num">02</span>分类的多重维度</h2>
+    <p class="lead">羊毛织物不是按一把尺子分的。把尺子认清楚，比背品种名有用得多。</p>
+
+    <p>
+      只讲「精纺 / 粗纺」，其实只占了一条线索。完整的分类至少还有四条并行的维度，
+      它们各自回答一个不同的问题：
+    </p>
+
+    <h3>维度一：按纤维来源</h3>
+    <p>「羊毛」严格说指绵羊毛。除此之外，来自其他动物的毛纤维统称<strong>特种动物毛</strong>，各有鲜明性格：</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:16%">纤维</th><th style="width:22%">英文</th><th>主要特点</th></tr></thead>
+        <tbody>
+          <tr><td><strong>绵羊毛</strong></td><td><code>wool</code></td><td>产量最大、用途最广；细度跨度极大（可从十几微米到四十微米以上）</td></tr>
+          <tr><td><strong>山羊绒</strong></td><td><code>cashmere</code></td><td>取自绒山羊的底层绒毛，极细（常在 14～16 μm）、轻软、保暖性极佳；产量稀少，价高</td></tr>
+          <tr><td><strong>马海毛</strong></td><td><code>mohair</code></td><td>取自安哥拉山羊，纤维长、光泽强、卷曲少，刚挺有骨感；不易毡缩</td></tr>
+          <tr><td><strong>羊驼毛</strong></td><td><code>alpaca</code></td><td>纤维长、强伸性好、光泽柔和；中空结构使其保暖而轻</td></tr>
+          <tr><td><strong>骆驼毛</strong></td><td><code>camel</code></td><td>有髓腔结构，保暖性好、质轻；多为驼色系</td></tr>
+          <tr><td><strong>兔毛</strong></td><td><code>angora rabbit</code></td><td>纤维极细而轻，蓬松、光泽柔和；抱合力差，常与羊毛或其他纤维混纺</td></tr>
+          <tr><td><strong>骆马毛</strong></td><td><code>vicuña</code></td><td>极细（常在 12～14 μm）、极轻暖；产量极少，属最昂贵的动物纤维之一</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">
+      阅读面料成分时要注意：<strong>「羊毛」与「羊绒」只差一个字，价格差好几倍</strong>，且纤维完全不同——
+      前者来自绵羊，后者来自绒山羊。国家标准要求纤维名称规范标注，成分标签是判断的第一依据。
+    </p>
+
+    <h3>维度二：按纤维细度与长度</h3>
+    <p>毛纺行业习惯把绵羊毛按<strong>平均直径</strong>与<strong>长度</strong>分成四档，这直接决定了它适合做什么：</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:18%">档次</th><th style="width:26%">平均直径（约）</th><th>典型用途</th></tr></thead>
+        <tbody>
+          <tr><td><strong>细羊毛</strong></td><td>25 μm 以下</td><td>高档服装面料、针织内衣、精纺西服料</td></tr>
+          <tr><td><strong>半细羊毛</strong></td><td>25～30 μm</td><td>精纺面料、毛衫、毯类</td></tr>
+          <tr><td><strong>长羊毛</strong></td><td>30～36 μm，长度较长</td><td>精纺哔叽、华达呢等要求身骨挺括的品种</td></tr>
+          <tr><td><strong>粗羊毛</strong></td><td>36 μm 以上</td><td>粗纺呢绒、地毯、工业用毯</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>维度三：按品质支数</h3>
+    <p>
+      <strong>品质支数</strong>（又称布拉福德支数，Bradford count）是毛纺行业沿用至今的一套间接指标，
+      它不是直接量纤维，而是用「能纺多细的纱」来反推纤维的粗细：
+    </p>
+    <div class="note d">
+      <span class="note-h">定义</span>
+      一磅（约 0.454 kg）洗净并梳理顺直的毛条（top），能纺出多少个 <strong>560 码（约 512 m）</strong>长的毛纱绞，
+      就是多少<strong>支</strong>。例如一磅毛条能纺出 64 绞，就是 64 支（写作 64s）。
+      <strong>支数越高，说明纤维越细、越能纺出细而长的纱</strong>。
+    </div>
+    <div class="tw">
+      <table>
+        <thead><tr><th>品质支数</th><th class="num">70s</th><th class="num">64s</th><th class="num">60s</th><th class="num">58s</th><th class="num">56s</th><th class="num">50s</th><th class="num">46s</th><th class="num">40s</th><th class="num">36s</th></tr></thead>
+        <tbody>
+          <tr><td>平均直径<br>（μm，约）</td><td class="num">19.2–20.6</td><td class="num">20.6–22.0</td><td class="num">23.5–24.9</td><td class="num">25.0–26.4</td><td class="num">26.4–27.8</td><td class="num">29.3–31.0</td><td class="num">32.7–34.4</td><td class="num">36.2–38.1</td><td class="num">38.1–40.2</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">
+      上表为美国农业部羊毛分级标准给出的区间（对应各品质支数）；国际毛纺织组织公布的换算值略作简化
+      （如 64s 对应约 21 μm、60s 约 23 μm）。<strong>支数与直径一一对应、方向相反</strong>：支数越大，直径越小，品质越高。
+      支数范围大致在 28s（很粗）到 70s（极细）之间。
+    </p>
+
+    <h3>维度四：按纺纱系统 —— 精纺与粗纺</h3>
+    <p>
+      这是影响成品性格最大的一条线索，也是本讲第 3 节的主题。
+      一句话概括：<strong>精梳去掉短纤维、把长纤维梳直；粗梳保留长短纤维、让它们交错蓬松。</strong>
+    </p>
+
+    <h3>维度五：按后整理</h3>
+    <div class="grid4">
+      <div class="step"><span class="sn">1</span><strong>缩绒整理</strong><br>利用羊毛的缩绒性使呢面紧密、绒面丰润。麦尔登、海军呢的关键工序。</div>
+      <div class="step"><span class="sn">2</span><strong>起绒 / 拉毛</strong><br>机械拉出纤维端头形成绒毛。法兰绒、大衣呢的标志性整理。</div>
+      <div class="step"><span class="sn">3</span><strong>防缩（机可洗）</strong><br>通过剥鳞片、树脂覆盖等方式抑制缩绒，使产品可机洗。注意：防缩处理会改变手感。</div>
+      <div class="step"><span class="sn">4</span><strong>压烫 / 电压</strong><br>使呢面平整、光泽增强。精纺毛织物常用，用于获得「呢面洁净」的外观。</div>
+    </div>
+    <div class="note k">
+      <span class="note-h">为什么必须先说清「哪把尺子」</span>
+      你会在不同资料里看到互相矛盾的说法——「法兰绒是粗纺」与「法兰绒是精纺」都对，
+      因为<strong>精纺法兰绒</strong>与<strong>粗纺法兰绒（绒面法兰绒）</strong>是两类实际存在的产品；
+      「啥味呢」在中国精纺毛织品的标准品种序列中在列，而英文 Cheviot 在英文语境下又常指粗纺厚呢。
+      <strong>不是谁错了，是口径不同。</strong>回答问题时先说口径，再下结论。
+    </div>
+  </section>
+
+  <!-- ========== 03 精纺与粗纺 ========== -->
+  <section id="spindle">
+    <h2><span class="num">03</span>精纺与粗纺</h2>
+    <p class="lead">同一批羊毛，精梳还是粗梳，出来的是两种性格完全不同的布。</p>
+
+    <h3>全套对照</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:20%">特征维度</th><th style="width:40%">精纺羊毛（精梳毛纺）</th><th>粗纺羊毛（粗梳毛纺）</th></tr></thead>
+        <tbody>
+          <tr><td><strong>工艺核心</strong></td><td>精梳：剔除短纤维，使长纤维平行顺直</td><td>粗梳：保留所有长短纤维，使其交错蓬松</td></tr>
+          <tr><td><strong>所用原料</strong></td><td>长而直的优质羊毛</td><td>较短或卷曲的羊毛，也可用精梳下脚毛、回毛</td></tr>
+          <tr><td><strong>用毛长度</strong></td><td class="num">一般 55～60 mm 以上</td><td class="num">一般 20～60 mm</td></tr>
+          <tr><td><strong>纺纱流程</strong></td><td>流程长：梳毛→多次针梳→精梳→粗纱→细纱</td><td>流程短：和毛加油→梳毛→细纱</td></tr>
+          <tr><td><strong>成品纱线</strong></td><td>纱线细、光滑、紧实；纤维排列平顺</td><td>纱线粗、蓬松、毛茸茸，含空气多；纤维排列紊乱</td></tr>
+          <tr><td><strong>纱线线密度</strong></td><td class="num">约 10～33 tex（30～100 公支）</td><td class="num">约 50 tex 以上（20 公支以下）</td></tr>
+          <tr><td><strong>捻度</strong></td><td>较高，纱线光洁紧实</td><td>较低，纱线蓬松、表面茸毛多</td></tr>
+          <tr><td><strong>面料外观</strong></td><td>织纹清晰可见，表面光洁平整，有丝绸般光泽</td><td>表面有绒毛，纹理模糊，外观质朴，呈哑光效果</td></tr>
+          <tr><td><strong>面料手感</strong></td><td>光滑、坚实、挺括、有弹性</td><td>柔软、蓬松、丰厚、温暖</td></tr>
+          <tr><td><strong>耐用性能</strong></td><td>更耐用，抗皱性好，不易起球</td><td>相对易磨损、易起球</td></tr>
+          <tr><td><strong>织物克重</strong></td><td class="num">约 100～380 g/m²</td><td class="num">约 180～840 g/m²</td></tr>
+          <tr><td><strong>主要整理</strong></td><td>烧毛、压烫（电压），追求呢面洁净</td><td>缩绒、起毛，追求绒面丰润</td></tr>
+          <tr><td><strong>设计理念</strong></td><td>「精英」路线：追求精致、利落、耐久</td><td>「自然」路线：追求温暖、舒适、质感</td></tr>
+          <tr><td><strong>代表面料</strong></td><td>哔叽、华达呢、凡立丁、派力司、啥味呢、马裤呢、巧克丁、贡呢、驼丝锦、花呢、女衣呢</td>
+              <td>制服呢、海军呢、麦尔登、大衣呢、法兰绒、粗花呢</td></tr>
+          <tr><td><strong>主要适用季节</strong></td><td>春、夏、秋（主导）</td><td>秋、冬（主导）</td></tr>
+          <tr><td><strong>总结场景</strong></td><td>正式商务、办公室、夏季、需要利落线条的场合</td><td>休闲、户外、冬季、追求舒适与复古风格的场合</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">
+      说明：表中克重区间存在重叠（180～380 g/m² 两者皆有），这是实际情况——
+      轻薄的粗纺花呢与厚重的精纺大衣呢确实存在交叠，
+      <strong>因此不能只凭克重判断精粗纺，必须结合外观（有无绒毛、织纹是否清晰）与手感一起看</strong>。
+    </p>
+
+    <h3>现场判断三步法</h3>
+    <div class="grid3">
+      <div class="card d">
+        <h4>第一步：看织纹</h4>
+        <p><strong>织纹清晰、能看到斜纹线或清晰的组织点</strong> → 偏精纺；
+          <strong>表面有绒毛、纹理模糊、看不出组织</strong> → 偏粗纺。</p>
+      </div>
+      <div class="card g">
+        <h4>第二步：摸手感</h4>
+        <p><strong>滑爽、挺括、有身骨、回弹快</strong> → 偏精纺；
+          <strong>丰满、蓬松、柔软、有暖感</strong> → 偏粗纺。</p>
+      </div>
+      <div class="card k">
+        <h4>第三步：看整理</h4>
+        <p><strong>呢面洁净、有压烫的光泽</strong> → 偏精纺；
+          <strong>表面有缩绒或起毛形成的绒面</strong> → 偏粗纺。</p>
+      </div>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">一句话记住分水岭</span>
+      <strong>精梳拿走「短」，粗梳留下「乱」。</strong>
+      短纤维被拿走 → 纱线必须细而光洁；长短纤维混在一起 → 纱线必然蓬松而毛茸。
+      后续所有差别——外观、手感、耐用性、季节——都是这一步的连锁反应。
+    </div>
+  </section>
+
+  <!-- ========== 04 鳞片层与缩绒性 ========== -->
+  <section id="scale">
+    <h2><span class="num">04</span>鳞片层与缩绒性</h2>
+    <p class="lead">羊毛能做成丰厚的呢面，靠的是它；羊毛衣物洗坏，也是栽在它手上。</p>
+
+    <h3>羊毛纤维的三层结构</h3>
+    <div class="grid3">
+      <div class="card d">
+        <h4>鳞片层（表皮层）</h4>
+        <p>最外层，由角质化的扁平细胞像<strong>瓦片一样叠覆</strong>而成。
+          它的<strong>自由端统一指向毛梢</strong>（纤维的尖端方向），是羊毛缩绒性的结构根源。</p>
+      </div>
+      <div class="card g">
+        <h4>皮质层</h4>
+        <p>纤维的主体，由纺锤形细胞沿纤维轴向排列，决定羊毛的<strong>强度、伸长与弹性</strong>。
+          细羊毛的皮质层还分为正、偏皮质两侧，形成天然卷曲。</p>
+      </div>
+      <div class="card k">
+        <h4>髓质层</h4>
+        <p>位于中心的疏松多孔结构，含空气。<strong>细羊毛常无髓质层，粗羊毛多有</strong>，
+          髓质层会降低强度与弹性，但提高保暖性。</p>
+      </div>
+    </div>
+
+    <div class="fig wide">
+      <svg viewBox="0 0 660 240" role="img" aria-label="羊毛鳞片层的定向摩擦效应示意">
+        <rect x="0" y="0" width="660" height="240" fill="#ffffff"/>
+        <!-- 纤维主体 -->
+        <rect x="60" y="86" width="540" height="52" rx="6" fill="#eef4fa" stroke="#1f4e79" stroke-width="1.4"/>
+        <!-- 鳞片（锯齿，自由端指向右＝毛梢） -->
+        <g fill="#c8d8e8" stroke="#1f4e79" stroke-width="1">
+          <path d="M60 86 L104 86 L104 62 L60 86 Z"/>
+          <path d="M124 86 L168 86 L168 62 L124 86 Z"/>
+          <path d="M188 86 L232 86 L232 62 L188 86 Z"/>
+          <path d="M252 86 L296 86 L296 62 L252 86 Z"/>
+          <path d="M316 86 L360 86 L360 62 L316 86 Z"/>
+          <path d="M380 86 L424 86 L424 62 L380 86 Z"/>
+          <path d="M444 86 L488 86 L488 62 L444 86 Z"/>
+          <path d="M508 86 L552 86 L552 62 L508 86 Z"/>
+        </g>
+        <text x="330" y="55" text-anchor="middle" font-size="12.5" fill="#1f4e79">鳞片自由端统一指向「毛梢」</text>
+        <text x="46" y="78" text-anchor="end" font-size="12" fill="#6b7a8d">毛根</text>
+        <text x="612" y="78" text-anchor="start" font-size="12" fill="#6b7a8d">毛梢</text>
+        <!-- 摩擦对比 -->
+        <g font-size="12.5" fill="#455468">
+          <text x="60" y="176">纤维向<tspan fill="#1a6f5a" font-weight="700">毛根方向</tspan>滑动：鳞片顺伏 → 摩擦系数小，容易滑动</text>
+          <text x="60" y="210">纤维向<tspan fill="#b5342a" font-weight="700">毛梢方向</tspan>滑动：鳞片张开互卡 → 摩擦系数大，滑动受阻</text>
+        </g>
+        <g stroke="#1a6f5a" stroke-width="2.4" fill="none" marker-end="url(#arwG)">
+          <line x1="612" y1="168" x2="470" y2="168"/>
+        </g>
+        <g stroke="#b5342a" stroke-width="2.4" fill="none" marker-end="url(#arwR)">
+          <line x1="470" y1="202" x2="612" y2="202"/>
+        </g>
+        <defs>
+          <marker id="arwG" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 z" fill="#1a6f5a"/>
+          </marker>
+          <marker id="arwR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 z" fill="#b5342a"/>
+          </marker>
+        </defs>
+      </svg>
+      <p class="figcap"><b>图 4-1</b>　鳞片层的方向性与定向摩擦效应。两个方向的摩擦系数不同，
+        使纤维在反复的机械作用下只能<strong>单向地向毛根方向蠕动</strong>，彼此穿插缠结——
+        这就是缩绒（毡化）的机理。</p>
+    </div>
+
+    <h3>定向摩擦效应：缩绒的机理</h3>
+    <p>
+      羊毛鳞片层方向一致，使纤维在两个方向上的摩擦系数不相等，这一现象称为
+      <strong>定向摩擦效应</strong>（也称差微摩擦效应）。它带来一个关键后果：
+    </p>
+    <div class="note d">
+      <span class="note-h">从摩擦差异到缩绒</span>
+      在<strong>湿热（水、热、蒸汽）</strong>与<strong>机械外力（搓揉、搅动、冲击）</strong>共同作用下，
+      纤维不断被推挤，却只能<strong>单向蠕动、无法回退</strong>；
+      于是纤维相互穿插、缠结、纠缠成团，纤维端头互相锁住，织物<strong>收缩、增厚、变硬</strong>。
+      这一过程称为<strong>缩绒</strong>；当缠结致密到纤维无法再移动时，就形成<strong>毡化</strong>。
+    </div>
+    <p class="small">
+      术语提示：不同教材对「顺鳞片／逆鳞片」的命名取向略有差异。
+      判断时以结果为准——<strong>摩擦系数小者容易滑动，大者滑动受阻</strong>，不必纠结于名称。
+    </p>
+
+    <h3>缩绒的两面性</h3>
+    <div class="grid2">
+      <div class="card g">
+        <h4>被利用的一面：整理工艺</h4>
+        <ul>
+          <li><strong>缩绒整理</strong>使呢面紧密、绒面丰润、手感丰厚——麦尔登、海军呢、大衣呢的关键工序；</li>
+          <li>毛衫洗后因轻微缩绒而更丰满，这是可接受的变化；</li>
+          <li>缩绒还能提高织物的紧度与保暖性、掩盖织纹。</li>
+        </ul>
+      </div>
+      <div class="card r">
+        <h4>被利用的另一面：使用事故</h4>
+        <ul>
+          <li>热水 + 搓揉 + 碱性洗涤剂 → <strong>严重毡缩</strong>：衣服缩小一两号、变硬板结；</li>
+          <li>毡化<strong>不可逆</strong>——纤维已互相锁死，无法通过任何洗护手段恢复；</li>
+          <li>烘干、滚筒搅拌同样会加剧缩绒，是常见的第二重损伤。</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>为什么防缩处理能机洗</h3>
+    <p>既然缩绒源于鳞片层，防缩的思路就是「拆掉或盖住它」：</p>
+    <div class="grid3">
+      <div class="card d">
+        <h4>剥鳞片法</h4>
+        <p>用氧化剂或酶处理，部分剥除或钝化鳞片边缘，使两个方向的摩擦差异大幅减小。</p>
+      </div>
+      <div class="card g">
+        <h4>树脂覆盖法</h4>
+        <p>用聚合物在纤维表面形成薄膜，把鳞片「抹平」并使其牢固，从而抑制单向蠕动。</p>
+      </div>
+      <div class="card k">
+        <h4>混纺与设备</h4>
+        <p>混入不缩绒纤维降低整体缩绒倾向；或采用专门的羊毛程序（低温柔和、低水位、弱机械）。</p>
+      </div>
+    </div>
+    <div class="note k">
+      <span class="note-h">一个常被忽略的代价</span>
+      防缩处理会<strong>改变手感</strong>——剥鳞片法容易造成纤维损伤与手感偏硬，
+      树脂覆盖则可能影响吸湿透气与光泽。<strong>因此「可机洗」并不等同于「更好」</strong>：
+      高档精纺面料往往保留天然鳞片、不防缩，以换取更好的手感与光泽，代价是必须干洗或极轻柔手洗。
+    </div>
+  </section>
+
+  <!-- ========== 05 代表面料表 ========== -->
+  <section id="fabrics">
+    <h2><span class="num">05</span>代表面料表</h2>
+    <p class="lead">可搜索、可按纺纱系统与季节筛选、可点表头排序，也可勾选两三种并排比较。</p>
+
+    <div class="datatool">
+      <div class="fld">
+        <label for="wf-q">搜索（名称 / 特征 / 用途 / 英文）</label>
+        <input type="search" id="wf-q" placeholder="如：法兰绒、flannel、大衣">
+      </div>
+      <div class="fld">
+        <label>按纺纱系统</label>
+        <div class="chips" style="margin:0" id="wf-spin">
+          <button class="chip on" type="button" data-spin="all">全部</button>
+          <button class="chip" type="button" data-spin="精纺">精纺</button>
+          <button class="chip" type="button" data-spin="粗纺">粗纺</button>
+        </div>
+      </div>
+      <div class="fld">
+        <label>按主要季节</label>
+        <div class="chips" style="margin:0" id="wf-season">
+          <button class="chip on" type="button" data-season="all">全部</button>
+          <button class="chip" type="button" data-season="春夏">春夏</button>
+          <button class="chip" type="button" data-season="春秋">春秋</button>
+          <button class="chip" type="button" data-season="秋冬">秋冬</button>
+          <button class="chip" type="button" data-season="四季">四季</button>
+        </div>
+      </div>
+      <span class="cnt" id="wf-cnt"></span>
+    </div>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:34px"></th>
+            <th class="sortable" data-sort="name" style="width:152px">面料名称</th>
+            <th class="sortable" data-sort="en" style="width:150px">英文名</th>
+            <th class="sortable" data-sort="spin" style="width:74px">纺纱系统</th>
+            <th>主要特征</th>
+            <th style="width:132px">手感</th>
+            <th style="width:152px">常见用途</th>
+            <th class="sortable" data-sort="season" style="width:76px">适用季节</th>
+            <th class="sortable" data-sort="gsm" style="width:110px">参考克重</th>
+          </tr>
+        </thead>
+        <tbody id="wf-body"></tbody>
+      </table>
+    </div>
+    <p class="small">
+      参考克重为行业常见范围（g/m²），仅供选料时估算之用，具体以产品规格单为准。
+      毛织物品种的英文名多为行业惯用译名，不同资料间存在出入，对外文件宜同时标注中文品名与规格。
+    </p>
+
+    <div class="cmp" id="wf-cmp"></div>
+  </section>
+
+  <!-- ========== 06 洗涤与保养 ========== -->
+  <section id="care">
+    <h2><span class="num">06</span>洗涤与保养</h2>
+    <p class="lead">这一节是前面所有机理的落点：知道它为什么会坏，才知道该怎么洗。</p>
+
+    <h3>先看两条铁律</h3>
+    <div class="grid2">
+      <div class="card r">
+        <h4>① 高温 + 机械 + 碱性 = 毡缩</h4>
+        <p>这三者凑齐，缩绒几乎必然发生，而且<strong>不可逆</strong>。
+          因此羊毛洗涤的核心不是「洗干净」，而是<strong>避免这三者同时出现</strong>：
+          用低温（30 ℃ 以下）、少搅动（不搓揉、不拧绞）、中性洗涤剂。</p>
+      </div>
+      <div class="card d">
+        <h4>② 洗标优先于一切经验</h4>
+        <p>护理符号依 <strong>GB/T 8685—2008</strong> 的规定标注，是产品生产方对该件衣物的正式承诺。
+          特别是防缩处理（机可洗）产品，其可承受的洗涤强度与普通羊毛完全不同——
+          <strong>先看洗标，再决定怎么洗</strong>。</p>
+      </div>
+    </div>
+
+    <h3>精纺与粗纺的护理差异</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:18%">项目</th><th style="width:41%">精纺羊毛（哔叽 · 华达呢 · 凡立丁）</th><th>粗纺羊毛（麦尔登 · 法兰绒 · 粗花呢）</th></tr></thead>
+        <tbody>
+          <tr><td><strong>首选方式</strong></td><td>干洗；轻度污渍可低温轻柔手洗</td><td><strong>建议干洗</strong>（缩绒整理的产品尤其如此）</td></tr>
+          <tr><td><strong>水洗风险</strong></td><td>中等：结构紧密，不易立刻毡缩，但反复搓揉与热水仍会损坏</td><td>较高：本身已缩绒，绒面纤维疏松，极易进一步毡缩、板结</td></tr>
+          <tr><td><strong>水温</strong></td><td>≤ 30 ℃，冷热水须一致（防止温差导致纤维收缩）</td><td>≤ 30 ℃，最好用冷水</td></tr>
+          <tr><td><strong>洗涤剂</strong></td><td>中性或专用羊毛洗涤剂，忌碱性洗衣粉与含酶产品</td><td>中性或专用羊毛洗涤剂</td></tr>
+          <tr><td><strong>手法</strong></td><td>按压式轻柔洗涤，<strong>不搓揉、不拧绞</strong>；可用毛巾吸去水分</td><td>极轻按压，<strong>不搓揉、不刷洗</strong>；绒面尤其怕摩擦</td></tr>
+          <tr><td><strong>脱水</strong></td><td>低速短时脱水或毛巾压吸，勿高速甩干</td><td>建议不脱水，用毛巾卷压吸水</td></tr>
+          <tr><td><strong>晾晒</strong></td><td>平铺阴干、整形至原尺寸；忌悬挂（易拉长变形）、忌暴晒</td><td>平铺阴干、整形；忌悬挂、忌暴晒</td></tr>
+          <tr><td><strong>熨烫</strong></td><td>中低温蒸汽熨烫，垫布或反面熨；忌高温直压</td><td>低温蒸汽，垫布熨烫；绒面宜用蒸汽悬烫，避免压塌绒毛</td></tr>
+          <tr><td><strong>存放</strong></td><td>洗净晾干后平叠存放，放防虫剂，避免长期悬挂</td><td>同左；绒面面料避免长期重压，以防绒面倒伏</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>特种动物毛的额外注意</h3>
+    <div class="grid3">
+      <div class="card d">
+        <h4>山羊绒</h4>
+        <p>纤维极细、强度较低，<strong>最忌搓揉与拧绞</strong>；建议干洗或专用羊绒洗涤剂冷水手洗，
+          平铺阴干，绝不可机洗甩干。</p>
+      </div>
+      <div class="card g">
+        <h4>马海毛</h4>
+        <p>鳞片不明显、<strong>不易毡缩</strong>，但纤维刚挺，受压易失去蓬松感；
+          洗涤后宜轻抖整形，避免重压。</p>
+      </div>
+      <div class="card k">
+        <h4>羊驼毛 / 兔毛</h4>
+        <p>羊驼毛强度较好但仍宜干洗；兔毛纤维抱合力差、易掉毛，
+          应用冷水极轻手洗或干洗，避免摩擦。</p>
+      </div>
+    </div>
+
+    <h3>四个最常见的护理错误</h3>
+    <div class="grid4">
+      <div class="step"><span class="sn">1</span><strong>热水泡洗</strong><br>以为热水能去污，结果触发缩绒。羊毛只认冷水或 30 ℃ 以下温水。</div>
+      <div class="step"><span class="sn">2</span><strong>搓揉与拧绞</strong><br>机械外力是缩绒的另一个必要条件。应改为按压。</div>
+      <div class="step"><span class="sn">3</span><strong>洗衣机常规程序与烘干</strong><br>除非洗标明确标注机可洗，否则普通程序与烘干都会造成开裂与毡缩。</div>
+      <div class="step"><span class="sn">4</span><strong>悬挂晾干</strong><br>湿态羊毛自重会使衣物拉长变形，且难以恢复。必须平铺。</div>
+    </div>
+
+    <div class="note r">
+      <span class="note-h">如果已经洗坏了</span>
+      若发生毡缩、尺寸明显变小且手感变硬板结，属<strong>不可逆损伤</strong>——
+      纤维已互相锁死，任何柔顺剂、蒸汽或拉伸都无法复原。
+      可尝试的补救仅限于「整形到略大尺寸后平铺定型」，用于轻微变形；
+      严重毡缩只能改作其他用途。<strong>预防的成本远低于补救。</strong>
+    </div>
+  </section>
+
+  <!-- ========== 07 自测练习 ========== -->
+  <section id="quiz">
+    <h2><span class="num">07</span>自测练习</h2>
+    <p class="lead">先自己回答，再点开对照。答不上来的，回到对应那一节。</p>
+
+    <details class="q">
+      <summary><span class="qn">1</span>精纺与粗纺最根本的差别是什么？由哪一步工艺造成？</summary>
+      <div class="ans">
+        <p>最根本的差别在于<strong>原料中是否保留短纤维</strong>，由<strong>是否经过精梳工序</strong>造成。</p>
+        <p><strong>精纺（精梳毛纺）</strong>：经精梳机剔除短纤维与杂质，留下的长纤维被反复针梳拉直、
+          平行顺直，因此毛纱中纤维排列整齐、结构紧密、外观光洁，可纺得较细的纱。</p>
+        <p><strong>粗纺（粗梳毛纺）</strong>：不经精梳，长短纤维全部保留，只能靠梳毛机开松分条，
+          因此纤维排列紊乱、呈自然弯曲相互捻合，毛纱蓬松、表面多茸毛，纱较粗。</p>
+        <p class="small">后面所有差别——外观、手感、耐用性、适用季节、克重——都是这一步的直接后果。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">2</span>「64 支全毛哔叽」里的「64 支」是什么意思？它反映的是纤维的什么性质？</summary>
+      <div class="ans">
+        <p>「64 支」指羊毛的<strong>品质支数</strong>（布拉福德支数）为 64s。</p>
+        <p>定义：一磅（约 0.454 kg）洗净并梳理顺直的毛条，能纺出多少个 560 码（约 512 m）长的毛纱绞，
+          就是多少支。能纺出 64 绞即 64 支。</p>
+        <p>它间接反映的是<strong>纤维的平均直径</strong>：<span class="fin">64 支对应的平均直径约为 21 μm 左右
+          （USDA 标准给出的区间为 20.6～22.0 μm）</span>。支数越高，纤维越细。</p>
+        <p class="small">「全毛」表示经纬全部为羊毛（含与其他动物毛混纺或纯纺的情况按标准口径处理），
+          与支数一起构成规格串「原料 + 支数 + 品名」。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">3</span>为什么羊毛衫用热水加碱性洗衣粉搓洗后会缩小、变硬？请按机理顺序说明。</summary>
+      <div class="ans">
+        <ol>
+          <li><strong>结构前提</strong>：羊毛纤维外层是鳞片层，鳞片的自由端统一指向毛梢。</li>
+          <li><strong>定向摩擦效应</strong>：纤维向毛根方向滑动时鳞片顺伏、摩擦系数小；
+            向毛梢方向滑动时鳞片张开互卡、摩擦系数大。两个方向不相等。</li>
+          <li><strong>触发条件</strong>：热水使纤维吸湿膨润、变得柔软易变形；碱性洗涤剂进一步加剧膨润并损伤纤维；
+            搓揉提供了持续的机械外力。</li>
+          <li><strong>结果</strong>：纤维被反复推挤，却只能单向蠕动、无法回退，于是相互穿插缠结、
+            端头互相锁住，织物收缩增厚、手感板结。</li>
+          <li><strong>不可逆</strong>：纤维已互相锁死，属于<strong>毡化</strong>，
+            任何柔顺剂或拉伸都无法恢复原状。</li>
+        </ol>
+        <p class="small">要点：<span class="fin">湿热 + 机械外力 + 碱性，三者同时出现才会严重毡缩</span>。
+          洗羊毛的正确做法就是拆掉其中至少两个条件。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">4</span>麦尔登与凡立丁各属于精纺还是粗纺？分别写出两条判断依据。</summary>
+      <div class="ans">
+        <p><strong>麦尔登 → 粗纺。</strong></p>
+        <ul>
+          <li>外观：经缩绒整理，绒毛密实、<strong>看不见织纹</strong>；</li>
+          <li>手感：厚实、硬挺、温暖，克重大（常见 400 g/m² 以上）。</li>
+        </ul>
+        <p><strong>凡立丁 → 精纺。</strong></p>
+        <ul>
+          <li>外观：平纹、结构疏松、呢面光洁，<strong>织纹清晰可辨</strong>；</li>
+          <li>手感：轻薄、光滑、透气，克重小（常见 150～220 g/m²）。</li>
+        </ul>
+        <p class="small">对比要点：一个是「绒面看不出纹」，一个是「光面看得清纹」。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">5</span>为什么「法兰绒」既可以算精纺、也可以算粗纺？遇到这种说法该怎么处理？</summary>
+      <div class="ans">
+        <p>因为现实中<strong>确实存在两类法兰绒</strong>：</p>
+        <ul>
+          <li><strong>精纺法兰绒</strong>（worsted flannel）：以精梳毛纱织制，表面有轻微绒面、织纹仍可辨认，
+            手感细洁而有身骨，多用于西装、西裤；</li>
+          <li><strong>粗纺法兰绒（绒面法兰绒）</strong>（woolen flannel）：以粗梳毛纱织制并经拉绒整理，
+            绒毛丰富、织纹模糊，手感柔软蓬松，多用于衬衫、家居服。</li>
+        </ul>
+        <p><strong>处理办法</strong>：不要争论「到底属于哪一系」，而是<strong>先明确口径</strong>——
+          是指哪一类产品、依据什么标准或习惯分类。<span class="fin">分类没有绝对对错，只有口径是否说清。</span></p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">6</span>「啥味呢」应归入哪一系？它在中文里是什么性质的名称？</summary>
+      <div class="ans">
+        <p>按中国毛纺行业的品种序列，「啥味呢」属于<strong>精纺毛织品</strong>的正式品种名之一
+          （精纺毛织品常见品种包括哔叽、华达呢、凡立丁、派力司、啥味呢、花呢、女衣呢等）。</p>
+        <p><strong>「啥味呢」是中文行业惯用的品种名，而不是英文译名。</strong>
+          其英文对应词为 <strong>Cheviot</strong>，而 Cheviot 在英文语境中既可指粗纺缩绒厚呢，
+          也可指精纺基础上的缩绒产品（worsted cheviot，可译作「精纺缩绒粗呢」）。</p>
+        <p class="small">因此处理办法是：<strong>中文品名照用「啥味呢」，同时把「精纺缩绒粗呢」单列</strong>，
+          说明两者所指与英文对应关系，而不是简单地把它改归粗纺。遇到译名与归属存疑的品种，
+          宜标注清楚所指口径，避免一刀切。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">7</span>一件山羊绒衫洗后缩小、变硬了，还能恢复吗？为什么？</summary>
+      <div class="ans">
+        <p><strong>不能恢复。</strong>这属于<strong>不可逆的毡化损伤</strong>。</p>
+        <p>原因与羊毛相同：鳞片层带来的定向摩擦效应，使纤维在湿热与机械作用下单向蠕动、
+          相互缠结并锁死。缠结一旦致密，纤维之间的相对位置就被固定，无法再解开。</p>
+        <p>山羊绒纤维更细、更柔软，缩绒倾向明显，因此损伤往往比普通羊毛更快、更严重。
+          <span class="fin">唯一的办法是预防：冷水、中性洗涤剂、按压式洗涤、平铺阴干。</span></p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">8</span>请为一件粗纺粗花呢大衣给出一条可执行的洗涤建议，并说明理由。</summary>
+      <div class="ans">
+        <p><strong>建议：优先送干洗。</strong></p>
+        <p>理由有三条：</p>
+        <ol>
+          <li>粗花呢以粗梳毛纱织制，表面绒毛多、结构相对疏松，
+            纤维的<strong>可移动性大</strong>，一旦遇湿热与机械作用很容易进一步毡缩；</li>
+          <li>粗纺产品多已经过缩绒或起绒整理，尺寸与绒面已「定型」，
+            再经水洗易发生<strong>尺寸变化与绒面倒伏</strong>；</li>
+          <li>大衣体积大、克重大，家庭水洗时的自重与搅动都难以控制，
+            湿态悬挂还会把衣身拉长变形。</li>
+        </ol>
+        <p class="small">若仅局部沾污，可先用微湿的白布轻按吸除，避免大面积浸水；
+          送洗前务必把洗标上的护理符号看清楚（依 GB/T 8685—2008）。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 08 一页速记 ========== -->
+  <section id="summary">
+    <h2><span class="num">08</span>一页速记</h2>
+    <p class="lead">五条维度、一个分水岭、一条机理、一套护理。</p>
+
+    <div class="grid2">
+      <div class="card d">
+        <h4>五条并行维度</h4>
+        <ol style="margin:6px 0 0; padding-left:20px">
+          <li><strong>纤维来源</strong>：绵羊毛 / 山羊绒 / 马海毛 / 羊驼毛 / 骆驼毛 / 兔毛 / 骆马毛</li>
+          <li><strong>细度与长度</strong>：细毛 / 半细毛 / 长毛 / 粗毛</li>
+          <li><strong>品质支数</strong>：28s ～ 70s，支数越大纤维越细</li>
+          <li><strong>纺纱系统</strong>：精纺 / 粗纺 ← 影响最大的一条</li>
+          <li><strong>后整理</strong>：缩绒 / 起绒拉毛 / 防缩 / 压烫</li>
+        </ol>
+      </div>
+      <div class="card g">
+        <h4>精纺 vs 粗纺 · 关键数字</h4>
+        <div class="tw" style="margin:8px 0 0">
+          <table>
+            <thead><tr><th>项目</th><th>精纺</th><th>粗纺</th></tr></thead>
+            <tbody>
+              <tr><td>用毛长度</td><td class="num">≥ 55～60 mm</td><td class="num">20～60 mm</td></tr>
+              <tr><td>纱线线密度</td><td class="num">10～33 tex</td><td class="num">≥ 50 tex</td></tr>
+              <tr><td>织物克重</td><td class="num">100～380 g/m²</td><td class="num">180～840 g/m²</td></tr>
+              <tr><td>织纹</td><td>清晰可见</td><td>模糊、有绒毛</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:8px">克重区间有重叠，<strong>不能只凭克重判断</strong>。</p>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card k">
+        <h4>品质支数与直径（约）</h4>
+        <p style="margin:6px 0 0" class="fml" >70s ≈ 19–21 μm（极细）<br>64s ≈ 21–22 μm<br>60s ≈ 23–25 μm<br>56s ≈ 26–28 μm<br>50s ≈ 29–31 μm<br>46s ≈ 33–34 μm<br>40s ≈ 36–38 μm</p>
+        <p class="small" style="margin-top:6px">方向相反：支数 ↑ → 直径 ↓。</p>
+      </div>
+      <div class="card r">
+        <h4>缩绒：三要素与结果</h4>
+        <ul style="margin:6px 0 0">
+          <li><strong>结构前提</strong>：鳞片层自由端指向毛梢</li>
+          <li><strong>机理</strong>：定向摩擦效应 → 纤维单向向毛根蠕动 → 缠结锁死</li>
+          <li><strong>触发</strong>：湿热 + 机械外力 + 碱性</li>
+          <li><strong>结果</strong>：收缩、增厚、变硬；<strong>不可逆</strong></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>护理四原则</h4>
+        <ol style="margin:6px 0 0; padding-left:20px">
+          <li><strong>先看洗标</strong>（GB/T 8685—2008 符号）</li>
+          <li><strong>低温</strong>：≤ 30 ℃，冷热一致</li>
+          <li><strong>中性洗涤剂</strong>：忌碱性、忌含酶</li>
+          <li><strong>按压不搓揉、不拧绞</strong>；平铺阴干、忌悬挂暴晒</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">一句话串起本讲</span>
+      <strong>鳞片决定了它为什么会缩；精梳还是粗梳决定了它成什么样；洗标决定了你该怎么对待它。</strong>
+      三者串起来，就是羊毛织物从纤维到衣橱的完整链条。
+    </div>
+  </section>
+
+  <!-- ========== 09 参考文献 ========== -->
+  <section id="ref">
+    <h2><span class="num">09</span>参考文献与标准</h2>
+    <p class="lead">标准号与名称可直接引用；教材的版次与年份请以版权页为准。</p>
+
+    <p class="refs-cat">一、国家标准<span>护理符号、成分标识与术语依据</span></p>
+    <ol class="refs">
+      <li>GB/T 8685—2008 纺织品 维护标签规范 符号法. <em>（羊毛护理符号的依据）</em></li>
+      <li>GB/T 29862—2013 纺织品 纤维含量的标识. <em>（「羊毛」「羊绒」等纤维名称标注的依据）</em></li>
+      <li>GB/T 3291.1—1997 纺织 纺织材料性能和试验术语 第 1 部分：纤维和纱线.</li>
+      <li>GB/T 9994—2018 纺织材料公定回潮率.</li>
+      <li>FZ/T 01035—2014 纺织品 标示线密度的通用制（特克斯制）.</li>
+    </ol>
+
+    <p class="refs-cat">二、羊毛分级与纤维细度<span>品质支数与平均直径换算的依据</span></p>
+    <ol class="refs">
+      <li>United States Department of Agriculture (USDA). United States Standards for Grades of Wool. Effective December 21, 1968. <span class="src">美国官方羊毛分级标准，给出各品质支数对应的平均直径与标准差区间</span></li>
+      <li>International Wool Textile Organisation (IWTO). 品质支数与纤维直径换算关系. <span class="src">国际毛纺织组织公布；与 USDA 区间略有差别，属正常口径差异</span></li>
+    </ol>
+
+    <p class="refs-cat">三、教材<span>术语体系本讲衔接</span></p>
+    <ol class="refs">
+      <li>姚穆 主编. 纺织材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>于伟东 主编. 纺织材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>王革辉 主编. 服装材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+    </ol>
+
+    <p class="refs-cat">四、行业技术资料<span>毛纺工艺参数与品种序列</span></p>
+    <ol class="refs">
+      <li>毛织物（wool fabric）、呢绒特点、分类. <span class="src">毛纺织行业技术资料（用毛长度与毛纱线密度范围）</span></li>
+      <li>服用呢绒及仿毛化纤织物. <span class="src">纺织行业技术资料（精纺、粗纺呢绒的种类划分与克重范围）</span></li>
+    </ol>
+
+    <div class="note d">
+      <span class="note-h">关于本页表格与数据</span>
+      第 5 节的面料表由页面内数据实时渲染，可搜索、筛选、排序与并排对比，不依赖任何外部资源。
+      参考克重为行业常见范围，仅供估算；具体产品请以规格单与洗标为准。
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <p style="margin:0 0 6px">羊毛织物的分类 · 精粗纺分类与特种动物毛 ｜ 配套单元：毛织物的品种与护理</p>
+  <p style="margin:0 0 6px">授课：梁帅童 · 上海工程技术大学纺织服装学院</p>
+  <p style="margin:0; color:#8a949f">本页为零外链单文件课件，表格与示意图均由页面脚本或内联 SVG 呈现，断网亦可正常使用。</p>
+</footer>
+
+<script>
+/* ================= 阅读进度 ================= */
+(function(){
+  var bar = document.getElementById('pbar');
+  function upd(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    if (bar) bar.style.width = Math.max(0, Math.min(100, p)) + '%';
+  }
+  window.addEventListener('scroll', upd, {passive:true});
+  window.addEventListener('resize', upd);
+  upd();
+})();
+
+/* ================= 导航高亮 ================= */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var map = {};
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) map[id] = a;
+  });
+  var ids = Object.keys(map);
+  var secs = ids.map(function(id){ return document.getElementById(id); });
+  function setOn(id){
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (map[id]) map[id].classList.add('on');
+  }
+  var raf = null;
+  function sync(){
+    var y = window.scrollY + 150, cur = ids[0];
+    for (var i = 0; i < secs.length; i++){
+      if (secs[i].offsetTop <= y) cur = ids[i];
+    }
+    setOn(cur);
+  }
+  function onScroll(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = null; sync(); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('load', sync);
+  sync();
+})();
+
+/* ================= 打印时自动展开练习答案 ================= */
+(function(){
+  var saved = [];
+  window.addEventListener('beforeprint', function(){
+    saved = [];
+    Array.prototype.forEach.call(document.querySelectorAll('details'), function(d){
+      saved.push([d, d.open]);
+      d.open = true;
+    });
+  });
+  window.addEventListener('afterprint', function(){
+    saved.forEach(function(p){ p[0].open = p[1]; });
+    saved = [];
+  });
+})();
+</script>
+
+<script>
+/* ================= 羊毛面料数据 ================= */
+var WOOL_FABRICS = [
+  { name:'麦尔登', en:'Melton', spin:'粗纺', season:'秋冬', gsm:400, gsmText:'约 400～600',
+    feat:'厚重，经缩绒整理，绒毛密实，看不见织纹',
+    feel:'厚实、硬挺、温暖', use:'冬季大衣、制服' },
+  { name:'精纺法兰绒', en:'Worsted flannel', spin:'精纺', season:'春秋', gsm:220, gsmText:'约 220～330',
+    feat:'斜纹或平纹，呢面有轻微绒面，织纹仍可辨认',
+    feel:'柔软、细洁、有身骨', use:'西装、西裤、女装' },
+  { name:'粗纺法兰绒（绒面法兰绒）', en:'Woolen flannel', spin:'粗纺', season:'秋冬', gsm:250, gsmText:'约 250～450',
+    feat:'经拉绒整理，表面绒毛丰富，织纹模糊',
+    feel:'柔软、蓬松、温暖', use:'衬衫、睡衣、家居服' },
+  { name:'粗花呢', en:'Tweed', spin:'粗纺', season:'秋冬', gsm:300, gsmText:'约 300～550',
+    feat:'常用杂色纱线，纹理鲜明，多为斜纹或人字纹',
+    feel:'硬挺、粗糙、耐磨、有毛感', use:'户外夹克、休闲西装、大衣' },
+  { name:'啥味呢', en:'Cheviot', spin:'精纺', season:'春秋', gsm:220, gsmText:'约 220～320',
+    feat:'呢面有轻微绒面，混色效果好，织纹隐约可见；在中文中是精纺毛织品的正式品种名',
+    feel:'挺括、柔软、有弹性', use:'西装、长裤、女装' },
+  { name:'精纺缩绒粗呢', en:'Worsted cheviot', spin:'精纺', season:'秋冬', gsm:280, gsmText:'约 280～400',
+    feat:'在精纺基础上施加缩绒整理，呢面紧密、绒面明显，兼具精纺的骨感与粗纺的暖感',
+    feel:'紧实、温暖、有身骨', use:'外套、冬季西装' },
+  { name:'凡立丁', en:'Tropical suiting（亦作 Tropical / Panama）', spin:'精纺', season:'春夏', gsm:150, gsmText:'约 150～220',
+    feat:'平纹，结构疏松，呢面光洁，透气性好',
+    feel:'轻薄、光滑、透气', use:'夏季西装、西裤' },
+  { name:'哔叽', en:'Serge', spin:'精纺', season:'四季', gsm:220, gsmText:'约 220～330',
+    feat:'斜纹织法，纹路清晰，呢面洁净，紧度适中',
+    feel:'平滑、坚实、耐用', use:'西装、制服、大衣' },
+  { name:'华达呢', en:'Gabardine', spin:'精纺', season:'春秋', gsm:250, gsmText:'约 250～380',
+    feat:'多为 2/2 斜纹，纹路清晰立体，紧度较大',
+    feel:'挺括、致密、耐磨', use:'风衣、雨衣、春秋西装' }
+];
+
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var body = $('wf-body'), cnt = $('wf-cnt'), cmp = $('wf-cmp'), qEl = $('wf-q');
+  var spinWrap = $('wf-spin'), seasonWrap = $('wf-season');
+  var spin = 'all', season = 'all', sortKey = null, sortDir = 1;
+  var picked = [];
+
+  function esc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function filtered(){
+    var q = (qEl.value || '').trim().toLowerCase();
+    var rows = WOOL_FABRICS.filter(function(r){
+      if (spin !== 'all' && r.spin !== spin) return false;
+      if (season !== 'all' && r.season !== season) return false;
+      if (!q) return true;
+      return [r.name, r.en, r.spin, r.season, r.feat, r.feel, r.use].join(' ').toLowerCase().indexOf(q) >= 0;
+    });
+    if (sortKey){
+      rows = rows.slice().sort(function(a, b){
+        var x = a[sortKey], y = b[sortKey];
+        if (typeof x === 'number' && typeof y === 'number') return (x - y) * sortDir;
+        x = String(x); y = String(y);
+        return (x > y ? 1 : x < y ? -1 : 0) * sortDir;
+      });
+    }
+    return rows;
+  }
+
+  function renderTable(){
+    var rows = filtered(), html = '';
+    rows.forEach(function(r){
+      var on = picked.indexOf(r.name) >= 0;
+      html += '<tr' + (on ? ' class="picked"' : '') + '>' +
+        '<td class="tc"><input type="checkbox" data-pick="' + esc(r.name) + '"' + (on ? ' checked' : '') + '></td>' +
+        '<td><strong>' + esc(r.name) + '</strong></td>' +
+        '<td><code>' + esc(r.en) + '</code></td>' +
+        '<td>' + (r.spin === '精纺' ? '<span class="tag d">精纺</span>' : '<span class="tag g">粗纺</span>') + '</td>' +
+        '<td>' + esc(r.feat) + '</td>' +
+        '<td>' + esc(r.feel) + '</td>' +
+        '<td>' + esc(r.use) + '</td>' +
+        '<td class="tc">' + esc(r.season) + '</td>' +
+        '<td class="num">' + esc(r.gsmText) + '</td>' +
+        '</tr>';
+    });
+    body.innerHTML = html || '<tr><td colspan="9" class="tc small" style="padding:22px">没有匹配的条目，请调整搜索词或筛选项。</td></tr>';
+    cnt.textContent = '显示 ' + rows.length + ' / ' + WOOL_FABRICS.length + ' 种';
+    Array.prototype.forEach.call(body.querySelectorAll('input[data-pick]'), function(cb){
+      cb.addEventListener('change', function(){
+        var k = cb.getAttribute('data-pick');
+        var i = picked.indexOf(k);
+        if (cb.checked){
+          if (picked.length >= 3){ cb.checked = false; return; }
+          if (i < 0) picked.push(k);
+        } else if (i >= 0){
+          picked.splice(i, 1);
+        }
+        renderTable(); renderCmp();
+      });
+    });
+  }
+
+  function renderCmp(){
+    if (picked.length < 2){
+      cmp.innerHTML = '<p class="empty">勾选左侧方框选择 2～3 种面料，这里会并排显示它们的特征、手感、用途与克重，便于选料时对照。</p>';
+      return;
+    }
+    var cols = picked.map(function(n){
+      for (var i = 0; i < WOOL_FABRICS.length; i++) if (WOOL_FABRICS[i].name === n) return WOOL_FABRICS[i];
+      return null;
+    }).filter(Boolean);
+    var html = '<div class="grid' + (cols.length === 3 ? '3' : '2') + '">';
+    cols.forEach(function(r){
+      html += '<div class="card ' + (r.spin === '精纺' ? 'd' : 'g') + '">' +
+        '<h4>' + esc(r.name) + '<span class="x" data-unpick="' + esc(r.name) + '">移除</span></h4>' +
+        '<div class="kv"><b>英文名</b><code>' + esc(r.en) + '</code></div>' +
+        '<div class="kv"><b>纺纱系统</b>' + esc(r.spin) + '</div>' +
+        '<div class="kv"><b>主要特征</b>' + esc(r.feat) + '</div>' +
+        '<div class="kv"><b>手感</b>' + esc(r.feel) + '</div>' +
+        '<div class="kv"><b>常见用途</b>' + esc(r.use) + '</div>' +
+        '<div class="kv"><b>适用季节</b>' + esc(r.season) + '</div>' +
+        '<div class="kv"><b>参考克重</b>' + esc(r.gsmText) + ' g/m²</div>' +
+        '</div>';
+    });
+    html += '</div>';
+    cmp.innerHTML = html;
+    Array.prototype.forEach.call(cmp.querySelectorAll('[data-unpick]'), function(b){
+      b.addEventListener('click', function(){
+        var i = picked.indexOf(b.getAttribute('data-unpick'));
+        if (i >= 0) picked.splice(i, 1);
+        renderTable(); renderCmp();
+      });
+    });
+  }
+
+  qEl.addEventListener('input', renderTable);
+
+  Array.prototype.forEach.call(spinWrap.querySelectorAll('.chip'), function(b){
+    b.addEventListener('click', function(){
+      spin = b.getAttribute('data-spin');
+      Array.prototype.forEach.call(spinWrap.querySelectorAll('.chip'), function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      renderTable();
+    });
+  });
+  Array.prototype.forEach.call(seasonWrap.querySelectorAll('.chip'), function(b){
+    b.addEventListener('click', function(){
+      season = b.getAttribute('data-season');
+      Array.prototype.forEach.call(seasonWrap.querySelectorAll('.chip'), function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      renderTable();
+    });
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('th.sortable'), function(th){
+    th.addEventListener('click', function(){
+      var k = th.getAttribute('data-sort');
+      if (sortKey === k){ sortDir = -sortDir; } else { sortKey = k; sortDir = 1; }
+      Array.prototype.forEach.call(document.querySelectorAll('th.sortable'), function(x){
+        x.classList.remove('asc'); x.classList.remove('desc');
+      });
+      th.classList.add(sortDir > 0 ? 'asc' : 'desc');
+      renderTable();
+    });
+  });
+
+  renderTable();
+  renderCmp();
+})();
+</script>
+</body>
+</html>
