@@ -1,0 +1,1502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>丝织物的分类 — 课堂讲义</title>
+<style>
+
+:root{
+  --ink:#1c2733;
+  --ink-2:#455468;
+  --ink-3:#6b7a8d;
+  --line:#dde3ea;
+  --line-2:#eef1f5;
+  --bg:#f2f4f7;
+  --paper:#ffffff;
+
+  --direct:#1f4e79;      /* 定长制 蓝 */
+  --direct-bg:#eef4fa;
+  --direct-soft:#c8d8e8;
+
+  --indirect:#1a6f5a;    /* 定重制 绿 */
+  --indirect-bg:#ecf6f2;
+  --indirect-soft:#bfe0d5;
+
+  --warn:#b5342a;        /* 重点/警示 红 */
+  --warn-bg:#fdf1ef;
+
+  --gold:#8a6d1f;        /* 常数 金 */
+  --gold-bg:#fdf8ec;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:96px}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+  font-size:17px;
+  line-height:1.78;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ 顶部条 ============ */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1320px; margin:0 auto; padding:10px 24px;
+  display:flex; align-items:center; gap:16px;
+}
+.topbar-title{font-size:15px; font-weight:700; letter-spacing:.02em; color:var(--direct)}
+.topbar-sub{font-size:12.5px; color:var(--ink-3); border-left:1px solid var(--line); padding-left:14px}
+.topbar-actions{margin-left:auto; display:flex; gap:8px}
+.btn{
+  font:inherit; font-size:12.5px; padding:5px 13px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-2);
+  cursor:pointer; transition:.16s;
+}
+.btn:hover{border-color:var(--direct); color:var(--direct); background:var(--direct-bg)}
+a.btn{text-decoration:none; display:inline-flex; align-items:center; gap:5px; line-height:1.5}
+a.btn.back{border-color:var(--direct); color:var(--direct); background:var(--direct-bg); font-weight:700}
+a.btn.back:hover{background:var(--direct); color:#fff}
+@media (max-width:640px){ .topbar-actions{flex-wrap:wrap} }
+.progress{height:3px; background:var(--line-2)}
+.progress-bar{height:100%; width:0; background:linear-gradient(90deg,var(--direct),var(--indirect)); transition:width .1s linear}
+
+/* ============ 布局 ============ */
+.shell{max-width:1320px; margin:0 auto; padding:0 24px 80px; display:grid; grid-template-columns:236px 1fr; gap:36px; align-items:start}
+
+/* ============ 侧栏导航 ============ */
+.nav{position:sticky; top:74px; padding:22px 0; max-height:calc(100vh - 90px); overflow-y:auto}
+.nav-h{font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; margin:0 0 10px 12px}
+.nav a{
+  display:block; font-size:14px; color:var(--ink-2); text-decoration:none;
+  padding:7px 12px; border-radius:8px; border-left:2px solid transparent;
+  transition:.14s; line-height:1.45;
+}
+.nav a:hover{background:#fff; color:var(--direct)}
+.nav a.on{background:#fff; color:var(--direct); font-weight:600; border-left-color:var(--direct); box-shadow:0 1px 3px rgba(31,78,121,.09)}
+.nav a .n{display:inline-block; width:20px; color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:12px}
+.nav a.on .n{color:var(--direct)}
+
+/* ============ 正文 ============ */
+main{min-width:0; padding-top:26px}
+section{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:32px 38px 36px; margin-bottom:26px; scroll-margin-top:96px;
+}
+h2{
+  font-size:23px; margin:0 0 6px; letter-spacing:.01em; line-height:1.4;
+  display:flex; align-items:baseline; gap:12px;
+}
+h2 .num{
+  font-size:13px; font-weight:700; color:#fff; background:var(--direct);
+  border-radius:6px; padding:2px 9px; letter-spacing:.04em; position:relative; top:-2px;
+  font-variant-numeric:tabular-nums;
+}
+h2.g .num{background:var(--indirect)}
+h2.r .num{background:var(--warn)}
+h2.k .num{background:var(--gold)}
+.lead{color:var(--ink-2); font-size:15.5px; margin:0 0 24px; padding-bottom:16px; border-bottom:1px dashed var(--line)}
+h3{font-size:18px; margin:30px 0 10px; color:var(--direct); letter-spacing:.01em}
+h3.g{color:var(--indirect)}
+h3::before{content:""; display:inline-block; width:4px; height:15px; background:currentColor; border-radius:2px; margin-right:9px; position:relative; top:1px}
+h4{font-size:16px; margin:22px 0 8px; color:var(--ink)}
+p{margin:10px 0}
+ul,ol{margin:10px 0; padding-left:24px}
+li{margin:6px 0}
+strong{color:var(--ink); font-weight:700}
+code{
+  font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.88em;
+  background:#f3f5f8; border:1px solid var(--line); border-radius:4px;
+  padding:1px 5px; color:#25476e;
+}
+
+/* ============ 公式 ============ */
+.eq{
+  display:block; margin:16px 0; padding:15px 20px;
+  background:#f8fafc; border:1px solid var(--line); border-left:3px solid var(--direct);
+  border-radius:8px; font-size:16.5px; line-height:2.1; overflow-x:auto;
+}
+.eq.g{border-left-color:var(--indirect)}
+.eq.k{border-left-color:var(--gold)}
+.eq .lbl{font-size:12.5px; color:var(--ink-3); margin-left:10px}
+.frac{display:inline-block; vertical-align:-0.55em; text-align:center; font-size:.86em; line-height:1.18; margin:0 .18em}
+.frac .num{display:block; border-bottom:1.2px solid currentColor; padding:0 .3em}
+.frac .den{display:block; padding:0 .3em}
+.big{font-size:20px; font-weight:700; color:var(--direct)}
+.big.g{color:var(--indirect)}
+
+/* ============ 表格 ============ */
+.tw{overflow-x:auto; margin:16px 0; border:1px solid var(--line); border-radius:10px}
+table{border-collapse:collapse; width:100%; font-size:14.5px; background:#fff}
+th,td{padding:9px 13px; text-align:left; border-bottom:1px solid var(--line-2); vertical-align:top}
+thead th{
+  background:#f6f8fb; font-weight:700; font-size:13.5px; color:var(--direct);
+  border-bottom:1px solid var(--line); white-space:nowrap; position:sticky; top:0;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafcfe}
+td.num,th.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+.tc{text-align:center}
+caption{caption-side:top; text-align:left; font-size:13px; color:var(--ink-3); padding:10px 13px 8px; background:#fff}
+
+/* ============ 卡片/提示 ============ */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:#fcfdfe}
+.card h4{margin:0 0 8px; font-size:15.5px}
+.card p:last-child{margin-bottom:0}
+.card.d{border-color:var(--direct-soft); background:var(--direct-bg)}
+.card.g{border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.card.k{border-color:#ecdcb0; background:var(--gold-bg)}
+.card.r{border-color:#f0cfca; background:var(--warn-bg)}
+
+.note{
+  border-radius:10px; padding:14px 18px; margin:18px 0; font-size:15.5px;
+  border:1px solid var(--line); background:#f8fafc;
+}
+.note.d{border-left:3px solid var(--direct); background:var(--direct-bg)}
+.note.g{border-left:3px solid var(--indirect); background:var(--indirect-bg)}
+.note.k{border-left:3px solid var(--gold); background:var(--gold-bg)}
+.note.r{border-left:3px solid var(--warn); background:var(--warn-bg)}
+.note-h{font-weight:700; font-size:14px; letter-spacing:.03em; margin-bottom:5px; display:block}
+.note.d .note-h{color:var(--direct)}
+.note.g .note-h{color:var(--indirect)}
+.note.k .note-h{color:var(--gold)}
+.note.r .note-h{color:var(--warn)}
+
+.tag{
+  display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-3); margin:0 5px 5px 0;
+  font-variant-numeric:tabular-nums;
+}
+.tag.d{color:var(--direct); border-color:var(--direct-soft); background:var(--direct-bg)}
+.tag.g{color:var(--indirect); border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.tag.r{color:var(--warn); border-color:#f0cfca; background:var(--warn-bg)}
+
+.kbd-f{font-family:"SF Mono",Menlo,monospace; font-size:14px; background:#fff; border:1px solid var(--line); border-radius:6px; padding:3px 8px}
+
+/* ============ 交互工具 ============ */
+.tool{border:1px solid var(--direct-soft); border-radius:12px; background:linear-gradient(180deg,#f7fafd,#fff); padding:20px 22px; margin:20px 0}
+.tool-h{font-size:15px; font-weight:700; color:var(--direct); margin:0 0 14px; display:flex; align-items:center; gap:8px}
+.tool-h::before{content:"▸"; color:var(--direct)}
+.tool-h.g{color:var(--indirect)} .tool-h.g::before{color:var(--indirect)}
+.frow{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:14px}
+.fld{display:flex; flex-direction:column; gap:5px}
+.fld label{font-size:12.5px; color:var(--ink-3); font-weight:600; letter-spacing:.02em}
+input[type=number],select{
+  font:inherit; font-size:15px; padding:8px 11px; border:1px solid var(--line);
+  border-radius:8px; background:#fff; color:var(--ink); min-width:118px;
+  font-variant-numeric:tabular-nums;
+}
+input[type=number]:focus,select:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.chips{display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 14px}
+.chip{
+  font:inherit; font-size:12.5px; padding:4px 11px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--direct-soft); background:#fff; color:var(--direct); transition:.14s;
+}
+.chip:hover{background:var(--direct); color:#fff}
+.out{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px; margin-top:6px}
+.ocard{border:1px solid var(--line); border-radius:9px; background:#fff; padding:11px 13px; text-align:center}
+.ocard .k{font-size:11.5px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase; font-weight:700}
+.ocard .v{font-size:21px; font-weight:700; color:var(--direct); font-variant-numeric:tabular-nums; line-height:1.3; word-break:break-all}
+.ocard .u{font-size:12px; color:var(--ink-3)}
+.ocard.hi{background:var(--direct); border-color:var(--direct)}
+.ocard.hi .k{color:#b8d0e6} .ocard.hi .v{color:#fff} .ocard.hi .u{color:#b8d0e6}
+.err{color:var(--warn); font-size:13.5px; min-height:20px; margin-top:6px}
+
+/* ============ 练习 ============ */
+details.q{border:1px solid var(--line); border-radius:10px; background:#fff; margin:12px 0; overflow:hidden}
+details.q>summary{
+  cursor:pointer; padding:14px 18px; font-size:15.5px; font-weight:600;
+  list-style:none; display:flex; gap:11px; align-items:flex-start; transition:.14s;
+}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary:hover{background:#f8fafc}
+details.q>summary .qn{
+  flex:0 0 auto; width:24px; height:24px; border-radius:50%; background:var(--direct);
+  color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; margin-top:2px;
+  font-variant-numeric:tabular-nums;
+}
+details.q[open]>summary{border-bottom:1px solid var(--line-2); background:#f8fafc}
+details.q .ans{padding:15px 18px 18px 53px; font-size:15px; color:var(--ink-2); background:#fcfdfe}
+details.q .ans .fin{color:var(--warn); font-weight:700}
+
+/* ============ 参考文献 ============ */
+.refs{counter-reset:r; list-style:none; padding:0; margin:14px 0 0}
+.refs li{
+  counter-increment:r; position:relative; padding:9px 0 9px 42px;
+  border-bottom:1px dashed var(--line-2); font-size:14.5px; line-height:1.72;
+}
+.refs li:last-child{border-bottom:none}
+.refs li::before{
+  content:"[" counter(r) "]"; position:absolute; left:0; top:9px;
+  font-size:12.5px; color:var(--direct); font-weight:700; font-variant-numeric:tabular-nums;
+}
+.refs li em{font-style:normal; color:var(--ink-3)}
+.refs li .src{color:var(--ink-3); font-size:13px}
+.refs-cat{font-size:14px; font-weight:700; color:var(--ink); margin:26px 0 6px; padding:6px 0 6px 0; border-bottom:2px solid var(--line)}
+.refs-cat:first-of-type{margin-top:8px}
+.refs-cat span{color:var(--ink-3); font-weight:400; font-size:12.5px; margin-left:8px}
+
+/* ============ 封面 ============ */
+.cover{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:46px 46px 40px; margin-bottom:26px; position:relative; overflow:hidden;
+}
+.cover::after{
+  content:""; position:absolute; right:-80px; top:-80px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 70%,rgba(31,78,121,.09),rgba(26,111,90,.05) 55%,transparent 72%);
+}
+.cover .kicker{font-size:12.5px; letter-spacing:.2em; color:var(--indirect); font-weight:700; text-transform:uppercase}
+.cover h1{font-size:35px; margin:14px 0 4px; letter-spacing:.01em; line-height:1.32}
+.cover h1 .a{color:var(--direct)} .cover h1 .b{color:var(--indirect)}
+.cover .sub{font-size:16.5px; color:var(--ink-2); margin:12px 0 0; max-width:660px}
+.cover .meta{
+  margin-top:26px; padding-top:18px; border-top:1px solid var(--line);
+  display:flex; flex-wrap:wrap; gap:10px 26px; font-size:13.5px; color:var(--ink-3);
+}
+.cover .meta b{color:var(--ink-2); font-weight:600}
+.cover .tags{margin-top:20px}
+.academic-note{margin-top:18px; font-size:13px; color:var(--ink-3); line-height:1.7}
+
+footer{
+  max-width:1320px; margin:0 auto; padding:22px 24px 60px;
+  font-size:13px; color:var(--ink-3); border-top:1px solid var(--line);
+}
+
+/* ============ 响应式 ============ */
+@media (max-width:1000px){
+  .shell{grid-template-columns:1fr; gap:0}
+  .nav{position:static; max-height:none; border-bottom:1px solid var(--line); padding:14px 0 18px}
+  .nav a{display:inline-block; margin:0 6px 6px 0}
+  .grid2,.grid3{grid-template-columns:1fr}
+  section{padding:24px 20px 28px}
+  .cover{padding:32px 24px}
+  .cover h1{font-size:27px}
+  .topbar-sub{display:none}
+}
+@media (min-width:1001px) and (max-width:1200px){
+  .grid3{grid-template-columns:1fr 1fr}
+}
+
+/* ============ 打印 ============ */
+@media print{
+  :root{--bg:#fff}
+  body{font-size:11.5pt; background:#fff}
+  .topbar,.nav,.tool .chips,.topbar-actions,footer .noprint{display:none !important}
+  .shell{display:block; max-width:none; padding:0}
+  section,.cover{border:none; border-radius:0; padding:0 0 18px; margin:0 0 20px; break-inside:auto; box-shadow:none}
+  h2,h3{break-after:avoid}
+  table,.card,.note,.eq,details.q{break-inside:avoid}
+  details.q{display:block} details.q>summary{cursor:default} details.q .ans{display:block !important}
+  details.q:not([open]) .ans{display:block !important}
+  a{color:inherit; text-decoration:none}
+  .cover::after{display:none}
+  .refs li{break-inside:avoid}
+}
+
+
+/* ============ 本讲新增（通用组件） ============ */
+.fig{border:1px solid var(--line); border-radius:12px; background:#fff; padding:14px 16px 10px; margin:20px 0; overflow-x:auto}
+/* 默认按 SVG 自身尺寸居中显示；需要铺满可读宽度的图加 .wide */
+.fig svg{display:block; height:auto; max-width:100%; margin:0 auto}
+.fig.wide svg{width:100%; min-width:620px; margin:0}
+.figcap{font-size:13px; color:var(--ink-3); margin:8px 2px 4px; line-height:1.68}
+.figcap b{color:var(--ink-2)}
+.chain{display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; margin:18px 0}
+.chain .node{flex:1 1 158px; border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:#fcfdfe}
+.chain .node h5{margin:0 0 6px; font-size:14.5px; color:var(--direct)}
+.chain .node p{margin:0; font-size:13px; color:var(--ink-2); line-height:1.62}
+.chain .arw{display:flex; align-items:center; color:var(--ink-3); font-size:17px; padding:0 1px}
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0}
+.step{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fcfdfe; font-size:13.8px; line-height:1.62}
+.step .sn{display:inline-block; width:20px; height:20px; border-radius:50%; background:var(--direct); color:#fff; font-size:11.5px; text-align:center; line-height:20px; margin-right:6px; font-weight:700; vertical-align:1px}
+.pill{display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px; background:#f3f5f8; border:1px solid var(--line); color:var(--ink-2); margin:0 6px 6px 0; font-variant-numeric:tabular-nums}
+.hl{background:linear-gradient(transparent 61%, #fbeec0 61%); font-weight:600}
+.fml{font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.92em; color:#25476e; background:#f3f5f8; border:1px solid var(--line); border-radius:4px; padding:1px 5px; white-space:nowrap}
+.small{font-size:13px; color:var(--ink-3); line-height:1.68}
+.ansvg{margin:8px 0 14px; overflow-x:auto}
+.ansvg svg{display:block; width:100%; max-width:760px; height:auto; min-width:520px; margin:0 auto}
+input[type=range]{width:200px; accent-color:var(--direct); vertical-align:middle; margin-top:4px}
+.fld .rngv{font-variant-numeric:tabular-nums; font-weight:700; color:var(--direct)}
+
+/* ============ 投影增强模式 ============ */
+body.proj{font-size:19px}
+body.proj .topbar-title{font-size:16px}
+body.proj .topbar-sub{font-size:13.5px}
+body.proj section{padding:38px 44px 42px}
+body.proj h2{font-size:27px}
+body.proj h3{font-size:21px}
+body.proj h4{font-size:18px}
+body.proj .lead{font-size:17px}
+body.proj p{line-height:1.85}
+body.proj table{font-size:16px}
+body.proj thead th{font-size:15px}
+body.proj th,body.proj td{padding:11px 15px}
+body.proj .note{font-size:17px}
+body.proj .card{font-size:16.5px}
+body.proj .card h4{font-size:17px}
+body.proj details.q>summary{font-size:17px}
+body.proj details.q .ans{font-size:16.5px}
+body.proj .refs li{font-size:16px}
+body.proj .figcap{font-size:14.5px}
+body.proj .nav a{font-size:15px}
+body.proj .step{font-size:15.5px}
+body.proj .chain .node p{font-size:14.5px}
+
+/* ============ 符号图例 ============ */
+.legend{display:flex; flex-wrap:wrap; gap:10px 22px; align-items:center; font-size:14.5px; color:var(--ink-2); margin:12px 0 6px; padding:11px 14px; border:1px solid var(--line); border-radius:9px; background:#fbfcfe}
+.legend .it{display:flex; align-items:center; gap:8px}
+.legend .sw{width:19px; height:19px; border:1px solid #6b7a8d; display:inline-block; border-radius:2px}
+.legend .sw.blk{background:var(--ink)}
+.legend .sw.wht{background:#fff}
+
+/* ============ 数据表工具栏 ============ */
+.datatool{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; margin:14px 0 6px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:#fbfcfe}
+.datatool input[type=search]{font:inherit; font-size:14.5px; padding:8px 11px; border:1px solid var(--line); border-radius:8px; min-width:232px; background:#fff; color:var(--ink)}
+.datatool input[type=search]:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.datatool .cnt{font-size:12.5px; color:var(--ink-3); margin-left:auto; font-variant-numeric:tabular-nums; align-self:center}
+.datatool .chip.on{background:var(--direct); color:#fff; border-color:var(--direct)}
+th.sortable{cursor:pointer; user-select:none}
+th.sortable:hover{color:var(--ink)}
+th.sortable::after{content:" ⇅"; color:var(--ink-3); font-weight:400; font-size:11px}
+th.sortable.asc::after{content:" ▲"; color:var(--direct)}
+th.sortable.desc::after{content:" ▼"; color:var(--direct)}
+tbody tr.picked{background:#f2f7fc}
+tbody tr.picked:hover{background:#eaf2fa}
+
+/* ============ 对比卡 ============ */
+.cmp{margin-top:16px}
+.cmp .card h4{font-size:15.5px; display:flex; align-items:center; gap:8px}
+.cmp .card h4 .x{margin-left:auto; font-size:12px; color:var(--ink-3); font-weight:400; cursor:pointer}
+.cmp .kv{font-size:13.8px; line-height:1.72; margin:5px 0; padding-bottom:5px; border-bottom:1px dashed var(--line-2)}
+.cmp .kv:last-child{border-bottom:none}
+.cmp .kv b{color:var(--ink-3); font-weight:600; display:inline-block; min-width:5.2em}
+.cmp .empty{font-size:14px; color:var(--ink-3); padding:12px 2px}
+
+/* ============ 组织图绘制区 ============ */
+.draftwrap{overflow-x:auto; padding:4px 0 2px}
+.draftwrap svg{display:block; background:#fff; border-radius:6px}
+.coordnote{font-size:13px; color:var(--ink-3); margin:6px 2px}
+
+@media (max-width:1000px){ .grid4{grid-template-columns:1fr 1fr} }
+@media (max-width:640px){
+  .grid4{grid-template-columns:1fr}
+  .chain .arw{display:none}
+  .datatool input[type=search]{min-width:0; width:100%}
+  .datatool .cnt{margin-left:0}
+}
+
+/* ============ 打印（扩展） ============ */
+@media print{
+  body.proj{font-size:11.5pt}
+  .fig,.ansvg,.legend,.cmp,.draftwrap{break-inside:avoid}
+  .datatool,.onlyscreen{display:none !important}
+  /* 新版 Chrome 用 ::details-content 的 content-visibility 隐藏折叠内容，
+     必须显式放开，否则练习答案不会被打印出来 */
+  details::details-content{content-visibility:visible !important; display:block !important}
+  details.q .ans{display:block !important}
+  details.q>summary{cursor:default}
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-title">丝织物的分类</div>
+    <div class="topbar-sub">十四大类 · 组织结构 · 国家标准</div>
+    <div class="topbar-actions">
+      <a class="btn back" href="index.html" title="返回专题目录">← 返回目录</a>
+      <button class="btn" id="btnProj" onclick="document.body.classList.toggle('proj')">投影增强</button>
+      <button class="btn" onclick="window.print()">打印 / 导出 PDF</button>
+      <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">回到顶部</button>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="pbar"></div></div>
+</div>
+
+<div class="shell">
+
+  <nav class="nav" id="nav">
+    <p class="nav-h">本讲目录</p>
+    <a href="#obj"><span class="n">01</span>学习目标</a>
+    <a href="#basis"><span class="n">02</span>分类依据与分类层级</a>
+    <a href="#list"><span class="n">03</span>十四大类总览</a>
+    <a href="#table"><span class="n">04</span>十四大类明细表</a>
+    <a href="#holes"><span class="n">05</span>孔眼类辨析：罗 · 纱 · 绡</a>
+    <a href="#jin"><span class="n">06</span>三大名锦</a>
+    <a href="#thumb"><span class="n">07</span>组织结构示意</a>
+    <a href="#modern"><span class="n">08</span>现代应用与英文对照</a>
+    <a href="#quiz"><span class="n">09</span>自测练习</a>
+    <a href="#summary"><span class="n">10</span>一页速记</a>
+    <a href="#ref"><span class="n">11</span>参考文献与标准</a>
+  </nav>
+
+  <main>
+
+  <!-- ========== 封面 ========== -->
+  <div class="cover" id="cover">
+    <div class="kicker">Textile Materials · 补充讲义</div>
+    <h1>丝织物的<span class="a">分类</span><br>十四大类 · 组织结构 · <span class="b">国家标准</span></h1>
+    <p class="sub">
+      绫、罗、绸、缎、纺、绉、绡、绢、锦、绨、葛、呢、绒、纱——十四个名字，
+      背后是十四种结构逻辑。本讲先把它们按组织家族归位，再逐类对照现行国标的口径，
+      把最容易混的几对讲清楚。
+    </p>
+    <div class="tags">
+      <span class="tag d">按组织结构分类</span>
+      <span class="tag g">GB/T 22860—2009</span>
+      <span class="tag k">品号与命名</span>
+      <span class="tag r">易混辨析</span>
+    </div>
+    <div class="meta">
+      <span><b>配套单元：</b>丝织物的品种与识别</span>
+      <span><b>授课：</b>梁帅童 · 上海工程技术大学纺织服装学院</span>
+      <span><b>适用对象：</b>纺织与服装类专业本科生</span>
+    </div>
+    <p class="academic-note">
+      本讲大类的划分、命名与编号依 <strong>GB/T 22860—2009《丝绸（机织物）的分类、命名及编号》</strong>；
+      历史名称与古代品种另参考 1965 年《丝织品分类定名及编号》及公开的标准文本。
+      织物密度的测定依 GB/T 4668—1995。完整出处见第 11 节。
+    </p>
+  </div>
+
+  <!-- ========== 01 学习目标 ========== -->
+  <section id="obj">
+    <h2><span class="num">01</span>学习目标</h2>
+    <p class="lead">记住十四个名字不难，难的是拿到一块布，能说出它为什么叫这个名字。</p>
+
+    <div class="grid3">
+      <div class="card d">
+        <h4>知识目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>说出丝织物分类所依据的三个维度：组织结构、加工工艺、外观形态</li>
+          <li>完整列出十四大类，并说明「绸」为什么是泛称</li>
+          <li>说出罗、纱、绡三者的区别</li>
+          <li>说明「绮」为什么不在现代十四大类之中</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <h4>能力目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>见到一个品种名（如「双绉」「杭罗」「电力纺」），能判断它属于哪一大类</li>
+          <li>能由组织结构反推大类，而不是靠死记品种名</li>
+          <li>能读懂品号的前两位数字，判断原料与类别</li>
+        </ul>
+      </div>
+      <div class="card r">
+        <h4>素养目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>理解传统名称与现代标准之间「同名不同物、同物不同名」的历史成因</li>
+          <li>养成遇到分类争议先查国标的习惯</li>
+          <li>认识丝绸这一中国传统产品在当代的技术延续</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>本讲的知识链条</h3>
+    <div class="chain">
+      <div class="node"><h5>一个依据</h5><p>组织结构是第一依据，工艺与外观是辅助依据。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>八种结构逻辑</h5><p>平纹 / 斜纹 / 缎纹 / 重组织 / 起绒 / 绞经 / 绉组织 / 呢（按质地）。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>十四大类</h5><p>标准给出的十四个名称，各有对应的结构条件。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>一个泛称</h5><p>「绸」不限定结构，是不落其余各类时的归处。</p></div>
+    </div>
+  </section>
+
+  <!-- ========== 02 分类依据与层级 ========== -->
+  <section id="basis">
+    <h2><span class="num">02</span>分类依据与分类层级</h2>
+    <p class="lead">先看什么把布分开，再看用什么名字叫它。</p>
+
+    <h3>分类的三个依据</h3>
+    <p>
+      中国传统丝织物的分类方式多样。现行国标采用的办法，是把下面三个维度<strong>综合</strong>起来判断，
+      其中<strong>组织结构占第一位</strong>：
+    </p>
+    <div class="grid3">
+      <div class="card d">
+        <h4>① 组织结构<span class="tag d" style="margin-left:6px">首要</span></h4>
+        <p>平纹、斜纹、缎纹，以及重组织、起绒组织、绞经（纱罗）组织、绉组织。
+          这块布「经纬怎么交」，是它归入哪一大类的根本理由。</p>
+      </div>
+      <div class="card g">
+        <h4>② 加工工艺</h4>
+        <p>生织还是熟织、是否加捻、经纬原料是否相同。
+          例如「绨」之所以独立成类，关键就在于<strong>长丝作经、棉纱蜡线作纬</strong>。</p>
+      </div>
+      <div class="card k">
+        <h4>③ 外观形态</h4>
+        <p>绸面是否光亮、有无孔眼、有无绒毛、有无横向凸纹。
+          例如「葛」的横向凸纹、「绒」的绒毛表面，都是外观上一眼可辨的特征。</p>
+      </div>
+    </div>
+
+    <h3>先按组织家族归位，再看传统名称</h3>
+    <p>
+      十四个名字是历史沿革下来的，彼此之间并不按同一把尺子切分——「绸」是泛称，「锦」讲的是色彩工艺，
+      「呢」讲的是手感。如果只背名字，遇到新情况就无从下手。更稳的办法是先按<strong>组织结构家族</strong>归位：
+    </p>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:20%">组织家族</th><th style="width:34%">结构特征</th><th>归入此家族的大类</th></tr></thead>
+        <tbody>
+          <tr><td><strong>平纹（含平纹变化）</strong></td><td>一上一下或在此基础上延长组织点</td><td>纺、绢、绡、绨、葛、绸（部分）</td></tr>
+          <tr><td><strong>斜纹（含斜纹变化）</strong></td><td>组织点连成斜向纹路</td><td>绫</td></tr>
+          <tr><td><strong>缎纹</strong></td><td>单独组织点孤立均匀分布，浮长线长</td><td>缎</td></tr>
+          <tr><td><strong>重组织</strong></td><td>两组以上经纬纱重叠交织，用于显色起花</td><td>锦</td></tr>
+          <tr><td><strong>起绒组织</strong></td><td>经起绒或纬起绒，表面形成绒毛或绒圈</td><td>绒</td></tr>
+          <tr><td><strong>绞经（纱罗）组织</strong></td><td>经纱相互扭绞，形成纱孔</td><td>罗、纱</td></tr>
+          <tr><td><strong>绉组织</strong></td><td>利用强捻或组织点杂乱排列形成绉效应</td><td>绉</td></tr>
+          <tr><td><strong>呢类（按质地划分）</strong></td><td>混用绉组织、短浮点组织或基本组织及其变化，以质地丰厚、有毛型感为特征</td><td>呢</td></tr>
+          <tr><td><strong>不限定</strong></td><td>凡不具上述各类典型特征者</td><td>绸</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note d">
+      <span class="note-h">这样归类的好处</span>
+      拿到一个陌生的品种名，先问三句话：<strong>①经纬怎么交？②是不是加了强捻？③表面有没有孔眼/绒毛？</strong>
+      答案出来，大类基本就定了。名字只是结果，不是理由。
+    </div>
+
+    <div class="note r">
+      <span class="note-h">一个必须澄清的点：十四大类里没有「绮」</span>
+      古代丝织物常按织物组织、花纹、色彩命名。「绮」是古代名称（平纹地上起斜纹花），
+      现代织造中已很少单独成类。现行国标 GB/T 22860—2009 与 1965 年《丝织品分类定名及编号》
+      给出的十四大类中<strong>均不含「绮」，而含「绉」</strong>——
+      而「绉」（双绉、碧绉、顺纡绉、乔其等）恰是当代真丝面料的主流。
+      把「绮」放进主表、漏掉「绉」，是常见的混淆。
+    </div>
+  </section>
+
+  <!-- ========== 03 十四大类总览 ========== -->
+  <section id="list">
+    <h2><span class="num">03</span>十四大类总览</h2>
+    <p class="lead">十四个名字，一次列全。注意其中哪一个在唱主角，哪一个只是泛称。</p>
+
+    <h3>标准给出的十四大类</h3>
+    <p>
+      按 <strong>GB/T 22860—2009《丝绸（机织物）的分类、命名及编号》</strong>，
+      丝织物按组织结构、加工工艺、外观形态与用途，分为十四大类：
+    </p>
+    <div class="legend" style="display:block; padding:16px 18px">
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">绡</span>
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">纺</span>
+      <span class="tag g" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">绉</span>
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">缎</span>
+      <span class="tag k" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">锦</span>
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">绫</span>
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">绢</span>
+      <span class="tag g" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">纱</span>
+      <span class="tag g" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">罗</span>
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">绨</span>
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">葛</span>
+      <span class="tag r" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">绒</span>
+      <span class="tag d" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">呢</span>
+      <span class="tag" style="font-size:14px; padding:6px 14px; margin:0 8px 8px 0">绸</span>
+      <p class="small" style="margin:10px 0 0; width:100%">
+        灰色标签的「绸」是<strong>泛称</strong>——凡经纬交错紧密、又不具备其余各类典型特征者，都归入绸类；
+        同时「绸」也常被用作丝织品的总称（如「丝绸」「绸缎」）。因此它既是十四大类之一，又是一个兜底项。
+      </p>
+    </div>
+
+    <h3>「十四」这个数字从哪来</h3>
+    <p>
+      1965 年，原纺织工业部制订《丝织品分类定名及编号》，按织品的组织结构、生产工艺、材料、
+      外观特征及用途综合分类，将其分为十四大类，以规范和统一中国的丝织品种。
+      此后多次修订，形成现行的 GB/T 22860—2009。每个大类之下又按原料、用途再分小类，
+      品种数以千计——所以「十四大类」只是第一层，不是全部。
+    </p>
+
+    <h3>品号：五位数字怎么读</h3>
+    <p>
+      国产绸缎实行统一的品号制度，品号由 <strong>5 位阿拉伯数字</strong>组成，前两位各自有含义：
+    </p>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:16%">位次</th><th style="width:34%">含义</th><th>取值</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>第 1 位</strong></td><td>原料类别</td>
+            <td><strong>01</strong> 桑蚕丝（含土丝、双宫丝、绢丝）· <strong>02</strong> 合成纤维（锦纶、涤纶等）·
+                <strong>03</strong> 天然纤维混纺 · <strong>04</strong> 柞丝（含柞绢丝）·
+                <strong>05</strong> 人造丝（粘胶、醋酯等）· <strong>06</strong> 两种以上原料交织 ·
+                <strong>07</strong> 被面类产品</td>
+          </tr>
+          <tr>
+            <td><strong>第 2 位</strong></td><td>大类品名</td>
+            <td>绡、纺、绉、绸、缎、锦、绢、绫、罗、纱、葛、绨、绒、呢等</td>
+          </tr>
+          <tr>
+            <td><strong>第 3～5 位</strong></td><td>规格顺序号</td>
+            <td>由主管部门按品种编排，用于唯一确定一个规格</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="note k">
+      <span class="note-h">品号有什么用</span>
+      拿到一段绸料，看到吊牌或规格单上的五位数字，就能先判断<strong>原料</strong>与<strong>类别</strong>。
+      例如「12101」「14101」是常见的桑蚕丝电力纺品号——第 1 位「1」指桑蚕丝，第 2 位「2」指纺类。
+      遇到与实物不符的品号，就该怀疑是以次充好。
+    </div>
+
+    <h3>关于古代名称：绮、纨、缣……</h3>
+    <p>
+      古代的丝织品常按<strong>织物组织、织物花纹、织物色彩</strong>命名，留下来的名称远不止十四个。
+      其中一部分现代仍在使用（如绉、绫、绨、绢），一部分已不再单独成类：
+    </p>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:16%">古称</th><th style="width:32%">结构</th><th>现代情况</th></tr></thead>
+        <tbody>
+          <tr><td><strong>绮</strong></td><td>平纹地上起斜纹花</td><td>古代名称，质地柔韧、外观素雅；现代多见于仿古织物，<strong>不属于现行十四大类</strong></td></tr>
+          <tr><td><strong>纨</strong></td><td>细致洁白的薄绸</td><td>古代对精细素色薄型丝织物的称呼，今多归入纺类或绢类</td></tr>
+          <tr><td><strong>缣</strong></td><td>双经双纬的平纹织物</td><td>古代名称，今归入平纹类织物</td></tr>
+          <tr><td><strong>绨</strong></td><td>平纹，长丝作经、棉线或蜡线作纬</td><td>仍属十四大类之一</td></tr>
+          <tr><td><strong>绉</strong></td><td>强捻或绉组织形成绉效应</td><td>仍属十四大类之一，且是当代真丝面料的主力</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">
+      提示：古代名称的含义与现代同类名称未必一致。古籍中「缎」称「纻丝」，
+      「绫」在明清以前地位远高于缎。阅读史料时，宜先确认所处朝代的口径。
+    </p>
+  </section>
+
+  <!-- ========== 04 十四大类明细表 ========== -->
+  <section id="table">
+    <h2><span class="num">04</span>十四大类明细表</h2>
+    <p class="lead">可以搜索、可以按组织家族筛选、可以点表头排序，也可以勾选任意两三类并排比较。</p>
+
+    <div class="datatool">
+      <div class="fld">
+        <label for="silk-q">搜索（大类 / 品种 / 特征 / 英文）</label>
+        <input type="search" id="silk-q" placeholder="如：绉、双绉、斜纹、crepe">
+      </div>
+      <div class="fld">
+        <label>按组织家族筛选</label>
+        <div class="chips" style="margin:0" id="silk-fam">
+          <button class="chip on" type="button" data-fam="all">全部</button>
+          <button class="chip" type="button" data-fam="平纹类">平纹类</button>
+          <button class="chip" type="button" data-fam="斜纹类">斜纹类</button>
+          <button class="chip" type="button" data-fam="缎纹类">缎纹类</button>
+          <button class="chip" type="button" data-fam="重组织类">重组织类</button>
+          <button class="chip" type="button" data-fam="起绒类">起绒类</button>
+          <button class="chip" type="button" data-fam="绞经类">绞经类</button>
+          <button class="chip" type="button" data-fam="绉组织类">绉组织类</button>
+          <button class="chip" type="button" data-fam="呢类">呢类</button>
+          <button class="chip" type="button" data-fam="泛称">泛称（绸）</button>
+        </div>
+      </div>
+      <span class="cnt" id="silk-cnt"></span>
+    </div>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:34px"></th>
+            <th class="sortable" data-sort="cls" style="width:62px">大类</th>
+            <th class="sortable" data-sort="en" style="width:104px">英文名</th>
+            <th class="sortable" data-sort="org" style="width:132px">主要组织结构</th>
+            <th class="sortable" data-sort="family" style="width:82px">组织家族</th>
+            <th>主要风格特征</th>
+            <th style="width:150px">典型品种举例</th>
+            <th style="width:170px">主要用途（含现代应用）</th>
+          </tr>
+        </thead>
+        <tbody id="silk-body"></tbody>
+      </table>
+    </div>
+    <p class="small">
+      勾选左侧方框可选 2～3 个大类，页底会生成并排对比卡。英文名依 GB/T 22860—2009；
+      该标准中「绫」的英文名为 <span class="fml">ghatpot</span>，属行业沿用写法。
+    </p>
+
+    <div class="cmp" id="silk-cmp"></div>
+  </section>
+
+  <!-- ========== 05 孔眼类辨析 ========== -->
+  <section id="holes">
+    <h2><span class="num">05</span>孔眼类辨析：罗 · 纱 · 绡</h2>
+    <p class="lead">三者都能「透」，但透的成因完全不同——这是丝织物分类里最容易混的一处。</p>
+
+    <div class="grid3">
+      <div class="card g">
+        <h4>罗 <span class="small" style="font-weight:400">leno</span></h4>
+        <p><strong>成因：绞经。</strong>经纱分成绞经与地经两组，制织时地经位置不动，
+          绞经时而在地经的左方、时而在地经的右方与纬纱交织。每次绞经从一侧转到另一侧，
+          绞、地两经就相互扭绞一次，扭绞处经纬间的空隙增大，<strong>形成纱孔</strong>。</p>
+        <p><strong>孔眼形态：呈条状分布</strong>（经纬向均呈条状者称花罗，仅纬向呈条状者为横罗）。</p>
+        <p class="small">典型：杭罗、花罗。质地紧密结实、纱孔通风透凉。</p>
+      </div>
+      <div class="card g">
+        <h4>纱 <span class="small" style="font-weight:400">gauze</span></h4>
+        <p><strong>成因：纱组织。</strong>全部或部分采用纱组织——凡<strong>每织一根或数根纬纱后，
+          绞经与地经相互扭绞一次</strong>者，即为纱组织。</p>
+        <p><strong>孔眼形态：清晰、均匀、布满全幅</strong>，不呈条状。</p>
+        <p class="small">典型：芦纱、山纱、筛绢。质地轻薄透气。</p>
+      </div>
+      <div class="card g">
+        <h4>绡 <span class="small" style="font-weight:400">chiffon</span></h4>
+        <p><strong>成因：不靠绞经，靠疏。</strong>采用平纹或假纱组织，<strong>经纬密度小</strong>、
+          经纬通常加捻，因此织物质地轻薄、呈透孔效果。</p>
+        <p><strong>孔眼形态：孔眼来自纱线之间的空隙</strong>，而非经纱扭绞。</p>
+        <p class="small">典型：真丝绡、尼龙绡。手感挺括，用于头巾、婚纱、装饰。</p>
+      </div>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">一句话抓住区别</span>
+      <strong>罗与纱靠「扭」</strong>——经纱相互绞缠挤出孔眼；<strong>绡靠「疏」</strong>——经纬密度小，空隙自然透光。
+      罗的孔眼<strong>成条</strong>，纱的孔眼<strong>均匀分散</strong>，绡的孔眼<strong>随密度而定、不形成条带</strong>。
+    </div>
+
+    <div class="note r">
+      <span class="note-h">一个常见的归类错误：乔其纱</span>
+      乔其纱（georgette）名字里有「纱」，但它<strong>不属于纱类</strong>。
+      按国标，乔其采用平纹组织、经纬均采用中强捻丝，质地较稀疏轻薄，
+      绸面<strong>同时呈现纱孔与绉效应</strong>——因此它属于<strong>绉类</strong>（乔其类）。
+      判断依据是：决定它外观的主导因素是<strong>强捻产生的绉效应</strong>，而不是绞经产生的纱孔。
+    </div>
+
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:14%">名称</th><th style="width:22%">孔眼成因</th><th style="width:26%">孔眼形态</th><th>归类判据</th></tr></thead>
+        <tbody>
+          <tr><td><strong>罗</strong></td><td>绞经与地经相互扭绞</td><td>呈条状分布（横罗为纬向条状）</td><td>绞经扭绞、孔呈条 → 罗类</td></tr>
+          <tr><td><strong>纱</strong></td><td>纱组织：每织一或数根纬纱后扭绞一次</td><td>清晰均匀、散布全幅</td><td>绞经扭绞、孔均匀分散 → 纱类</td></tr>
+          <tr><td><strong>绡</strong></td><td>经纬密度小、纱线加捻</td><td>纱线间隙形成的透孔</td><td>不靠扭绞，靠密度 → 绡类</td></tr>
+          <tr><td><strong>乔其</strong></td><td>经纬中强捻产生的绉效应 + 稀疏</td><td>纱孔与绉效应并存</td><td>主导因素是绉效应 → <strong>绉类</strong>（不是纱类）</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== 06 三大名锦 ========== -->
+  <section id="jin">
+    <h2><span class="num">06</span>三大名锦</h2>
+    <p class="lead">锦是丝织物中技术最复杂、也最能代表中国织造水平的一类。</p>
+
+    <p>
+      「锦」采用重组织，用多色丝线织成，是绚丽多彩的色织提花丝织物。
+      古有「织采为文，其价如金」之说——这也是「锦」字从「金」的由来。
+      其中最具代表性的是三大名锦：
+    </p>
+
+    <div class="tw">
+      <table>
+        <thead>
+          <tr><th style="width:14%">名称</th><th style="width:14%">产地</th><th style="width:30%">历史与地位</th><th>结构与艺术特征</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>云锦</strong></td><td>南京</td>
+            <td>明清时期达到鼎盛，一度为宫廷织造的主力品种；因纹样常以云纹为骨架、色彩灿若云霞而得名。</td>
+            <td>多用重纬与妆花工艺，可织入金银线，色彩浓艳、金碧辉煌；「织金」「妆花」是其标志性技法。</td>
+          </tr>
+          <tr>
+            <td><strong>蜀锦</strong></td><td>成都</td>
+            <td>起源最早，汉代即已发达，是「丝绸之路」上的主要外销品种之一。</td>
+            <td>多用经锦与纬锦结构，纹样以几何骨架与团花为主；色彩对比强烈，质地厚重。</td>
+          </tr>
+          <tr>
+            <td><strong>宋锦</strong></td><td>苏州</td>
+            <td>两宋时期形成，明清在苏州一带发展成熟，多用于书画装裱与服饰。</td>
+            <td>以斜纹与缎纹为地、纬向显花；配色典雅和谐，纹样繁而不乱，被称为「锦绣之冠」。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note k">
+      <span class="note-h">「三大名锦」与「四大名锦」</span>
+      通常所说的三大名锦指 <strong>云锦（南京）· 蜀锦（成都）· 宋锦（苏州）</strong>。
+      若说「中国四大名锦」，则在三者之外加上<strong>广西壮锦</strong>——
+      壮锦是壮族传统织锦，以棉纱为地、彩色丝线起花，纹样多为几何与动植物，风格与前三者不同。
+      两种说法都在用，答题时应先明确是哪一种口径。
+    </div>
+
+    <h3>锦为什么难</h3>
+    <div class="grid3">
+      <div class="card d">
+        <h4>结构上：重组织</h4>
+        <p>需要两组以上的经纬纱重叠交织（重经组织或重纬组织），才能在同一个部位呈现多种颜色的花与地。</p>
+      </div>
+      <div class="card g">
+        <h4>工艺上：提花 + 色织</h4>
+        <p>花纹靠提花装置（古代用花本，现代用纹板/电子提花）控制，且经、纬丝多先染色后织造，属熟织。</p>
+      </div>
+      <div class="card k">
+        <h4>成本上：工时极长</h4>
+        <p>大提花织物组织循环很大，织造速度慢、废品率高——「其价如金」并非虚言。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 07 组织结构示意 ========== -->
+  <section id="thumb">
+    <h2><span class="num">07</span>组织结构示意</h2>
+    <p class="lead">十四大类归根到底是几种基本的结构逻辑。把这几张图记住，名字自然就有了依据。</p>
+
+    <div class="grid3">
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"plain","R":6}' data-cell="26"></div>
+        <p class="figcap"><b>平纹</b>（纺 · 绢 · 绡 · 绨 · 葛 · 绸）<br>组织点最密，质地平挺细洁。</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"twill","R":4,"S":1,"m":2}' data-cell="26"></div>
+        <p class="figcap"><b>斜纹</b>（绫）<br>组织点连成斜向纹路，质地细薄、光泽较好。</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"satin","R":5,"S":2,"face":"warp"}' data-cell="26"></div>
+        <p class="figcap"><b>缎纹</b>（缎）<br>单独组织点孤立均匀，浮长线长，表面光滑明亮。</p>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"satin","R":8,"S":3,"face":"warp"}' data-cell="26"></div>
+        <p class="figcap"><b>重组织</b>（锦）<br>示意为多枚缎地起花；实际为两组以上经纬重叠交织，用于多色显花。</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <svg viewBox="0 0 176 176" width="176" height="176" role="img" aria-label="绞经组织示意">
+          <rect x="0" y="0" width="176" height="176" fill="#fff"/>
+          <g stroke="#c3ccd6" stroke-width="1">
+            <line x1="16" y1="40" x2="160" y2="40"/><line x1="16" y1="76" x2="160" y2="76"/>
+            <line x1="16" y1="112" x2="160" y2="112"/><line x1="16" y1="148" x2="160" y2="148"/>
+          </g>
+          <g fill="none" stroke="#1a6f5a" stroke-width="3" stroke-linecap="round">
+            <path d="M40 32 L56 47 L40 63 L56 79 L40 95 L56 111 L40 127 L56 143"/>
+            <path d="M56 32 L40 47 L56 63 L40 79 L56 95 L40 111 L56 127 L40 143"/>
+            <path d="M104 32 L120 47 L104 63 L120 79 L104 95 L120 111 L104 127 L120 143"/>
+            <path d="M120 32 L104 47 L120 63 L104 79 L120 95 L104 111 L120 127 L104 143"/>
+          </g>
+          <text x="88" y="20" text-anchor="middle" font-size="11" fill="#6b7a8d">绞经扭绞 → 纱孔</text>
+        </svg>
+        <p class="figcap"><b>绞经（纱罗）</b>（罗 · 纱）<br>经纱两两相绞，扭绞处形成纱孔。</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <svg viewBox="0 0 176 176" width="176" height="176" role="img" aria-label="起绒组织示意">
+          <rect x="0" y="0" width="176" height="176" fill="#fff"/>
+          <g stroke="#c3ccd6" stroke-width="1">
+            <line x1="16" y1="110" x2="160" y2="110"/><line x1="16" y1="130" x2="160" y2="130"/>
+            <line x1="16" y1="150" x2="160" y2="150"/>
+          </g>
+          <g stroke="#b5342a" stroke-width="2.6" stroke-linecap="round" fill="none">
+            <path d="M26 108 L26 44"/><path d="M38 108 L38 36"/><path d="M50 108 L50 46"/>
+            <path d="M62 108 L62 34"/><path d="M74 108 L74 44"/><path d="M86 108 L86 38"/>
+            <path d="M98 108 L98 46"/><path d="M110 108 L110 34"/><path d="M122 108 L122 44"/>
+            <path d="M134 108 L134 38"/><path d="M146 108 L146 46"/>
+          </g>
+          <text x="88" y="24" text-anchor="middle" font-size="11" fill="#6b7a8d">绒经起绒 → 绒毛</text>
+          <text x="88" y="166" text-anchor="middle" font-size="11" fill="#6b7a8d">地组织（平纹）</text>
+        </svg>
+        <p class="figcap"><b>起绒</b>（绒）<br>经起绒或纬起绒，表面形成绒毛或绒圈。</p>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"crepe","R":6}' data-cell="26"></div>
+        <p class="figcap"><b>绉组织</b>（绉）<br>在基本组织上加减、调移组织点，使浮长长短交错、排列无明显规律，
+          从而在绸面形成细密的凹凸起皱外观——绉效应。</p>
+      </div>
+      <div class="card k" style="grid-column:span 2; margin:10px 0">
+        <h4>剩下两类为什么不画组织图</h4>
+        <p><strong>呢（呢类）</strong>——名义上「采用或混用基本组织、联合组织及变化组织」，
+          结构上并没有一种专属组织；它之所以独立成类，靠的是<strong>质地丰厚、蓬松、有毛型感</strong>这一外观与手感特征
+          （常借助绉组织或短浮点组织，并配合较粗的经纬丝线实现）。</p>
+        <p><strong>绸（绸类）</strong>——采用或混用各种基本组织及变化组织，质地较紧密，
+          或<strong>不具备其余各类典型特征</strong>者归入此类。它是十四大类里的兜底项，
+          正因为「什么组织都可能」，所以无法用一张组织图代表。</p>
+        <p class="small">记忆方法：<strong>绉、呢、绸这三类里，绉靠组织，呢与绸靠特征</strong>——
+          判断时前者看结构，后两者看外观与手感。</p>
+      </div>
+    </div>
+
+    <p class="small">
+      说明：图中平纹、斜纹、缎纹、绉组织四张为按规则生成的组织图（绉组织为示意性构造，用于表达
+      「打破规律性」这一特征，不代表某一具体品种的完全组织）；重组织、绞经、起绒三张为结构示意，
+      分别表达「多组纱线重叠」「经纱扭绞」「绒经起绒」三种逻辑。
+      想看任意枚数与飞数的组织图，可参见《织物组织图》专题。
+    </p>
+  </section>
+
+  <!-- ========== 08 现代应用与英文对照 ========== -->
+  <section id="modern">
+    <h2><span class="num">08</span>现代应用与英文对照</h2>
+    <p class="lead">这些古老的名字今天还在用，而且用得比过去更活泼。</p>
+
+    <h3>当代服装设计中的丝织物</h3>
+    <div class="grid2">
+      <div class="card d">
+        <h4>香云纱（莨纱）—— 非遗工艺的当代回归</h4>
+        <p>
+          香云纱在 PPT 中常被归入纱类（因表面有纱孔），其真正的辨识点却是<strong>工艺</strong>：
+          以薯莨汁液反复浸染、再经河泥涂覆处理，使绸面呈一面棕红、一面乌黑的独特效果，
+          手感挺爽、穿着凉爽。当代新中式服装把它用在外套、长裙上，是「非遗面料进入日常穿着」的代表案例。
+        </p>
+      </div>
+      <div class="card g">
+        <h4>宋锦 —— 从装裱料到时装</h4>
+        <p>
+          传统宋锦多用于书画装裱与礼盒，用量有限。近年来借助<strong>数码提花</strong>与数字化纹样库，
+          宋锦实现了规模化、智能化生产，成本下降，被大量用于新中式外套、旗袍、包袋与文创产品，
+          应用场景从「华服」拓展到家居与艺术品。
+        </p>
+      </div>
+      <div class="card k">
+        <h4>真丝的功能化改性</h4>
+        <p>
+          通过构筑纳米级防护结构改善易清洁性、与氨纶等弹性材料复合获得抗皱弹性——
+          传统「娇气」的丝织物正在获得更宽的服用边界。这类改性不改变大类归属，
+          但会影响洗涤与保养方式。
+        </p>
+      </div>
+      <div class="card r">
+        <h4>绉类仍是最主流</h4>
+        <p>
+          双绉、碧绉、顺纡绉、乔其等绉类面料，因手感糯爽、抗皱性好、光泽柔和，
+          至今仍是真丝服装的主力。这也正是把它从「编外」请回十四大类的原因——
+          教学口径若漏掉绉类，学生记住的分类表就与实际市场脱节了。
+        </p>
+      </div>
+    </div>
+
+    <h3>中英文对照速查</h3>
+    <p>与国际买家、外文文献打交道时，这套对应关系很有用（依 GB/T 22860—2009）：</p>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:12%">大类</th><th style="width:24%">英文名</th><th style="width:12%">大类</th><th style="width:24%">英文名</th><th>备注</th></tr></thead>
+        <tbody>
+          <tr><td>绡</td><td><code>chiffon</code></td><td>纺</td><td><code>habotai</code></td><td>均为外来语沿用</td></tr>
+          <tr><td>绉</td><td><code>crepe</code></td><td>缎</td><td><code>satin</code></td><td>国际通用词</td></tr>
+          <tr><td>锦</td><td><code>brocade</code></td><td>绫</td><td><code>ghatpot</code></td><td>绫的英文为行业沿用写法</td></tr>
+          <tr><td>绢</td><td><code>yarn-dyed silk fabric</code></td><td>纱</td><td><code>gauze</code></td><td>—</td></tr>
+          <tr><td>罗</td><td><code>leno</code></td><td>绨</td><td><code>bengaline</code></td><td>—</td></tr>
+          <tr><td>葛</td><td><code>poplin</code></td><td>绒</td><td><code>velvet</code></td><td>—</td></tr>
+          <tr><td>呢</td><td><code>suitingsilk</code></td><td>绸</td><td><code>silk &amp; filament fabric</code></td><td>绸为泛称，英文亦为描述性表达</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">
+      提示：不同标准版本、不同教材对个别品类的英文名可能不一致（例如「纺」也有写作
+      <code>habutai</code> 的）。对外文件宜同时给出中文名与标准号，避免歧义。
+    </p>
+  </section>
+
+  <!-- ========== 09 自测练习 ========== -->
+  <section id="quiz">
+    <h2><span class="num">09</span>自测练习</h2>
+    <p class="lead">先自己判断，再点开对照。分类题的答案往往就在「为什么」里。</p>
+
+    <details class="q">
+      <summary><span class="qn">1</span>完整列出丝织物的十四大类，并指出其中哪一个是泛称、为什么。</summary>
+      <div class="ans">
+        <p>按 GB/T 22860—2009：<strong>绡、纺、绉、缎、锦、绫、绢、纱、罗、绨、葛、绒、呢、绸</strong>。</p>
+        <p><strong>「绸」是泛称。</strong>它的定义是「采用或混用各种基本组织及变化组织、
+          质地较紧密或不具备其余各类特征的织物」——也就是说，凡不属于前十三类典型特征的丝织物，
+          都归入绸类。同时「绸」还常被用作丝织品的总称（丝绸、绸缎），因而兼有类名与通名两重身份。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">2</span>「绮」为什么不在现代十四大类之中？它属于哪一类组织？</summary>
+      <div class="ans">
+        <p>绮是<strong>古代丝织物名称</strong>，组织为「平纹地上起斜纹花」，质地柔韧、外观素雅。
+          它在现代织造中已很少单独成类，因此在 1965 年《丝织品分类定名及编号》与现行
+          GB/T 22860—2009 的十四大类中<strong>均未列入</strong>。</p>
+        <p>按组织结构，绮的地组织是平纹、起花用斜纹，可归入平纹类与斜纹类的结合；
+          今天若见到类似结构的织物，通常按其主要特征归入绸类或绫类。</p>
+        <p class="small">注意区分：十四大类中<strong>含「绉」而不含「绮」</strong>。绉（双绉、碧绉、顺纡绉、乔其）是当代主流品种，不能遗漏。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">3</span>罗、纱、绡三者都能透孔，请说明各自孔眼的成因与形态差别。</summary>
+      <div class="ans">
+        <p><strong>罗</strong>：孔眼由<strong>绞经与地经相互扭绞</strong>造成，形态<strong>呈条状分布</strong>
+          （横罗为纬向条状）。典型品种杭罗、花罗。</p>
+        <p><strong>纱</strong>：孔眼由<strong>纱组织</strong>造成（每织一根或数根纬纱后绞经扭绞一次），
+          形态<strong>清晰均匀、散布全幅</strong>。典型品种芦纱、山纱、筛绢。</p>
+        <p><strong>绡</strong>：孔眼<strong>不靠扭绞</strong>，而是因为经纬密度小、纱线加捻，
+          由纱线之间的<strong>空隙</strong>形成透孔。典型品种真丝绡、尼龙绡。</p>
+        <p class="small">记忆：罗与纱靠「扭」，绡靠「疏」。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">4</span>乔其纱应该归入哪一大类？为什么不能归入纱类？</summary>
+      <div class="ans">
+        <p>应归入<strong>绉类（乔其类）</strong>。</p>
+        <p>按国标，乔其采用<strong>平纹组织</strong>，经、纬均采用<strong>中强捻丝</strong>，
+          质地较稀疏轻薄，绸面<strong>同时呈现纱孔与绉效应</strong>。
+          它外观的主导因素是<strong>强捻产生的绉效应</strong>，而不是绞经扭绞产生的纱孔——
+          因此判据指向绉类。</p>
+        <p class="small">「纱」这个字出现在名字里，只是历史命名的沿留，不能作为归类依据。
+          分类要看结构与决定外观的主导因素，不看名字。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">5</span>某绸缎吊牌上的品号以「01」开头，第二位是「2」。请判断它的原料与类别，并举出可能的品种。</summary>
+      <div class="ans">
+        <p>第 1 位 <strong>01</strong> → 原料为 <span class="fin">桑蚕丝</span>（含土丝、双宫丝、绢丝）。</p>
+        <p>第 2 位 <strong>2</strong> → 大类为 <span class="fin">纺类</span>。</p>
+        <p>因此这是<strong>桑蚕丝纺类织物</strong>，典型品种即<strong>电力纺、杭纺</strong>——
+          平纹组织、经纬不加捻或弱捻，绸面平整缜密，常用于衬衫、裙装与里料。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">6</span>为什么说「绨」必须单独成类，而不能归入「纺」？</summary>
+      <div class="ans">
+        <p>因为两者的<strong>原料组合</strong>根本不同。</p>
+        <p>「纺」是平纹组织、经纬线<strong>不加捻或弱捻</strong>、质地轻薄柔软的丝织物，经纬一般同为长丝
+          （如电力纺、杭纺）。</p>
+        <p>「绨」虽也是平纹，但用<strong>长丝作经、棉纱蜡线或其他短纤维纱线作纬</strong>，
+          质地粗厚、坚牢、价格较低（如线绨、素绨）。</p>
+        <p>按国标，分类要综合组织结构、采用原料、加工工艺与外观形态——
+          <span class="fin">「经长丝 + 纬棉纱」这个原料组合，正是绨独立成类的理由。</span></p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">7</span>三大名锦指哪三种？各自产地与最突出的结构或工艺特征是什么？</summary>
+      <div class="ans">
+        <p><strong>云锦</strong>（南京）：重纬与妆花工艺，可织入金银线，色彩浓艳、金碧辉煌。</p>
+        <p><strong>蜀锦</strong>（成都）：起源最早，汉代即已发达；多用经锦与纬锦结构，纹样以几何骨架与团花为主。</p>
+        <p><strong>宋锦</strong>（苏州）：以斜纹与缎纹为地、纬向显花，配色典雅、纹样繁而不乱，多用于装裱与服饰。</p>
+        <p class="small">若题目问「四大名锦」，则在上述三者之外加上<strong>广西壮锦</strong>。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">8</span>拿到一块表面光滑、看不见织纹、光泽很强的素色面料。你会按什么顺序判断它属于哪一大类？</summary>
+      <div class="ans">
+        <p>按「组织结构优先」的顺序判断：</p>
+        <ol>
+          <li><strong>看有无纹路</strong>——表面看不到清晰纹路、反光连续 → 首要怀疑缎类。</li>
+          <li><strong>看反光方向</strong>——反光沿经向延伸为经面缎纹，沿纬向为纬面缎纹（缎纹织物常见直贡呢、素缎、横贡缎）。</li>
+          <li><strong>看手感与紧度</strong>——缎纹质地柔软、平滑匀整、紧度较大，与平纹的挺括细洁不同。</li>
+          <li><strong>排除其他</strong>——若表面有细密纹路则考虑绫；若无纹路但也不反光、有细颗粒感，则考虑绉类。</li>
+        </ol>
+        <p class="small">关键：先定结构，再定名字。<span class="fin">绸是泛称，只有在确实不落入其他各类时才用它兜底。</span></p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 10 一页速记 ========== -->
+  <section id="summary">
+    <h2><span class="num">10</span>一页速记</h2>
+    <p class="lead">十四类、七家族、一个泛称，加三处易混。</p>
+
+    <div class="grid2">
+      <div class="card d">
+        <h4>十四大类（标准顺序）</h4>
+        <p style="font-size:17px; line-height:1.9; margin:8px 0 0">
+          绡 · 纺 · 绉 · 缎 · 锦 · 绫 · 绢 · 纱 · 罗 · 绨 · 葛 · 绒 · 呢 · 绸
+        </p>
+        <p class="small" style="margin-top:10px">
+          <strong>含「绉」不含「绮」</strong>；「绸」为泛称，其余十三类各有明确的结构条件。
+        </p>
+      </div>
+      <div class="card g">
+        <h4>七种组织家族 → 十四类</h4>
+        <ul style="margin:6px 0 0">
+          <li><strong>平纹</strong>：纺 · 绢 · 绡 · 绨 · 葛 · （部分）绸</li>
+          <li><strong>斜纹</strong>：绫</li>
+          <li><strong>缎纹</strong>：缎</li>
+          <li><strong>重组织</strong>：锦</li>
+          <li><strong>起绒</strong>：绒</li>
+          <li><strong>绞经</strong>：罗 · 纱</li>
+          <li><strong>绉组织</strong>：绉</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card r">
+        <h4>三处最容易错</h4>
+        <ol style="margin:0;padding-left:20px">
+          <li>把<strong>「绮」</strong>当十四大类之一（应为<strong>绉</strong>）。</li>
+          <li>把<strong>乔其纱</strong>归入纱类（应归<strong>绉类</strong>）。</li>
+          <li>认为<strong>罗与纱</strong>都是「密度小才透」（罗、纱靠<strong>扭绞</strong>；绡才是靠密度小）。</li>
+        </ol>
+      </div>
+      <div class="card k">
+        <h4>孔眼成因一句话</h4>
+        <ul style="margin:6px 0 0">
+          <li><strong>罗</strong>：绞经扭绞，孔成条</li>
+          <li><strong>纱</strong>：纱组织扭绞，孔均匀</li>
+          <li><strong>绡</strong>：经纬密度小，靠空隙</li>
+          <li><strong>乔其</strong>：强捻起绉 → 绉类</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>分类判断的顺序</h4>
+        <ol style="margin:0;padding-left:20px">
+          <li>经纬怎么交？（组织结构）</li>
+          <li>原料与工艺有无特殊之处？（如绨的棉纬）</li>
+          <li>外观有无孔眼 / 绒毛 / 凸纹？</li>
+          <li>仍不能归类，才落到<strong>绸</strong>。</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 11 参考文献 ========== -->
+  <section id="ref">
+    <h2><span class="num">11</span>参考文献与标准</h2>
+    <p class="lead">标准编号与名称可直接引用；教材的版次与年份请以版权页为准。</p>
+
+    <p class="refs-cat">一、国家标准<span>本讲的分类、命名与测定依据</span></p>
+    <ol class="refs">
+      <li>GB/T 22860—2009 丝绸（机织物）的分类、命名及编号. <em>（十四大类划分、英文名与命名规则的主要依据）</em></li>
+      <li>GB/T 4668—1995 机织物密度的测定.</li>
+      <li>GB/T 3291.1—1997 纺织 纺织材料性能和试验术语 第 1 部分：纤维和纱线.</li>
+      <li>FZ/T 01035—2014 纺织品 标示线密度的通用制（特克斯制）.</li>
+    </ol>
+
+    <p class="refs-cat">二、历史分类文件<span>传统名称的由来</span></p>
+    <ol class="refs">
+      <li>原纺织工业部. 丝织品分类定名及编号. 1965. <em>（「十四大类」这一划分方式的源头文件）</em></li>
+    </ol>
+
+    <p class="refs-cat">三、教材<span>术语与本讲衔接</span></p>
+    <ol class="refs">
+      <li>蔡陛霞 主编. 织物结构与设计. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>姚穆 主编. 纺织材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>于伟东 主编. 纺织材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>王革辉 主编. 服装材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+    </ol>
+
+    <p class="refs-cat">四、行业技术资料<span>结构分类的辅助口径</span></p>
+    <ol class="refs">
+      <li>中国棉纺织行业协会. 常用的织物组织结构. <span class="src">行业技术资料</span></li>
+      <li>中国丝绸协会. 丝织物分类与品号编制相关技术说明. <span class="src">行业技术资料；品号规则以主管部门现行规定为准</span></li>
+    </ol>
+
+    <div class="note d">
+      <span class="note-h">关于本页表格</span>
+      第 4 节的明细表由页面内数据实时渲染，可搜索、筛选、排序与并排对比；不依赖任何外部资源，断网可用。
+      表中内容以国标条目为准，品种举例取自教材与行业公开资料。
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <p style="margin:0 0 6px">丝织物的分类 · 十四大类与国标分类 ｜ 配套单元：丝织物的品种与识别</p>
+  <p style="margin:0 0 6px">授课：梁帅童 · 上海工程技术大学纺织服装学院</p>
+  <p style="margin:0; color:#8a949f">本页为零外链单文件课件，表格与图形均由页面脚本实时渲染，断网亦可正常使用。</p>
+</footer>
+
+<script>
+/* ================= 阅读进度 ================= */
+(function(){
+  var bar = document.getElementById('pbar');
+  function upd(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    if (bar) bar.style.width = Math.max(0, Math.min(100, p)) + '%';
+  }
+  window.addEventListener('scroll', upd, {passive:true});
+  window.addEventListener('resize', upd);
+  upd();
+})();
+
+/* ================= 导航高亮 ================= */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var map = {};
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) map[id] = a;
+  });
+  var ids = Object.keys(map);
+  var secs = ids.map(function(id){ return document.getElementById(id); });
+  function setOn(id){
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (map[id]) map[id].classList.add('on');
+  }
+  var raf = null;
+  function sync(){
+    var y = window.scrollY + 150, cur = ids[0];
+    for (var i = 0; i < secs.length; i++){
+      if (secs[i].offsetTop <= y) cur = ids[i];
+    }
+    setOn(cur);
+  }
+  function onScroll(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = null; sync(); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('load', sync);
+  sync();
+})();
+
+/* ================= 打印时自动展开练习答案 ================= */
+(function(){
+  var saved = [];
+  window.addEventListener('beforeprint', function(){
+    saved = [];
+    Array.prototype.forEach.call(document.querySelectorAll('details'), function(d){
+      saved.push([d, d.open]);
+      d.open = true;
+    });
+  });
+  window.addEventListener('afterprint', function(){
+    saved.forEach(function(p){ p[0].open = p[1]; });
+    saved = [];
+  });
+})();
+
+/* ================= 组织图引擎（用于结构示意） ================= */
+function mod(n, m){ return ((n % m) + m) % m; }
+function buildDraft(t, R, S, face, m){
+  R = Math.max(1, Math.round(R));
+  S = Math.round(S || 0);
+  m = Math.max(1, Math.round(m || 1));
+  var M = [], i, j;
+  for (i = 0; i < R; i++){ M.push([]); for (j = 0; j < R; j++) M[i].push(false); }
+  if (t === 'plain'){
+    for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = ((i + j) % 2 === 0);
+  } else if (t === 'twill'){
+    for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = (mod(j - i * S, R) < m);
+  } else if (t === 'crepe'){
+    /* 绉组织示意：以平纹为底，按固定规律加添、调移组织点，打破规律性，形成起伏颗粒外观 */
+    for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = ((i + j) % 2 === 0);
+    var add = [[0,1],[1,4],[2,2],[3,5],[4,0],[5,3],[0,4],[2,5],[4,2],[1,1]];
+    for (var q = 0; q < add.length; q++) M[add[q][0] % R][add[q][1] % R] = true;
+  } else {
+    if (face === 'weft'){
+      for (i = 0; i < R; i++) M[i][mod(i * S, R)] = true;
+    } else {
+      for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = true;
+      for (j = 0; j < R; j++) M[mod(j * S, R)][j] = false;
+    }
+  }
+  return M;
+}
+function draftSVG(M, opt){
+  opt = opt || {};
+  var R = M.length, cell = opt.cell || 30, gl = opt.gl || 24, gt = opt.gt || 20, pad = 8;
+  var w = gl + R * cell + pad, h = gt + R * cell + pad;
+  var s = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h +
+          '" role="img" aria-label="织物组织结构示意">';
+  s += '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="#ffffff"/>';
+  var kr, j, k, x, y;
+  for (kr = 0; kr < R; kr++){
+    k = R - 1 - kr;
+    for (j = 0; j < R; j++){
+      x = gl + j * cell; y = gt + kr * cell;
+      s += '<rect x="' + x + '" y="' + y + '" width="' + cell + '" height="' + cell +
+           '" fill="' + (M[k][j] ? '#1c2733' : '#ffffff') + '" stroke="#c3ccd6" stroke-width="1"/>';
+    }
+  }
+  s += '<rect x="' + gl + '" y="' + gt + '" width="' + (R * cell) + '" height="' + (R * cell) +
+       '" fill="none" stroke="#455468" stroke-width="1.6"/>';
+  for (j = 0; j < R; j++){
+    s += '<text x="' + (gl + j * cell + cell / 2) + '" y="' + (gt - 6) +
+         '" text-anchor="middle" font-size="10" fill="#455468">' + (j + 1) + '</text>';
+  }
+  for (kr = 0; kr < R; kr++){
+    s += '<text x="' + (gl - 6) + '" y="' + (gt + kr * cell + cell / 2 + 3.5) +
+         '" text-anchor="end" font-size="10" fill="#455468">' + (R - kr) + '</text>';
+  }
+  return s + '</svg>';
+}
+(function(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-draft]'), function(node){
+    var o;
+    try { o = JSON.parse(node.getAttribute('data-draft')); } catch (e) { return; }
+    var M = buildDraft(o.t, o.R, o.S || 1, o.face || 'warp', o.m || 1);
+    node.innerHTML = draftSVG(M, {cell: parseInt(node.getAttribute('data-cell'), 10) || 30});
+  });
+})();
+</script>
+
+<script>
+/* ================= 十四大类数据（依 GB/T 22860—2009） ================= */
+var SILK = [
+  { cls:'绡', en:'chiffon', org:'平纹或假纱组织', family:'平纹类',
+    style:'经纬密度小，质地轻薄透明，手感挺括', ex:'真丝绡、尼龙绡',
+    use:'头巾、婚纱、舞台服装、装饰' },
+  { cls:'纺', en:'habotai', org:'平纹组织', family:'平纹类',
+    style:'经纬不加捻或弱捻，绸面平整缜密，质地轻薄', ex:'电力纺、杭纺、洋纺',
+    use:'衬衫、裙装、里料；数码印花真丝面料' },
+  { cls:'绉', en:'crepe', org:'平纹或绉组织，经纬加强捻', family:'绉组织类',
+    style:'绸面呈现明显的绉效应，光泽柔和，手感糯爽、富有弹性、抗皱性好', ex:'双绉、碧绉、顺纡绉、乔其',
+    use:'真丝衬衫、连衣裙、丝巾；当代真丝面料主力' },
+  { cls:'缎', en:'satin', org:'缎纹组织', family:'缎纹类',
+    style:'表面平滑光亮、细腻，单独组织点孤立均匀，浮长线长，耐磨性稍差', ex:'花软缎、素绉缎、织锦缎',
+    use:'礼服、旗袍、高端服装面料、被面' },
+  { cls:'锦', en:'brocade', org:'重经或重纬组织（斜纹、缎纹为地）', family:'重组织类',
+    style:'多彩提花，花纹精致高雅，结构复杂、织物丰满，是丝织品中的艺术代表', ex:'云锦、蜀锦、宋锦',
+    use:'高档服装、装饰、收藏；新中式时装与文创' },
+  { cls:'绫', en:'ghatpot', org:'斜纹或斜纹变化组织', family:'斜纹类',
+    style:'表面有明显斜向纹路（绫纹），质地细薄、光泽较好', ex:'花绫、素绫、美丽绸',
+    use:'衬衫、旗袍、书画装裱' },
+  { cls:'绢', en:'yarn-dyed silk fabric', org:'平纹或平纹变化组织', family:'平纹类',
+    style:'经纬先练白或染色的熟织（色织）织物，绸面细密、平整、挺括', ex:'天香绢、画绢、塔夫绸',
+    use:'礼服、领带、书画装裱' },
+  { cls:'纱', en:'gauze', org:'全部或部分采用纱组织', family:'绞经类',
+    style:'绸面呈现清晰、均匀的纱孔，质地轻薄透气', ex:'芦纱、山纱、筛绢',
+    use:'夏季服装、窗帘、筛网' },
+  { cls:'罗', en:'leno', org:'全部或部分采用罗组织（绞经）', family:'绞经类',
+    style:'纱孔呈条状分布，质地紧密结实、通风透凉，风格雅致', ex:'杭罗、花罗',
+    use:'夏季服装、高端礼服' },
+  { cls:'绨', en:'bengaline', org:'平纹，长丝作经、棉纱蜡线或短纤纱作纬', family:'平纹类',
+    style:'质地粗厚、坚牢，织纹清晰，价格较低', ex:'线绨、素绨',
+    use:'春秋季外衣、棉服面料' },
+  { cls:'葛', en:'poplin', org:'平纹、平纹变化或急斜纹组织', family:'平纹类',
+    style:'经细纬粗、经密纬疏，表面有横向凸纹，质地厚实、少光泽', ex:'文尚葛、素葛、提花葛',
+    use:'春秋季外套、沙发面料' },
+  { cls:'绒', en:'velvet', org:'起绒组织（经起绒或纬起绒）', family:'起绒类',
+    style:'表面有绒毛或绒圈，质地丰满、柔软、保暖，光泽柔和', ex:'天鹅绒（漳绒）、金丝绒、乔其绒',
+    use:'高级时装、帷幕、坐垫' },
+  { cls:'呢', en:'suitingsilk', org:'绉组织、短浮点组织或混用基本组织', family:'呢类',
+    style:'质地丰厚、蓬松、少光泽，手感柔软，有毛型感', ex:'大伟呢、博士呢',
+    use:'春秋冬季外套、西装' },
+  { cls:'绸', en:'silk & filament fabric', org:'采用或混用各种基本组织及变化组织', family:'泛称',
+    style:'质地较紧密，或不具备其余各类典型特征——丝织品的泛称与兜底类', ex:'塔夫绸、双宫绸、绵绸',
+    use:'衬衫、外套、裙装、家居用品' }
+];
+
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var body = $('silk-body'), cnt = $('silk-cnt'), cmp = $('silk-cmp'), qEl = $('silk-q');
+  var famWrap = $('silk-fam');
+  var fam = 'all', sortKey = null, sortDir = 1;
+  var picked = [];
+
+  function esc(s){ return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  function filtered(){
+    var q = (qEl.value || '').trim().toLowerCase();
+    var rows = SILK.filter(function(r){
+      if (fam !== 'all' && r.family !== fam) return false;
+      if (!q) return true;
+      return [r.cls, r.en, r.org, r.family, r.style, r.ex, r.use].join(' ').toLowerCase().indexOf(q) >= 0;
+    });
+    if (sortKey){
+      rows = rows.slice().sort(function(a, b){
+        var x = String(a[sortKey]), y = String(b[sortKey]);
+        return (x > y ? 1 : x < y ? -1 : 0) * sortDir;
+      });
+    }
+    return rows;
+  }
+
+  function renderTable(){
+    var rows = filtered();
+    var html = '';
+    rows.forEach(function(r){
+      var on = picked.indexOf(r.cls) >= 0;
+      html += '<tr' + (on ? ' class="picked"' : '') + '>' +
+        '<td class="tc"><input type="checkbox" data-pick="' + esc(r.cls) + '"' + (on ? ' checked' : '') + '></td>' +
+        '<td><strong>' + esc(r.cls) + '</strong></td>' +
+        '<td><code>' + esc(r.en) + '</code></td>' +
+        '<td>' + esc(r.org) + '</td>' +
+        '<td>' + esc(r.family) + '</td>' +
+        '<td>' + esc(r.style) + '</td>' +
+        '<td>' + esc(r.ex) + '</td>' +
+        '<td>' + esc(r.use) + '</td>' +
+        '</tr>';
+    });
+    body.innerHTML = html || '<tr><td colspan="8" class="tc small" style="padding:22px">没有匹配的条目，请调整搜索词或筛选项。</td></tr>';
+    cnt.textContent = '显示 ' + rows.length + ' / ' + SILK.length + ' 类';
+    Array.prototype.forEach.call(body.querySelectorAll('input[data-pick]'), function(cb){
+      cb.addEventListener('change', function(){
+        var cls = cb.getAttribute('data-pick');
+        var i = picked.indexOf(cls);
+        if (cb.checked){
+          if (picked.length >= 3){ cb.checked = false; return; }
+          if (i < 0) picked.push(cls);
+        } else if (i >= 0){
+          picked.splice(i, 1);
+        }
+        renderTable(); renderCmp();
+      });
+    });
+  }
+
+  function renderCmp(){
+    if (picked.length < 2){
+      cmp.innerHTML = '<p class="empty">勾选左侧方框选择 2～3 个大类，这里会并排显示它们的结构、特征与用途，便于对照。</p>';
+      return;
+    }
+    var cols = picked.map(function(c){
+      for (var i = 0; i < SILK.length; i++) if (SILK[i].cls === c) return SILK[i];
+      return null;
+    }).filter(Boolean);
+    var html = '<div class="grid' + (cols.length === 3 ? '3' : '2') + '">';
+    cols.forEach(function(r){
+      html += '<div class="card d">' +
+        '<h4>' + esc(r.cls) + ' <span class="small" style="font-weight:400">' + esc(r.en) + '</span>' +
+        '<span class="x" data-unpick="' + esc(r.cls) + '">移除</span></h4>' +
+        '<div class="kv"><b>组织结构</b>' + esc(r.org) + '</div>' +
+        '<div class="kv"><b>组织家族</b>' + esc(r.family) + '</div>' +
+        '<div class="kv"><b>风格特征</b>' + esc(r.style) + '</div>' +
+        '<div class="kv"><b>典型品种</b>' + esc(r.ex) + '</div>' +
+        '<div class="kv"><b>主要用途</b>' + esc(r.use) + '</div>' +
+        '</div>';
+    });
+    html += '</div>';
+    cmp.innerHTML = html;
+    Array.prototype.forEach.call(cmp.querySelectorAll('[data-unpick]'), function(b){
+      b.addEventListener('click', function(){
+        var i = picked.indexOf(b.getAttribute('data-unpick'));
+        if (i >= 0) picked.splice(i, 1);
+        renderTable(); renderCmp();
+      });
+    });
+  }
+
+  qEl.addEventListener('input', renderTable);
+
+  Array.prototype.forEach.call(famWrap.querySelectorAll('.chip'), function(b){
+    b.addEventListener('click', function(){
+      fam = b.getAttribute('data-fam');
+      Array.prototype.forEach.call(famWrap.querySelectorAll('.chip'), function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      renderTable();
+    });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('th.sortable'), function(th){
+    th.addEventListener('click', function(){
+      var k = th.getAttribute('data-sort');
+      if (sortKey === k){ sortDir = -sortDir; } else { sortKey = k; sortDir = 1; }
+      Array.prototype.forEach.call(document.querySelectorAll('th.sortable'), function(x){
+        x.classList.remove('asc'); x.classList.remove('desc');
+      });
+      th.classList.add(sortDir > 0 ? 'asc' : 'desc');
+      renderTable();
+    });
+  });
+
+  renderTable();
+  renderCmp();
+})();
+</script>
+</body>
+</html>

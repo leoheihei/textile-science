@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>织物组织图的绘制 — 课堂讲义</title>
+<style>
+
+:root{
+  --ink:#1c2733;
+  --ink-2:#455468;
+  --ink-3:#6b7a8d;
+  --line:#dde3ea;
+  --line-2:#eef1f5;
+  --bg:#f2f4f7;
+  --paper:#ffffff;
+
+  --direct:#1f4e79;      /* 定长制 蓝 */
+  --direct-bg:#eef4fa;
+  --direct-soft:#c8d8e8;
+
+  --indirect:#1a6f5a;    /* 定重制 绿 */
+  --indirect-bg:#ecf6f2;
+  --indirect-soft:#bfe0d5;
+
+  --warn:#b5342a;        /* 重点/警示 红 */
+  --warn-bg:#fdf1ef;
+
+  --gold:#8a6d1f;        /* 常数 金 */
+  --gold-bg:#fdf8ec;
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:96px}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Source Han Sans SC","Noto Sans CJK SC",sans-serif;
+  font-size:17px;
+  line-height:1.78;
+  -webkit-font-smoothing:antialiased;
+}
+
+/* ============ 顶部条 ============ */
+.topbar{
+  position:sticky; top:0; z-index:50;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:saturate(180%) blur(12px);
+  border-bottom:1px solid var(--line);
+}
+.topbar-inner{
+  max-width:1320px; margin:0 auto; padding:10px 24px;
+  display:flex; align-items:center; gap:16px;
+}
+.topbar-title{font-size:15px; font-weight:700; letter-spacing:.02em; color:var(--direct)}
+.topbar-sub{font-size:12.5px; color:var(--ink-3); border-left:1px solid var(--line); padding-left:14px}
+.topbar-actions{margin-left:auto; display:flex; gap:8px}
+.btn{
+  font:inherit; font-size:12.5px; padding:5px 13px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-2);
+  cursor:pointer; transition:.16s;
+}
+.btn:hover{border-color:var(--direct); color:var(--direct); background:var(--direct-bg)}
+a.btn{text-decoration:none; display:inline-flex; align-items:center; gap:5px; line-height:1.5}
+a.btn.back{border-color:var(--direct); color:var(--direct); background:var(--direct-bg); font-weight:700}
+a.btn.back:hover{background:var(--direct); color:#fff}
+@media (max-width:640px){ .topbar-actions{flex-wrap:wrap} }
+.progress{height:3px; background:var(--line-2)}
+.progress-bar{height:100%; width:0; background:linear-gradient(90deg,var(--direct),var(--indirect)); transition:width .1s linear}
+
+/* ============ 布局 ============ */
+.shell{max-width:1320px; margin:0 auto; padding:0 24px 80px; display:grid; grid-template-columns:236px 1fr; gap:36px; align-items:start}
+
+/* ============ 侧栏导航 ============ */
+.nav{position:sticky; top:74px; padding:22px 0; max-height:calc(100vh - 90px); overflow-y:auto}
+.nav-h{font-size:11px; font-weight:700; letter-spacing:.14em; color:var(--ink-3); text-transform:uppercase; margin:0 0 10px 12px}
+.nav a{
+  display:block; font-size:14px; color:var(--ink-2); text-decoration:none;
+  padding:7px 12px; border-radius:8px; border-left:2px solid transparent;
+  transition:.14s; line-height:1.45;
+}
+.nav a:hover{background:#fff; color:var(--direct)}
+.nav a.on{background:#fff; color:var(--direct); font-weight:600; border-left-color:var(--direct); box-shadow:0 1px 3px rgba(31,78,121,.09)}
+.nav a .n{display:inline-block; width:20px; color:var(--ink-3); font-variant-numeric:tabular-nums; font-size:12px}
+.nav a.on .n{color:var(--direct)}
+
+/* ============ 正文 ============ */
+main{min-width:0; padding-top:26px}
+section{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:32px 38px 36px; margin-bottom:26px; scroll-margin-top:96px;
+}
+h2{
+  font-size:23px; margin:0 0 6px; letter-spacing:.01em; line-height:1.4;
+  display:flex; align-items:baseline; gap:12px;
+}
+h2 .num{
+  font-size:13px; font-weight:700; color:#fff; background:var(--direct);
+  border-radius:6px; padding:2px 9px; letter-spacing:.04em; position:relative; top:-2px;
+  font-variant-numeric:tabular-nums;
+}
+h2.g .num{background:var(--indirect)}
+h2.r .num{background:var(--warn)}
+h2.k .num{background:var(--gold)}
+.lead{color:var(--ink-2); font-size:15.5px; margin:0 0 24px; padding-bottom:16px; border-bottom:1px dashed var(--line)}
+h3{font-size:18px; margin:30px 0 10px; color:var(--direct); letter-spacing:.01em}
+h3.g{color:var(--indirect)}
+h3::before{content:""; display:inline-block; width:4px; height:15px; background:currentColor; border-radius:2px; margin-right:9px; position:relative; top:1px}
+h4{font-size:16px; margin:22px 0 8px; color:var(--ink)}
+p{margin:10px 0}
+ul,ol{margin:10px 0; padding-left:24px}
+li{margin:6px 0}
+strong{color:var(--ink); font-weight:700}
+code{
+  font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.88em;
+  background:#f3f5f8; border:1px solid var(--line); border-radius:4px;
+  padding:1px 5px; color:#25476e;
+}
+
+/* ============ 公式 ============ */
+.eq{
+  display:block; margin:16px 0; padding:15px 20px;
+  background:#f8fafc; border:1px solid var(--line); border-left:3px solid var(--direct);
+  border-radius:8px; font-size:16.5px; line-height:2.1; overflow-x:auto;
+}
+.eq.g{border-left-color:var(--indirect)}
+.eq.k{border-left-color:var(--gold)}
+.eq .lbl{font-size:12.5px; color:var(--ink-3); margin-left:10px}
+.frac{display:inline-block; vertical-align:-0.55em; text-align:center; font-size:.86em; line-height:1.18; margin:0 .18em}
+.frac .num{display:block; border-bottom:1.2px solid currentColor; padding:0 .3em}
+.frac .den{display:block; padding:0 .3em}
+.big{font-size:20px; font-weight:700; color:var(--direct)}
+.big.g{color:var(--indirect)}
+
+/* ============ 表格 ============ */
+.tw{overflow-x:auto; margin:16px 0; border:1px solid var(--line); border-radius:10px}
+table{border-collapse:collapse; width:100%; font-size:14.5px; background:#fff}
+th,td{padding:9px 13px; text-align:left; border-bottom:1px solid var(--line-2); vertical-align:top}
+thead th{
+  background:#f6f8fb; font-weight:700; font-size:13.5px; color:var(--direct);
+  border-bottom:1px solid var(--line); white-space:nowrap; position:sticky; top:0;
+}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafcfe}
+td.num,th.num{font-variant-numeric:tabular-nums; white-space:nowrap}
+.tc{text-align:center}
+caption{caption-side:top; text-align:left; font-size:13px; color:var(--ink-3); padding:10px 13px 8px; background:#fff}
+
+/* ============ 卡片/提示 ============ */
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0}
+.card{border:1px solid var(--line); border-radius:10px; padding:16px 18px; background:#fcfdfe}
+.card h4{margin:0 0 8px; font-size:15.5px}
+.card p:last-child{margin-bottom:0}
+.card.d{border-color:var(--direct-soft); background:var(--direct-bg)}
+.card.g{border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.card.k{border-color:#ecdcb0; background:var(--gold-bg)}
+.card.r{border-color:#f0cfca; background:var(--warn-bg)}
+
+.note{
+  border-radius:10px; padding:14px 18px; margin:18px 0; font-size:15.5px;
+  border:1px solid var(--line); background:#f8fafc;
+}
+.note.d{border-left:3px solid var(--direct); background:var(--direct-bg)}
+.note.g{border-left:3px solid var(--indirect); background:var(--indirect-bg)}
+.note.k{border-left:3px solid var(--gold); background:var(--gold-bg)}
+.note.r{border-left:3px solid var(--warn); background:var(--warn-bg)}
+.note-h{font-weight:700; font-size:14px; letter-spacing:.03em; margin-bottom:5px; display:block}
+.note.d .note-h{color:var(--direct)}
+.note.g .note-h{color:var(--indirect)}
+.note.k .note-h{color:var(--gold)}
+.note.r .note-h{color:var(--warn)}
+
+.tag{
+  display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px;
+  border:1px solid var(--line); background:#fff; color:var(--ink-3); margin:0 5px 5px 0;
+  font-variant-numeric:tabular-nums;
+}
+.tag.d{color:var(--direct); border-color:var(--direct-soft); background:var(--direct-bg)}
+.tag.g{color:var(--indirect); border-color:var(--indirect-soft); background:var(--indirect-bg)}
+.tag.r{color:var(--warn); border-color:#f0cfca; background:var(--warn-bg)}
+
+.kbd-f{font-family:"SF Mono",Menlo,monospace; font-size:14px; background:#fff; border:1px solid var(--line); border-radius:6px; padding:3px 8px}
+
+/* ============ 交互工具 ============ */
+.tool{border:1px solid var(--direct-soft); border-radius:12px; background:linear-gradient(180deg,#f7fafd,#fff); padding:20px 22px; margin:20px 0}
+.tool-h{font-size:15px; font-weight:700; color:var(--direct); margin:0 0 14px; display:flex; align-items:center; gap:8px}
+.tool-h::before{content:"▸"; color:var(--direct)}
+.tool-h.g{color:var(--indirect)} .tool-h.g::before{color:var(--indirect)}
+.frow{display:flex; flex-wrap:wrap; gap:12px; align-items:flex-end; margin-bottom:14px}
+.fld{display:flex; flex-direction:column; gap:5px}
+.fld label{font-size:12.5px; color:var(--ink-3); font-weight:600; letter-spacing:.02em}
+input[type=number],select{
+  font:inherit; font-size:15px; padding:8px 11px; border:1px solid var(--line);
+  border-radius:8px; background:#fff; color:var(--ink); min-width:118px;
+  font-variant-numeric:tabular-nums;
+}
+input[type=number]:focus,select:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.chips{display:flex; flex-wrap:wrap; gap:7px; margin:4px 0 14px}
+.chip{
+  font:inherit; font-size:12.5px; padding:4px 11px; border-radius:999px; cursor:pointer;
+  border:1px solid var(--direct-soft); background:#fff; color:var(--direct); transition:.14s;
+}
+.chip:hover{background:var(--direct); color:#fff}
+.out{display:grid; grid-template-columns:repeat(auto-fit,minmax(132px,1fr)); gap:10px; margin-top:6px}
+.ocard{border:1px solid var(--line); border-radius:9px; background:#fff; padding:11px 13px; text-align:center}
+.ocard .k{font-size:11.5px; color:var(--ink-3); letter-spacing:.04em; text-transform:uppercase; font-weight:700}
+.ocard .v{font-size:21px; font-weight:700; color:var(--direct); font-variant-numeric:tabular-nums; line-height:1.3; word-break:break-all}
+.ocard .u{font-size:12px; color:var(--ink-3)}
+.ocard.hi{background:var(--direct); border-color:var(--direct)}
+.ocard.hi .k{color:#b8d0e6} .ocard.hi .v{color:#fff} .ocard.hi .u{color:#b8d0e6}
+.err{color:var(--warn); font-size:13.5px; min-height:20px; margin-top:6px}
+
+/* ============ 练习 ============ */
+details.q{border:1px solid var(--line); border-radius:10px; background:#fff; margin:12px 0; overflow:hidden}
+details.q>summary{
+  cursor:pointer; padding:14px 18px; font-size:15.5px; font-weight:600;
+  list-style:none; display:flex; gap:11px; align-items:flex-start; transition:.14s;
+}
+details.q>summary::-webkit-details-marker{display:none}
+details.q>summary:hover{background:#f8fafc}
+details.q>summary .qn{
+  flex:0 0 auto; width:24px; height:24px; border-radius:50%; background:var(--direct);
+  color:#fff; font-size:13px; display:flex; align-items:center; justify-content:center; margin-top:2px;
+  font-variant-numeric:tabular-nums;
+}
+details.q[open]>summary{border-bottom:1px solid var(--line-2); background:#f8fafc}
+details.q .ans{padding:15px 18px 18px 53px; font-size:15px; color:var(--ink-2); background:#fcfdfe}
+details.q .ans .fin{color:var(--warn); font-weight:700}
+
+/* ============ 参考文献 ============ */
+.refs{counter-reset:r; list-style:none; padding:0; margin:14px 0 0}
+.refs li{
+  counter-increment:r; position:relative; padding:9px 0 9px 42px;
+  border-bottom:1px dashed var(--line-2); font-size:14.5px; line-height:1.72;
+}
+.refs li:last-child{border-bottom:none}
+.refs li::before{
+  content:"[" counter(r) "]"; position:absolute; left:0; top:9px;
+  font-size:12.5px; color:var(--direct); font-weight:700; font-variant-numeric:tabular-nums;
+}
+.refs li em{font-style:normal; color:var(--ink-3)}
+.refs li .src{color:var(--ink-3); font-size:13px}
+.refs-cat{font-size:14px; font-weight:700; color:var(--ink); margin:26px 0 6px; padding:6px 0 6px 0; border-bottom:2px solid var(--line)}
+.refs-cat:first-of-type{margin-top:8px}
+.refs-cat span{color:var(--ink-3); font-weight:400; font-size:12.5px; margin-left:8px}
+
+/* ============ 封面 ============ */
+.cover{
+  background:var(--paper); border:1px solid var(--line); border-radius:14px;
+  padding:46px 46px 40px; margin-bottom:26px; position:relative; overflow:hidden;
+}
+.cover::after{
+  content:""; position:absolute; right:-80px; top:-80px; width:340px; height:340px;
+  border-radius:50%; background:radial-gradient(circle at 30% 70%,rgba(31,78,121,.09),rgba(26,111,90,.05) 55%,transparent 72%);
+}
+.cover .kicker{font-size:12.5px; letter-spacing:.2em; color:var(--indirect); font-weight:700; text-transform:uppercase}
+.cover h1{font-size:35px; margin:14px 0 4px; letter-spacing:.01em; line-height:1.32}
+.cover h1 .a{color:var(--direct)} .cover h1 .b{color:var(--indirect)}
+.cover .sub{font-size:16.5px; color:var(--ink-2); margin:12px 0 0; max-width:660px}
+.cover .meta{
+  margin-top:26px; padding-top:18px; border-top:1px solid var(--line);
+  display:flex; flex-wrap:wrap; gap:10px 26px; font-size:13.5px; color:var(--ink-3);
+}
+.cover .meta b{color:var(--ink-2); font-weight:600}
+.cover .tags{margin-top:20px}
+.academic-note{margin-top:18px; font-size:13px; color:var(--ink-3); line-height:1.7}
+
+footer{
+  max-width:1320px; margin:0 auto; padding:22px 24px 60px;
+  font-size:13px; color:var(--ink-3); border-top:1px solid var(--line);
+}
+
+/* ============ 响应式 ============ */
+@media (max-width:1000px){
+  .shell{grid-template-columns:1fr; gap:0}
+  .nav{position:static; max-height:none; border-bottom:1px solid var(--line); padding:14px 0 18px}
+  .nav a{display:inline-block; margin:0 6px 6px 0}
+  .grid2,.grid3{grid-template-columns:1fr}
+  section{padding:24px 20px 28px}
+  .cover{padding:32px 24px}
+  .cover h1{font-size:27px}
+  .topbar-sub{display:none}
+}
+@media (min-width:1001px) and (max-width:1200px){
+  .grid3{grid-template-columns:1fr 1fr}
+}
+
+/* ============ 打印 ============ */
+@media print{
+  :root{--bg:#fff}
+  body{font-size:11.5pt; background:#fff}
+  .topbar,.nav,.tool .chips,.topbar-actions,footer .noprint{display:none !important}
+  .shell{display:block; max-width:none; padding:0}
+  section,.cover{border:none; border-radius:0; padding:0 0 18px; margin:0 0 20px; break-inside:auto; box-shadow:none}
+  h2,h3{break-after:avoid}
+  table,.card,.note,.eq,details.q{break-inside:avoid}
+  details.q{display:block} details.q>summary{cursor:default} details.q .ans{display:block !important}
+  details.q:not([open]) .ans{display:block !important}
+  a{color:inherit; text-decoration:none}
+  .cover::after{display:none}
+  .refs li{break-inside:avoid}
+}
+
+
+/* ============ 本讲新增（通用组件） ============ */
+.fig{border:1px solid var(--line); border-radius:12px; background:#fff; padding:14px 16px 10px; margin:20px 0; overflow-x:auto}
+/* 默认按 SVG 自身尺寸居中显示；需要铺满可读宽度的图加 .wide */
+.fig svg{display:block; height:auto; max-width:100%; margin:0 auto}
+.fig.wide svg{width:100%; min-width:620px; margin:0}
+.figcap{font-size:13px; color:var(--ink-3); margin:8px 2px 4px; line-height:1.68}
+.figcap b{color:var(--ink-2)}
+.chain{display:flex; flex-wrap:wrap; align-items:stretch; gap:8px; margin:18px 0}
+.chain .node{flex:1 1 158px; border:1px solid var(--line); border-radius:10px; padding:12px 14px; background:#fcfdfe}
+.chain .node h5{margin:0 0 6px; font-size:14.5px; color:var(--direct)}
+.chain .node p{margin:0; font-size:13px; color:var(--ink-2); line-height:1.62}
+.chain .arw{display:flex; align-items:center; color:var(--ink-3); font-size:17px; padding:0 1px}
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0}
+.step{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fcfdfe; font-size:13.8px; line-height:1.62}
+.step .sn{display:inline-block; width:20px; height:20px; border-radius:50%; background:var(--direct); color:#fff; font-size:11.5px; text-align:center; line-height:20px; margin-right:6px; font-weight:700; vertical-align:1px}
+.pill{display:inline-block; font-size:12px; padding:2px 9px; border-radius:999px; background:#f3f5f8; border:1px solid var(--line); color:var(--ink-2); margin:0 6px 6px 0; font-variant-numeric:tabular-nums}
+.hl{background:linear-gradient(transparent 61%, #fbeec0 61%); font-weight:600}
+.fml{font-family:"SF Mono",Menlo,Consolas,monospace; font-size:.92em; color:#25476e; background:#f3f5f8; border:1px solid var(--line); border-radius:4px; padding:1px 5px; white-space:nowrap}
+.small{font-size:13px; color:var(--ink-3); line-height:1.68}
+.ansvg{margin:8px 0 14px; overflow-x:auto}
+.ansvg svg{display:block; width:100%; max-width:760px; height:auto; min-width:520px; margin:0 auto}
+input[type=range]{width:200px; accent-color:var(--direct); vertical-align:middle; margin-top:4px}
+.fld .rngv{font-variant-numeric:tabular-nums; font-weight:700; color:var(--direct)}
+
+/* ============ 投影增强模式 ============ */
+body.proj{font-size:19px}
+body.proj .topbar-title{font-size:16px}
+body.proj .topbar-sub{font-size:13.5px}
+body.proj section{padding:38px 44px 42px}
+body.proj h2{font-size:27px}
+body.proj h3{font-size:21px}
+body.proj h4{font-size:18px}
+body.proj .lead{font-size:17px}
+body.proj p{line-height:1.85}
+body.proj table{font-size:16px}
+body.proj thead th{font-size:15px}
+body.proj th,body.proj td{padding:11px 15px}
+body.proj .note{font-size:17px}
+body.proj .card{font-size:16.5px}
+body.proj .card h4{font-size:17px}
+body.proj details.q>summary{font-size:17px}
+body.proj details.q .ans{font-size:16.5px}
+body.proj .refs li{font-size:16px}
+body.proj .figcap{font-size:14.5px}
+body.proj .nav a{font-size:15px}
+body.proj .step{font-size:15.5px}
+body.proj .chain .node p{font-size:14.5px}
+
+/* ============ 符号图例 ============ */
+.legend{display:flex; flex-wrap:wrap; gap:10px 22px; align-items:center; font-size:14.5px; color:var(--ink-2); margin:12px 0 6px; padding:11px 14px; border:1px solid var(--line); border-radius:9px; background:#fbfcfe}
+.legend .it{display:flex; align-items:center; gap:8px}
+.legend .sw{width:19px; height:19px; border:1px solid #6b7a8d; display:inline-block; border-radius:2px}
+.legend .sw.blk{background:var(--ink)}
+.legend .sw.wht{background:#fff}
+
+/* ============ 数据表工具栏 ============ */
+.datatool{display:flex; flex-wrap:wrap; gap:10px; align-items:flex-end; margin:14px 0 6px; padding:12px 14px; border:1px solid var(--line); border-radius:10px; background:#fbfcfe}
+.datatool input[type=search]{font:inherit; font-size:14.5px; padding:8px 11px; border:1px solid var(--line); border-radius:8px; min-width:232px; background:#fff; color:var(--ink)}
+.datatool input[type=search]:focus{outline:2px solid var(--direct-soft); outline-offset:1px; border-color:var(--direct)}
+.datatool .cnt{font-size:12.5px; color:var(--ink-3); margin-left:auto; font-variant-numeric:tabular-nums; align-self:center}
+.datatool .chip.on{background:var(--direct); color:#fff; border-color:var(--direct)}
+th.sortable{cursor:pointer; user-select:none}
+th.sortable:hover{color:var(--ink)}
+th.sortable::after{content:" ⇅"; color:var(--ink-3); font-weight:400; font-size:11px}
+th.sortable.asc::after{content:" ▲"; color:var(--direct)}
+th.sortable.desc::after{content:" ▼"; color:var(--direct)}
+tbody tr.picked{background:#f2f7fc}
+tbody tr.picked:hover{background:#eaf2fa}
+
+/* ============ 对比卡 ============ */
+.cmp{margin-top:16px}
+.cmp .card h4{font-size:15.5px; display:flex; align-items:center; gap:8px}
+.cmp .card h4 .x{margin-left:auto; font-size:12px; color:var(--ink-3); font-weight:400; cursor:pointer}
+.cmp .kv{font-size:13.8px; line-height:1.72; margin:5px 0; padding-bottom:5px; border-bottom:1px dashed var(--line-2)}
+.cmp .kv:last-child{border-bottom:none}
+.cmp .kv b{color:var(--ink-3); font-weight:600; display:inline-block; min-width:5.2em}
+.cmp .empty{font-size:14px; color:var(--ink-3); padding:12px 2px}
+
+/* ============ 组织图绘制区 ============ */
+.draftwrap{overflow-x:auto; padding:4px 0 2px}
+.draftwrap svg{display:block; background:#fff; border-radius:6px}
+.coordnote{font-size:13px; color:var(--ink-3); margin:6px 2px}
+
+@media (max-width:1000px){ .grid4{grid-template-columns:1fr 1fr} }
+@media (max-width:640px){
+  .grid4{grid-template-columns:1fr}
+  .chain .arw{display:none}
+  .datatool input[type=search]{min-width:0; width:100%}
+  .datatool .cnt{margin-left:0}
+}
+
+/* ============ 打印（扩展） ============ */
+@media print{
+  body.proj{font-size:11.5pt}
+  .fig,.ansvg,.legend,.cmp,.draftwrap{break-inside:avoid}
+  .datatool,.onlyscreen{display:none !important}
+  /* 新版 Chrome 用 ::details-content 的 content-visibility 隐藏折叠内容，
+     必须显式放开，否则练习答案不会被打印出来 */
+  details::details-content{content-visibility:visible !important; display:block !important}
+  details.q .ans{display:block !important}
+  details.q>summary{cursor:default}
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="topbar-title">织物组织图的绘制</div>
+    <div class="topbar-sub">三原组织 · 飞数 · 上机图</div>
+    <div class="topbar-actions">
+      <a class="btn back" href="index.html" title="返回专题目录">← 返回目录</a>
+      <button class="btn" id="btnProj" onclick="document.body.classList.toggle('proj')">投影增强</button>
+      <button class="btn" onclick="window.print()">打印 / 导出 PDF</button>
+      <button class="btn" onclick="window.scrollTo({top:0,behavior:'smooth'})">回到顶部</button>
+    </div>
+  </div>
+  <div class="progress"><div class="progress-bar" id="pbar"></div></div>
+</div>
+
+<div class="shell">
+
+  <nav class="nav" id="nav">
+    <p class="nav-h">本讲目录</p>
+    <a href="#obj"><span class="n">01</span>学习目标</a>
+    <a href="#lang"><span class="n">02</span>组织点与完全组织</a>
+    <a href="#tools"><span class="n">03</span>手绘与数码工具</a>
+    <a href="#plain"><span class="n">04</span>平纹组织</a>
+    <a href="#twill"><span class="n">05</span>斜纹组织</a>
+    <a href="#satin"><span class="n">06</span>缎纹组织</a>
+    <a href="#float"><span class="n">07</span>平均浮长与对比</a>
+    <a href="#restore"><span class="n">08</span>实物还原与常见错误</a>
+    <a href="#loom"><span class="n">09</span>从组织图到上机图</a>
+    <a href="#gen"><span class="n">10</span>组织图生成器</a>
+    <a href="#quiz"><span class="n">11</span>自测练习</a>
+    <a href="#summary"><span class="n">12</span>一页速记</a>
+    <a href="#ref"><span class="n">13</span>参考文献与标准</a>
+  </nav>
+
+  <main>
+
+  <!-- ========== 封面 ========== -->
+  <div class="cover" id="cover">
+    <div class="kicker">Textile Materials · 补充讲义</div>
+    <h1>织物组织图的<span class="a">绘制</span><br>从三原组织到<span class="b">上机图</span></h1>
+    <p class="sub">
+      一根经、一根纬，交一次、让一次，布面上就有了纹。组织图就是把这件事写成方格纸上的黑白——
+      本讲从「经浮涂黑、纬浮留白」这条唯一的规则出发，把平纹、斜纹、缎纹三者画准、画快，
+      并一路推到织造真正要用的上机图。
+    </p>
+    <div class="tags">
+      <span class="tag d">三原组织</span>
+      <span class="tag g">飞数 S 与取模</span>
+      <span class="tag k">平均浮长 F = R / t</span>
+      <span class="tag r">上机图 · 穿综 · 纹板</span>
+    </div>
+    <div class="meta">
+      <span><b>配套单元：</b>织物组织与结构</span>
+      <span><b>授课：</b>梁帅童 · 上海工程技术大学纺织服装学院</span>
+      <span><b>适用对象：</b>纺织与服装类专业本科生</span>
+    </div>
+    <p class="academic-note">
+      本讲义术语与上机图符号依《织物组织与结构》类教材通用口径；文字组织以 GB/T 4668—1995
+      《机织物密度的测定》为织物密度相关依据，织物分类另见 GB/T 22860—2009。
+      全文所有组织图由本页脚本依飞数规则实时生成，可逐格核对，完整出处见第 13 节。
+    </p>
+  </div>
+
+  <!-- ========== 01 学习目标 ========== -->
+  <section id="obj">
+    <h2><span class="num">01</span>学习目标</h2>
+
+    <div class="grid3">
+      <div class="card d">
+        <h4>知识目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>说明经纱、纬纱与组织点的定义，复述「经浮涂黑、纬浮留白」规则</li>
+          <li>说出完全组织、组织循环纱线数 R 与飞数 S 的含义</li>
+          <li>写出三原组织的平均浮长 F 并解释其与织物松紧的关系</li>
+          <li>说出缎纹组织的三个构成条件</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <h4>能力目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>在方格纸上独立画准 2×2 平纹、2/1 斜纹与 5 枚缎纹的组织图</li>
+          <li>用「循环移位」方法由第 1 根纬纱推出整张组织图</li>
+          <li>对任意给定的枚数与飞数，判断它能否构成缎纹</li>
+          <li>由组织图作出对应上机图：穿综图与纹板图</li>
+        </ul>
+      </div>
+      <div class="card r">
+        <h4>素养目标</h4>
+        <ul style="margin:0;padding-left:20px">
+          <li>养成「画完必自检」的习惯：上下左右各复制一次看能否无缝拼接</li>
+          <li>建立「飞数决定方向、枚数决定疏密」的量化判断意识</li>
+          <li>理解组织图是织造指令的表达形式，而非单纯的图形练习</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>本讲的知识链条</h3>
+    <div class="chain">
+      <div class="node"><h5>一条规则</h5><p>经浮涂黑，纬浮留白。全部组织图都由它生成。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>一个递推</h5><p>下一根纬纱的组织点 = 上一根循环移位 S 格。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>三个约束</h5><p>D 枚数 R ≥ 5 且 R ≠ 6；1 &lt; S &lt; R−1；R 与 S 互质。</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>一张上机图</h5><p>组织图 + 穿综图 + 纹板图 = 织机听得懂的指令。</p></div>
+    </div>
+  </section>
+
+  <!-- ========== 02 组织点与完全组织 ========== -->
+  <section id="lang">
+    <h2><span class="num">02</span>组织图的语言：组织点与完全组织</h2>
+    <p class="lead">如果组织图是一门外语，它的词汇表只有两个词：黑格与白格。</p>
+
+    <h3>经纬纱与组织点</h3>
+    <p>
+      在织物中，<strong>经纱</strong>是与布边平行的纵向纱线，<strong>纬纱</strong>是与布边垂直的横向纱线。
+      两者上下交错的地方称为<strong>组织点</strong>。
+    </p>
+    <ul>
+      <li>当<strong>经纱浮在纬纱之上</strong>时，形成<strong>经组织点</strong>（又称经浮点），在组织图中<strong>涂黑</strong>；</li>
+      <li>当<strong>纬纱浮在经纱之上</strong>时，形成<strong>纬组织点</strong>（又称纬浮点），在组织图中<strong>留白</strong>。</li>
+    </ul>
+
+    <div class="legend">
+      <span class="it"><span class="sw blk"></span>■ 经组织点（经浮，涂黑）</span>
+      <span class="it"><span class="sw wht"></span>□ 纬组织点（纬浮，留白）</span>
+      <span class="it"><span class="sw" style="border-style:dashed"></span>方格纸一格 = 一个组织点</span>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">唯一规则</span>
+      经浮点涂黑，纬浮点留白。这一条规则贯穿平纹、斜纹、缎纹以及一切变化组织——后面所有图形，
+      都只是它在不同约束下反复施加的结果。
+    </div>
+
+    <h3>从三维织物到二维组织图</h3>
+    <p>
+      织物的真实结构是三维的：经纱在上、纬纱在下，彼此穿梭。方格纸把它压成二维——
+      每一个方格代表一个组织点，格子的位置就代表它落在哪根经纱与哪根纬纱的交叉处。
+      于是「谁在上面」这个物理事实，被编码成了「黑还是白」。
+    </p>
+
+    <h3>完全组织与组织循环纱线数</h3>
+    <p>
+      织物组织总是周期性的：一部分经纱与纬纱的浮沉规律反复出现。能够<strong>独立表达整个组织规律
+      的最小纱线组合</strong>，称为一个<strong>完全组织</strong>（或称一个组织循环）。其中：
+    </p>
+    <ul>
+      <li><strong>R<sub>j</sub></strong> —— 完全组织的经纱数（一循环内的经纱根数）；</li>
+      <li><strong>R<sub>w</sub></strong> —— 完全组织的纬纱数（一循环内的纬纱根数）。</li>
+    </ul>
+    <p>
+      对平纹、斜纹、缎纹这三类<strong>原组织</strong>，有 <strong>R<sub>j</sub> = R<sub>w</sub> = R</strong>，
+      因此常用一个数 R 表示，称为<strong>组织循环纱线数</strong>（口语里也说「几枚」，如「五枚缎纹」）。
+    </p>
+
+    <div class="note k">
+      <span class="note-h">编号规范（务必统一）</span>
+      <strong>经纱自左向右</strong>依次标 1、2、3…，<strong>纬纱自下而上</strong>依次标 1、2、3…。
+      即：图的横向是经纱、纵向是纬纱，原点在左下角。这一点如不统一，后面的「右斜／左斜」判断必然出错。
+    </div>
+
+    <div class="fig">
+      <div class="draftwrap" data-draft='{"t":"plain","R":6}' data-cell="40"></div>
+      <p class="figcap"><b>图 2-1</b>　平纹组织图（6×6 示意）。左侧数字为纬纱序号（自下而上），
+        上方数字为经纱序号（自左向右）。黑白相间如棋盘，这是平纹最直观的特征。</p>
+    </div>
+
+    <h3>组织图的三条自检线</h3>
+    <div class="grid3">
+      <div class="card"><h4>循环拼接</h4><p>不要只是照抄复制——复制本身必然无缝，查不出错。正确做法是遮住第 1 行，按你用的规律把第 R+1 行写出来，再与第 1 行逐格对照，两者必须完全相同；平铺后接缝两侧的浮长线、斜线不得错位或断头。</p></div>
+      <div class="card"><h4>行列计数</h4><p>每一行黑格数之和、每一列黑格数之和，都与所画组织的构造规律相符。缎纹要求每行、每列各恰有一个<strong>单独组织点</strong>（颜色随经面／纬面而变）。</p></div>
+      <div class="card"><h4>浮长检查</h4><p>沿经向与纬向数连续同色的格数，即浮长。浮长过大意味着布面易勾丝、耐磨变差。</p></div>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">「不出现两条黑格或两条白格并列」只对平纹成立</span>
+      平纹每行黑白逐格交替，相邻两格同色就说明规律断了；而斜纹（2/2 本就两黑两白连排）与缎纹（浮长 4 格以上）
+      正确地画出来也必然有同色连排，不能拿这一条去套它们。
+      分组织另有判据：<strong>斜纹</strong>看斜线过接缝时斜率不变、不错台，倒向与 S 的正负一致；
+      <strong>缎纹</strong>看单独组织点每行每列恰有一个，且沿经纬向数格的位移恒为 S。
+      <br>还有一件事三条线管不了：<strong>方向与面</strong>。三条线只查数值——2/1 ↗ 与 2/1 ↖ 的点数、浮长、周期完全相同，却是一正一反；
+      经面与纬面缎纹的浮长也完全相同，差别只在孤立点是黑还是白。
+    </div>
+  </section>
+
+  <!-- ========== 03 工具 ========== -->
+  <section id="tools">
+    <h2><span class="num">03</span>手绘与数码工具</h2>
+    <p class="lead">工具不决定水平，但决定你一天能画几张。</p>
+
+    <div class="grid2">
+      <div class="card d">
+        <h4>手绘工具</h4>
+        <p>
+          需要准备<strong>意匠纸</strong>或普通方格纸、<strong>铅笔</strong>、<strong>橡皮</strong>，
+          以及用于最终填色的<strong>黑色笔或马克笔</strong>。
+        </p>
+        <ul>
+          <li><strong>意匠纸</strong>自带大格子分区，画「几枚」组织时数格不易错，是首选；</li>
+          <li>铅笔与橡皮用于打草稿与修改，填色务必最后一步再做，避免中途改不动；</li>
+          <li>成本低、修改直观，最要紧的是——<span class="hl">每一格都经过你的手</span>，规律记得最牢。</li>
+        </ul>
+      </div>
+      <div class="card g">
+        <h4>数码工具</h4>
+        <p>数码绘制织物组织图有多种选择，各有适用场景：</p>
+        <div class="tw" style="margin:10px 0 0">
+          <table>
+            <thead><tr><th>工具</th><th>做法</th><th>适合</th></tr></thead>
+            <tbody>
+              <tr><td>Excel / WPS</td><td>调成正方形单元格，填充颜色</td><td>快、可复制循环</td></tr>
+              <tr><td>Photoshop</td><td>网格 + 图案填充</td><td>做效果图、纹理</td></tr>
+              <tr><td>Illustrator</td><td>网格 + 精确复制与对齐</td><td>出版级精度</td></tr>
+              <tr><td>系统「画图」类</td><td>方格网底 + 逐格涂色</td><td>应急</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:10px">
+          数码工具的优势是复制与缩放精确、改一枚只需重算一次；代价是容易「画完不理解」。
+          建议先用方格纸把规律跑通，再交给软件批量出图。
+        </p>
+      </div>
+    </div>
+
+    <h3>手绘的通用技术路线：一条路径，三个参数</h3>
+    <p>
+      三种组织常被当成三套画法，其实是同一条路径在三个参数上分岔：<strong>谁当种子线</strong>（一般是第 1 根纬纱，经面缎纹取第 1 根经纱）、
+      <strong>按几格递推</strong>（飞数 S）、<strong>先铺面还是先定点</strong>（缎纹必须先把孤立点定死）。路径走通之后，画平纹与画十二枚缎纹只是填不同的数。
+      平纹也不是例外：取 R = 2、S = 1，它正是这条递推式在最小枚数上的退化情形。
+    </p>
+
+    <div class="fig wide">
+      <svg viewBox="0 0 940 392" width="940" height="392" role="img" aria-label="手绘织物组织图的技术路线图">
+        <defs>
+          <marker id="orgAh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#1f4e79"/>
+          </marker>
+          <marker id="orgAg" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 Z" fill="#1a6f5a"/>
+          </marker>
+        </defs>
+      
+        <rect x="0" y="0" width="940" height="392" fill="#ffffff"/>
+      
+        <!-- ===== 第一排：①②③ ===== -->
+        <g>
+          <rect x="20" y="24" width="280" height="56" rx="10" fill="#ffffff" stroke="#c8d8e8" stroke-width="1.4"/>
+          <circle cx="44" cy="52" r="11" fill="#1f4e79"/>
+          <text x="44" y="56.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">1</text>
+          <text x="64" y="47" font-size="14.5" font-weight="700" fill="#1c2733">定参数</text>
+          <text x="64" y="66" font-size="11" fill="#6b7a8d">R、S、m、经面／纬面</text>
+        </g>
+        <line x1="302" y1="52" x2="326" y2="52" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+      
+        <g>
+          <rect x="330" y="24" width="280" height="56" rx="10" fill="#ffffff" stroke="#c8d8e8" stroke-width="1.4"/>
+          <circle cx="354" cy="52" r="11" fill="#1f4e79"/>
+          <text x="354" y="56.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">2</text>
+          <text x="374" y="47" font-size="14.5" font-weight="700" fill="#1c2733">铺网格、标序号</text>
+          <text x="374" y="66" font-size="11" fill="#6b7a8d">R×R；经 1…R 左→右，纬 1…R 下→上</text>
+        </g>
+        <line x1="612" y1="52" x2="636" y2="52" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+      
+        <g>
+          <rect x="640" y="24" width="280" height="56" rx="10" fill="#ffffff" stroke="#c8d8e8" stroke-width="1.4"/>
+          <circle cx="664" cy="52" r="11" fill="#1f4e79"/>
+          <text x="664" y="56.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">3</text>
+          <text x="684" y="47" font-size="14.5" font-weight="700" fill="#1c2733">写种子线</text>
+          <text x="684" y="66" font-size="11" fill="#6b7a8d">第 1 行；经面缎纹取第 1 列</text>
+        </g>
+      
+        <!-- ===== 第 ③ 阶段分岔 ===== -->
+        <path d="M780 80 V104 M160 104 H780" fill="none" stroke="#1f4e79" stroke-width="2"/>
+        <line x1="160" y1="104" x2="160" y2="118" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+        <line x1="470" y1="104" x2="470" y2="118" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+        <line x1="780" y1="104" x2="780" y2="118" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+      
+        <!-- ===== 三条泳道 ===== -->
+        <g>
+          <rect x="20" y="124" width="280" height="142" rx="10" fill="#ffffff" stroke="#c8d8e8" stroke-width="1.4"/>
+          <rect x="20" y="124" width="5" height="142" rx="2.5" fill="#1f4e79"/>
+          <text x="38" y="148" font-size="14" font-weight="700" fill="#1f4e79">平纹 1/1</text>
+          <text x="286" y="148" text-anchor="end" font-size="11" fill="#6b7a8d">R=2、S=1</text>
+          <text x="38" y="171" font-size="10.5" fill="#6b7a8d">种子线</text>
+          <text x="38" y="199" font-size="21" letter-spacing="3" fill="#1c2733">■ □</text>
+          <text x="38" y="222" font-size="11.5" fill="#455468">逐行推进，每行与上一行反相</text>
+          <text x="38" y="240" font-size="11.5" fill="#455468">即移位 1 格——斜纹公式在 R=2 的退化</text>
+          <text x="38" y="258" font-size="10.5" fill="#8a6d1f">易错：R 画成奇数，一上一下闭不上</text>
+        </g>
+        <g>
+          <rect x="330" y="124" width="280" height="142" rx="10" fill="#ffffff" stroke="#bfe0d5" stroke-width="1.4"/>
+          <rect x="330" y="124" width="5" height="142" rx="2.5" fill="#1a6f5a"/>
+          <text x="348" y="148" font-size="14" font-weight="700" fill="#1a6f5a">斜纹 m/(R−m)</text>
+          <text x="596" y="148" text-anchor="end" font-size="11" fill="#6b7a8d">R=m+n、S=±1</text>
+          <text x="348" y="171" font-size="10.5" fill="#6b7a8d">种子线</text>
+          <text x="348" y="199" font-size="21" letter-spacing="3" fill="#1c2733">■ ■ □</text>
+          <text x="348" y="222" font-size="11.5" fill="#455468">逐行推移 |S| 格：S 正右斜、负左斜</text>
+          <text x="348" y="240" font-size="11.5" fill="#455468">种子线 = m 黑 + (R−m) 白，越界回绕</text>
+          <text x="348" y="258" font-size="10.5" fill="#8a6d1f">易错：不回绕，斜线在边界断头</text>
+        </g>
+        <g>
+          <rect x="640" y="124" width="280" height="142" rx="10" fill="#ffffff" stroke="#ecdcb0" stroke-width="1.4"/>
+          <rect x="640" y="124" width="5" height="142" rx="2.5" fill="#8a6d1f"/>
+          <text x="658" y="148" font-size="14" font-weight="700" fill="#8a6d1f">缎纹（正则）</text>
+          <text x="906" y="148" text-anchor="end" font-size="11" fill="#6b7a8d">R≥5、R≠6、1&lt;S&lt;R−1</text>
+          <text x="658" y="171" font-size="10.5" fill="#6b7a8d">种子线（纬面示例）</text>
+          <text x="658" y="199" font-size="21" letter-spacing="3" fill="#1c2733">□ □ □ □ ■</text>
+          <text x="658" y="222" font-size="11.5" fill="#455468">纬面逐行推、经面逐列推，步长 S</text>
+          <text x="658" y="240" font-size="11.5" fill="#455468">先定孤立点再铺底色，gcd(R,S)=1</text>
+          <text x="658" y="258" font-size="10.5" fill="#8a6d1f">易错：先铺黑再找白点，补不回来</text>
+        </g>
+      
+        <!-- ===== 合流到 ④ ===== -->
+        <path d="M160 266 V286 M160 286 H780 M470 266 V286 M780 266 V286" fill="none" stroke="#1f4e79" stroke-width="2"/>
+        <line x1="160" y1="286" x2="160" y2="296" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+      
+        <!-- ===== 第二排：④⑤⑥ ===== -->
+        <g>
+          <rect x="20" y="300" width="280" height="56" rx="10" fill="#ffffff" stroke="#c8d8e8" stroke-width="1.4"/>
+          <circle cx="44" cy="328" r="11" fill="#1f4e79"/>
+          <text x="44" y="332.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">4</text>
+          <text x="64" y="323" font-size="14.5" font-weight="700" fill="#1c2733">移位推满</text>
+          <text x="64" y="342" font-size="11" fill="#6b7a8d">第 k 行 = 第 1 行移 (k−1)S 格（mod R）</text>
+        </g>
+        <line x1="302" y1="328" x2="326" y2="328" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+      
+        <g>
+          <rect x="330" y="300" width="280" height="56" rx="10" fill="#ffffff" stroke="#c8d8e8" stroke-width="1.4"/>
+          <circle cx="354" cy="328" r="11" fill="#1f4e79"/>
+          <text x="354" y="332.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">5</text>
+          <text x="374" y="323" font-size="14.5" font-weight="700" fill="#1c2733">三线自检 ＋ 方向</text>
+          <text x="374" y="342" font-size="11" fill="#6b7a8d">拼接 · 计数 · 浮长；再看斜向与面</text>
+        </g>
+        <line x1="612" y1="328" x2="636" y2="328" stroke="#1f4e79" stroke-width="2" marker-end="url(#orgAh)"/>
+      
+        <g>
+          <rect x="640" y="300" width="280" height="56" rx="10" fill="#ffffff" stroke="#c8d8e8" stroke-width="1.4"/>
+          <circle cx="664" cy="328" r="11" fill="#1f4e79"/>
+          <text x="664" y="332.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#ffffff">6</text>
+          <text x="684" y="323" font-size="14.5" font-weight="700" fill="#1c2733">标注出图</text>
+          <text x="684" y="342" font-size="11" fill="#6b7a8d">图题、R／S／m；再转上机图</text>
+        </g>
+      
+        <!-- ===== 自检回流（错因分流） ===== -->
+        <path d="M470 356 V372 H160 V360" fill="none" stroke="#1a6f5a" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#orgAg)"/>
+        <text x="486" y="377" font-size="11" fill="#1a6f5a">自检不合格 → 断线·错位回 ④　点数不符回 ③　浮长·方向回 ①</text>
+      </svg>
+      <p class="figcap"><b>图 3-1</b>　手绘织物组织图的通用技术路线。五个阶段中只有第 ③ 阶段随组织类型分岔，此后全是机械的循环移位；
+        自检不合格时按错因分流回第 ④、③、① 阶段，不必整张重画。</p>
+      <p class="small" style="margin:2px 2px 4px">工序层（不进主干）：铅笔起稿并标点 → 整张核对 → 墨笔填色 → 擦去辅助线。填色永远放在最后一步。</p>
+    </div>
+
+    <div class="note k">
+      <span class="note-h">这条路径管到哪里为止</span>
+      「种子线 + 循环移位」适用于<strong>单层、单系统经纬</strong>的规则组织。变化组织（重平、方平、加强斜纹）是在种子线上做加减；
+      联合组织（绉、透孔、蜂巢）是把两张图并合；复杂组织（双层、毛巾、起绒）要分层画——它们都还在这条路径上做加法，
+      只是参数更多、图层更多，一张 R×R 的二维图已经装不下。
+    </div>
+
+    <div class="note d">
+      <span class="note-h">本页自带一台绘图机</span>
+      第 10 节提供了一个可离线运行的组织图生成器：选组织类型、填枚数与飞数，图上每个格子都是按
+      飞数规则现算出来的，并会同时给出循环拼接与浮长的自检结果。它可以当作随手验证猜想用的计算器。
+    </div>
+  </section>
+
+  <!-- ========== 04 平纹 ========== -->
+  <section id="plain">
+    <h2><span class="num">04</span>平纹组织（R = 2）</h2>
+    <p class="lead">平纹是所有组织的起点：两根经、两根纬，一上一下，再无第二种可能。</p>
+
+    <h3>建立 2×2 完全组织</h3>
+    <p>
+      画平纹，先画一个 <strong>2×2</strong> 的方格网格。左侧自下而上标注纬纱序号 1、2，
+      上方自左向右标注经纱序号 1、2。这个 2×2 网格就是一个完整的平纹组织循环单元——
+      仅需两根经纱和两根纬纱即可完整表达其规律。
+    </p>
+    <div class="fig">
+      <div class="draftwrap" data-draft='{"t":"plain","R":2}' data-cell="62"></div>
+      <p class="figcap"><b>图 4-1</b>　平纹的 2×2 完全组织。它是全部组织图中最小的一个循环单元。</p>
+    </div>
+
+    <h3>一上一下交替填色</h3>
+    <p>按「一根纬纱看一行」的顺序逐行填色，规则只有一句：一上一下，交替进行。</p>
+
+    <div class="grid2">
+      <div class="card">
+        <h4>纬 1 填色</h4>
+        <p>
+          第一根纬纱（纬 1）投入时，<strong>经 1 浮在纬 1 之上</strong>，形成经组织点，涂黑；
+          <strong>经 2 沉在纬 1 之下</strong>，形成纬组织点，留白。
+          因此第一行的第一格涂黑、第二格留白。
+        </p>
+      </div>
+      <div class="card">
+        <h4>纬 2 填色</h4>
+        <p>
+          第二根纬纱（纬 2）投入时，<strong>经 1 沉在纬 2 之下</strong>，留白；
+          <strong>经 2 浮在纬 2 之上</strong>，涂黑。
+          因此第二行的第一格留白、第二格涂黑。
+        </p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <div class="draftwrap" data-draft='{"t":"plain","R":4}' data-cell="46" data-hl="1,2"></div>
+      <p class="figcap"><b>图 4-2</b>　把 2×2 单元复制两次得到的 4×4 平纹。前两根纬纱（橙色框）即上图逐行填色的结果，
+        继续复制便形成整幅布面的棋盘结构。</p>
+    </div>
+
+    <div class="note g">
+      <span class="note-h">口诀</span>
+      「一上一下，交替进行」。画的时候不要盯着一整张图，只盯<strong>上一行</strong>——
+      这一行是上一行的反相，一个字都不会错。
+    </div>
+
+    <h3>循环自检</h3>
+    <p>
+      画完 2×2 的平纹组织图后必须自检：把该单元在<strong>上下左右四个方向各复制一次</strong>，
+      观察黑白格子是否连续、有没有突兀的断线或多余的孤岛。
+    </p>
+    <p>
+      若拼接处出现<strong>两条黑格或两条白格并列</strong>，说明填色有误，须返回最小单元重新检查。
+      通过自检的组织图，才能无缝拼出符合织物实际结构的整幅布面。
+    </p>
+    <p class="small">
+      注意这是平纹的专属判据：平纹整张图上，上下左右相邻的两格都不同色，任何同色相邻都是错格；
+      斜纹、缎纹本就允许同色连排，不能套用这一条。
+    </p>
+
+    <div class="fig">
+      <div class="draftwrap" data-draft='{"t":"plain","R":2,"tile":3}' data-cell="30"></div>
+      <p class="figcap"><b>图 4-3</b>　循环拼接自检：把 2×2 单元向四个方向复制，拼接处应毫无痕迹。
+        平纹最常见的错误是「边界断行」——在边界处多涂或多空一格，一拼就露馅。</p>
+    </div>
+
+    <h3>平纹的平均浮长</h3>
+    <p>组织循环纱线数 R = 2，每根纱线在一个循环内与另一系统纱线的交错次数 t = 2，故</p>
+    <div class="eq">
+      <span class="big">F = <span class="frac"><span class="num">R</span><span class="den">t</span></span> = <span class="frac"><span class="num">2</span><span class="den">2</span></span> = 1</span>
+      <span class="lbl">平纹的平均浮长（浮长最短）</span>
+    </div>
+    <p>
+      平纹的经纬纱交错最频繁，纱线被牢牢约束，因而织物<strong>最紧密、最坚牢、最挺括</strong>，
+      但手感偏硬、光泽较暗。你穿的衬衫布、府绸、细平布，都是平纹。
+    </p>
+
+    <details class="q">
+      <summary><span class="qn">练</span>在 4×4 的方格纸上画出平纹组织图，并数出总共有多少个经组织点。</summary>
+      <div class="ans">
+        <p>4×4 共 16 格，按棋盘规律黑白各半，因此经组织点数 = 16 ÷ 2 = <span class="fin">8 个</span>。</p>
+        <p>更一般的规律：在 R×R 的平纹组织图中，经组织点数 = R² ÷ 2。注意平纹的完全组织固定为 R = 2，
+          因此 R 只能取 2 的整数倍（2、4、6…）；若硬画成边长为奇数的方格网，一上一下的规律无法闭合，
+          拼接时必然错位。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 05 斜纹 ========== -->
+  <section id="twill">
+    <h2><span class="num">05</span>斜纹组织（R ≥ 3 与飞数 S）</h2>
+    <p class="lead">平纹是「每格都翻」，斜纹是「隔几格才翻」——正是这个「隔」，画出了一条斜线。</p>
+
+    <h3>3×3 网格与飞数概念</h3>
+    <p>
+      以最常见的 <strong>2/1 ↗（二上一下右斜纹）</strong>为例：画一个 <strong>3×3</strong> 的网格，
+      左侧自下而上标纬纱 1、2、3，上方自左向右标经纱 1、2、3。这个 3×3 网格就是一个完整的斜纹组织循环单元。
+      「2/1」的意思是一根经纱在一个循环内<strong>连续浮在两根纬纱之上、再沉到一根纬纱之下</strong>。
+    </p>
+
+    <div class="legend">
+      <span class="it"><span class="sw blk"></span>■ 经组织点（经浮，涂黑）</span>
+      <span class="it"><span class="sw wht"></span>□ 纬组织点（纬浮，留白）</span>
+      <span class="it">分子 = 连续经浮根数 &nbsp;·&nbsp; 分母 = 连续纬浮根数</span>
+    </div>
+
+    <h3>飞数：斜纹的关键参数</h3>
+    <p>
+      <strong>飞数 S</strong> 是斜纹组织最核心的参数，它描述的是<strong>相邻两根纱线上单独组织点之间的移动量</strong>。
+      操作上的定义最不容易出错：
+    </p>
+    <div class="note d">
+      <span class="note-h">飞数的操作定义</span>
+      把当前这一根纬纱上的经组织点位置作为基准，<strong>换到下一根纬纱时，把它的经组织点整体向右（或向左）移动 S 格</strong>，
+      就得到下一根纬纱的填色。S 的符号决定斜向：
+      <ul style="margin:8px 0 0">
+        <li><strong>S 为正（↗）</strong>——经组织点每换一根纬纱向右移动，斜纹线向右上方倾斜，称<strong>右斜纹</strong>；</li>
+        <li><strong>S 为负（↖）</strong>——经组织点向左移动，斜纹线向左上方倾斜，称<strong>左斜纹</strong>。</li>
+      </ul>
+    </div>
+    <p>
+      对 2/1 ↗ 而言 S = +1：每织入下一根纬纱，经组织点整体向右移动一格。飞数决定斜纹的<strong>倾斜方向</strong>，
+      而浮长的组合（2/1、3/1、2/2…）决定斜纹线的<strong>粗细与角度</strong>。
+    </p>
+
+    <h3>循环移位填色演示</h3>
+    <p>按「一根纬纱一行」的顺序填色，做法就是反复做一次移位：</p>
+
+    <div class="grid3">
+      <div class="card">
+        <h4>纬 1 填色</h4>
+        <p>
+          第一根纬纱的规律是「二上一下」：经 1、经 2 浮在纬 1 之上（涂黑），经 3 沉在纬 1 之下（留白）。
+          因此第一行为 <strong>■ ■ □</strong>。
+        </p>
+      </div>
+      <div class="card">
+        <h4>纬 2 填色</h4>
+        <p>
+          把纬 1 的规律<strong>整体向右移动一格</strong>：第一格留白，第二、三格涂黑。
+          第二行为 <strong>□ ■ ■</strong>。
+        </p>
+      </div>
+      <div class="card">
+        <h4>纬 3 填色</h4>
+        <p>
+          再把纬 2 的规律向右移动一格。因为只有 3 根经纱，移出右边界后要<strong>循环回绕到最左边</strong>：
+          第一格与第三格涂黑，中间留白。第三行为 <strong>■ □ ■</strong>。
+        </p>
+      </div>
+    </div>
+
+    <div class="fig">
+      <div class="draftwrap" data-draft='{"t":"twill","R":3,"S":1,"m":2}' data-cell="56" data-hl="1,2"></div>
+      <p class="figcap"><b>图 5-1</b>　2/1 ↗ 右斜纹的 3×3 完全组织。橙色框标出前两根纬纱，即上面逐步挪动的结果。
+        斜视整图，黑格连成一条自左下向右上的斜线——这就是「斜纹」这个名字的来处。</p>
+    </div>
+
+    <div class="note k">
+      <span class="note-h">循环回绕是斜纹最容易出错的地方</span>
+      移位一旦移出边界，必须<strong>回到另一侧接着数</strong>（相当于对 R 取余）。漏掉这一步，斜纹线就会在边界处断掉，
+      整张组织图再也不成立。
+    </div>
+
+    <h3>左斜与变体：改一个参数，换一种纹路</h3>
+    <div class="grid4">
+      <div class="step"><span class="sn">1</span><strong>左斜纹（S = −1）</strong><br>经组织点向左移动，形成向左上方倾斜的斜纹线。</div>
+      <div class="step"><span class="sn">2</span><strong>飞数变化（S = +2）</strong><br>斜纹的倾斜角度变得更陡。不同飞数给出不同角度。</div>
+      <div class="step"><span class="sn">3</span><strong>浮长变化（2/1 → 3/1）</strong><br>连续经浮根数增加，斜纹线变粗、布面更显纹路。</div>
+      <div class="step"><span class="sn">4</span><strong>可选练习</strong><br>在 3×3 或 4×4 网格上自行尝试不同飞数与浮长组合，观察对角线角度的变化。</div>
+    </div>
+
+    <div class="grid3">
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"twill","R":3,"S":-1,"m":2}' data-cell="42"></div>
+        <p class="figcap"><b>图 5-2a</b>　2/1 ↖ 左斜纹（S = −1）</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"twill","R":4,"S":1,"m":3}' data-cell="42"></div>
+        <p class="figcap"><b>图 5-2b</b>　3/1 ↗ 右斜纹（R = 4，更粗的斜线）</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"twill","R":4,"S":1,"m":2}' data-cell="42"></div>
+        <p class="figcap"><b>图 5-2c</b>　2/2 ↗ 右斜纹（经纬浮长相等）</p>
+      </div>
+    </div>
+
+    <div class="note g">
+      <span class="note-h">斜纹的结构特点</span>
+      斜纹组织的特点是组织点在布面上连成一条<strong>清晰的斜向纹路</strong>。因为斜纹线有方向性，
+      织物有了严格意义上的正反面区别——这是平纹所没有的。同时，斜纹的经纬纱交错次数比平纹少，
+      纱线排列得更密，因此织物<strong>比平纹厚实、柔软，光泽也更好</strong>。
+    </div>
+
+    <h3>斜纹的平均浮长</h3>
+    <p>以 2/1 斜纹为例：组织循环纱线数 R = 3，每根纱线在一个循环内的交错次数 t = 2，故</p>
+    <div class="eq">
+      <span class="big">F = <span class="frac"><span class="num">R</span><span class="den">t</span></span> = <span class="frac"><span class="num">3</span><span class="den">2</span></span> = 1.5</span>
+      <span class="lbl">2/1 斜纹的平均浮长（介于平纹与缎纹之间）</span>
+    </div>
+    <p>
+      也可以直接从图上看：最大经浮长 = 2 格、最大纬浮长 = 1 格，两者取平均 <span class="fml">(2+1)/2 = 1.5</span>，
+      与公式结果一致。两种算法互为校验。
+    </p>
+
+    <details class="q">
+      <summary><span class="qn">练</span>画出 3/1 ↗ 右斜纹的组织图（R = 4），写出它的最大经浮长与平均浮长。</summary>
+      <div class="ans">
+        <p><strong>完全组织：</strong>R = 4，需要 4×4 的网格，共 16 格。</p>
+        <p><strong>逐行移位：</strong>纬 1 为 ■ ■ ■ □ → 纬 2 向右移 1 格为 □ ■ ■ ■ → 纬 3 为 ■ □ ■ ■ → 纬 4 为 ■ ■ □ ■。</p>
+        <p><strong>最大经浮长：</strong>沿任一列数连续黑格，得 <span class="fin">3 格</span>；最大纬浮长 = 1 格。</p>
+        <p><strong>平均浮长：</strong>F = R / t = 4 / 2 = <span class="fin">2</span>；用浮长校核 (3 + 1) / 2 = 2，一致。</p>
+        <p class="small">注意 3/1 与 2/1 的区别只在浮长组合，飞数都取 +1，因此斜向相同而斜线更粗。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 06 缎纹 ========== -->
+  <section id="satin">
+    <h2><span class="num">06</span>缎纹组织（R ≥ 5 与构成条件）</h2>
+    <p class="lead">缎纹把交错的次数压到最低：每一根纱在一个循环里只「交代」一次，其余时间全浮在表面。</p>
+
+    <h3>缎纹的核心：单独组织点</h3>
+    <p>
+      缎纹的定义与前两者不同。平纹看「上下交替」，斜纹看「斜线连缀」，而缎纹看<strong>孤立点</strong>：
+    </p>
+    <div class="note d">
+      <span class="note-h">定义</span>
+      在缎纹的一个完全组织中，<strong>每一根经纱上和每一根纬纱上都只有一个单独组织点</strong>，
+      这些单独组织点彼此相距较远、分布均匀，并被两旁另一系统纱线的<strong>浮长线</strong>所遮盖。
+      于是织物表面几乎全由一种浮长线构成，因而平滑、匀整、富有光泽。
+    </div>
+    <p>
+      由此引申出<strong>经面缎纹</strong>与<strong>纬面缎纹</strong>的分野：
+    </p>
+    <ul>
+      <li><strong>经面缎纹</strong>——织物正面主要被<strong>经浮长</strong>覆盖，
+        组织图中<strong>经组织点（黑）占多数</strong>，孤立的是<b>纬组织点（白）</b>。例：直贡呢、素缎。</li>
+      <li><strong>纬面缎纹</strong>——织物正面主要被<strong>纬浮长</strong>覆盖，
+        组织图中<strong>纬组织点（白）占多数</strong>，孤立的是<b>经组织点（黑）</b>。例：横贡缎、贡缎。</li>
+    </ul>
+
+    <h3>缎纹构成的三个条件</h3>
+    <p>并非任意枚数与飞数都能构成缎纹。三者缺一不可：</p>
+    <div class="eq">
+      <span class="big">① R ≥ 5 且 R ≠ 6</span><span class="lbl">枚数下限</span><br>
+      <span class="big">② 1 &lt; S &lt; R − 1</span><span class="lbl">飞数范围（S 为常数，称正则缎纹）</span><br>
+      <span class="big">③ gcd(R, S) = 1</span><span class="lbl">R 与 S 必须互质</span>
+    </div>
+    <div class="grid3">
+      <div class="card r">
+        <h4>为什么 R ≥ 5 且 R ≠ 6</h4>
+        <p>R = 3、4 时飞数只有 2，无法让相邻单独组织点充分散开；R = 6 时无论取 S = 5 还是 S = 1（为 6 的邻数，不合条件二），
+          都得不到均匀分布，故标准规定<strong>六枚无正则缎纹</strong>（只能做变则缎纹）。</p>
+      </div>
+      <div class="card k">
+        <h4>为什么 S 不能取 1 或 R−1</h4>
+        <p>S = 1 或 S = R−1 时，单独组织点会逐根顺次相连，退化成<strong>斜纹</strong>（如五枚一飞、五枚四飞就是斜纹），
+          不再是「孤立、互不连续」的缎纹。</p>
+      </div>
+      <div class="card d">
+        <h4>为什么必须互质</h4>
+        <p>若 R 与 S 有公因数，组织循环会在中途提前闭合——有些纱线上出现多个组织点，
+          另一些纱线上一个都没有，<strong>根本织不成布</strong>。例：R = 6、S = 2 或 3 都不行。</p>
+      </div>
+    </div>
+
+    <h3>5 枚 2 飞经面缎纹：参数解析</h3>
+    <div class="grid3">
+      <div class="card">
+        <h4>「5 枚」的含义</h4>
+        <p>一个完整的组织循环包含 5 根经纱和 5 根纬纱，因此需要画一个 5×5 的网格。</p>
+      </div>
+      <div class="card">
+        <h4>「2 飞」的含义</h4>
+        <p>相邻两根纱线上单独组织点的移动量为 2 格。经面缎纹使用<strong>经向飞数</strong>：
+          从当前单独组织点向右移一根经纱，再向上数 2 格，即得到下一个单独组织点。</p>
+      </div>
+      <div class="card">
+        <h4>「经面」的含义</h4>
+        <p>织物正面主要由经纱覆盖，经浮长线长而连续，形成光滑匀整的布面效应。</p>
+      </div>
+    </div>
+
+    <h4>绘制步骤：单经单点，均匀落位</h4>
+    <p>
+      经面缎纹的起点取在左下角（经 1、纬 1），该点是<strong>孤立纬组织点</strong>；其余所有格子先一律填成经组织点（黑）。
+      然后按经向飞数 2 依次找到另外四个孤立点：
+    </p>
+    <div class="chain">
+      <div class="node"><h5>经 1</h5><p>孤立点在纬 1</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>经 2</h5><p>向右移 1 根、向上 2 格 → 纬 3</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>经 3</h5><p>再向上 2 格 → 纬 5</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>经 4</h5><p>向上 2 格越界，回绕 → 纬 2</p></div>
+      <div class="arw">→</div>
+      <div class="node"><h5>经 5</h5><p>→ 纬 4</p></div>
+    </div>
+    <p>
+      每个经纱上只有一个孤立组织点，5 个点分布在 5 个不同的纬纱上，分布均匀、互不连续。
+      把这些点留白，其余全部涂黑，就得到 5 枚 2 飞经面缎纹的组织图。
+    </p>
+
+    <div class="fig">
+      <div class="draftwrap" data-draft='{"t":"satin","R":5,"S":2,"face":"warp"}' data-cell="52"></div>
+      <p class="figcap"><b>图 6-1</b>　5 枚 2 飞<b>经面</b>缎纹。经组织点（黑）占多数，5 个孤立纬组织点（白）均匀分布且互不相邻——
+        「枚数 5」在图上就是 5 个白点的个数，「飞数 2」就是白点每次的移动量。</p>
+    </div>
+
+    <h3>经面与纬面：一次对照</h3>
+    <p>把同一枚数、同一飞数的经面与纬面缎纹并排看，区别一目了然——两者恰好互为转置：</p>
+    <div class="grid2">
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"satin","R":5,"S":2,"face":"warp"}' data-cell="44"></div>
+        <p class="figcap"><b>图 6-2a</b>　5 枚 2 飞<b>经面</b>缎纹：黑为主，孤立白点为纬组织点。</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"satin","R":5,"S":2,"face":"weft"}' data-cell="44"></div>
+        <p class="figcap"><b>图 6-2b</b>　5 枚 2 飞<b>纬面</b>缎纹：白为主，孤立黑点为经组织点。</p>
+      </div>
+    </div>
+
+    <details class="q">
+      <summary><span class="qn">练</span>判断下列组合能否构成正则缎纹，并说明理由：① R = 6, S = 3；② R = 5, S = 1；③ R = 8, S = 3；④ R = 12, S = 4。</summary>
+      <div class="ans">
+        <p>① <strong>不能</strong>。R = 6 属「6 除外」，且 gcd(6, 3) = 3 ≠ 1，两个条件同时不满足。</p>
+        <p>② <strong>不能</strong>。S = 1 不满足 1 &lt; S &lt; R−1，单独组织点会连成斜线，退化为五枚一飞斜纹。</p>
+        <p>③ <strong>能</strong>。R = 8 ≥ 5 且 ≠ 6；1 &lt; 3 &lt; 7 成立；gcd(8, 3) = 1。<span class="fin">这是常用的八枚三飞缎纹。</span></p>
+        <p>④ <strong>不能</strong>。1 &lt; 4 &lt; 11 成立，但 gcd(12, 4) = 4 ≠ 1，组织循环会提前闭合，不是正则缎纹。</p>
+      </div>
+    </details>
+
+    <h3>循环与浮长检验</h3>
+    <p>缎纹画完后要双向检验，两件事各查一遍：</p>
+    <div class="grid4">
+      <div class="step"><span class="sn">1</span>沿<strong>经向</strong>看同一列，孤立点是否等距分布。</div>
+      <div class="step"><span class="sn">2</span>沿<strong>纬向</strong>看同一行，孤立点是否落在不同的经纱上。</div>
+      <div class="step"><span class="sn">3</span>数<strong>连续同色格</strong>——它就是这个方向的浮长。</div>
+      <div class="step"><span class="sn">4</span>把完全组织向四周复制一次，看拼接处是否<strong>无缝</strong>。</div>
+    </div>
+    <div class="note r">
+      <span class="note-h">浮长过长的代价</span>
+      缎纹的浮长线长，是它光泽好的原因，也正是它<strong>易摩擦起毛、易勾丝、耐磨性最差</strong>的原因。
+      枚数越大（5 枚 → 8 枚 → 12 枚），浮长越长，光泽越好、手感越柔软，<strong>坚牢度越低</strong>。
+      这是缎纹织物必须轻柔护理的根本原因。
+    </div>
+
+    <h3>换一个例子：7 枚 3 飞纬面缎纹</h3>
+    <p>
+      纬面缎纹使用<strong>纬向飞数</strong>：从当前单独组织点向上移一根纬纱，再向右数 S 格，即得下一个单独组织点。
+      以 R = 7、S = 3 为例，起点（纬 1、经 1），逐根推进如下：
+    </p>
+    <div class="tw">
+      <table>
+        <thead><tr><th class="num">纬纱</th><th>推进过程</th><th class="num">孤立经组织点落在</th></tr></thead>
+        <tbody>
+          <tr><td class="num">纬 1</td><td>起点</td><td class="num">经 1</td></tr>
+          <tr><td class="num">纬 2</td><td>向右数 3 格：经 2 → 经 3 → 经 4</td><td class="num">经 4</td></tr>
+          <tr><td class="num">纬 3</td><td>再向右数 3 格：经 5 → 经 6 → 经 7</td><td class="num">经 7</td></tr>
+          <tr><td class="num">纬 4</td><td>向右数 3 格越界，循环回绕：经 1 → 经 2 → 经 3</td><td class="num">经 3</td></tr>
+          <tr><td class="num">纬 5</td><td>向右数 3 格：经 4 → 经 5 → 经 6</td><td class="num">经 6</td></tr>
+          <tr><td class="num">纬 6</td><td>向右数 3 格：经 7 →（回绕）经 1 → 经 2</td><td class="num">经 2</td></tr>
+          <tr><td class="num">纬 7</td><td>向右数 3 格：经 3 → 经 4 → 经 5</td><td class="num">经 5</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      7 个孤立经组织点分别落在 7 个不同的经纱上，每根经纱、每根纬纱上各只有 1 个，
+      满足缎纹的定义；gcd(7, 3) = 1，故构成正则缎纹。
+    </p>
+
+    <div class="fig">
+      <div class="draftwrap" data-draft='{"t":"satin","R":7,"S":3,"face":"weft"}' data-cell="40"></div>
+      <p class="figcap"><b>图 6-3</b>　7 枚 3 飞<b>纬面</b>缎纹。白格（纬组织点）占多数，7 个黑点是孤立的经组织点。
+        与图 6-1 相比：本次飞数 3、枚数 7，孤立点的间距更疏，浮长更长。</p>
+    </div>
+
+    <details class="q">
+      <summary><span class="qn">练</span>5 枚 2 飞经面缎纹中，最大经浮长与最大纬浮长各是多少？由此求平均浮长，并与公式 F = R/t 对照。</summary>
+      <div class="ans">
+        <p>看图 6-1：沿任一<strong>列</strong>数连续黑格，为 4 格，即<strong>最大经浮长 = 4</strong>；
+          沿任一<strong>行</strong>数连续白格，为 1 格，即<strong>最大纬浮长 = 1</strong>。</p>
+        <p>两者之和 4 + 1 = 5 = R，故平均浮长 = (4 + 1) / 2 = <span class="fin">2.5</span>。</p>
+        <p>公式法：F = R / t = 5 / 2 = 2.5，一致。</p>
+        <p class="small">若换成 5 枚 2 飞<strong>纬面</strong>缎纹，则最大经浮长与最大纬浮长互换为 1 与 4，平均浮长仍为 2.5——
+          经面与纬面改变的是「谁盖住谁」，不改变浮长的平均值。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 07 平均浮长与对比 ========== -->
+  <section id="float">
+    <h2><span class="num">07</span>平均浮长 F 与三原组织对比</h2>
+    <p class="lead">三种组织的差别，最终可以压缩成一个数——平均浮长。它一变大，光泽就上来，坚牢度就下去。</p>
+
+    <h3>平均浮长的定义式</h3>
+    <div class="eq">
+      <span class="big">F = <span class="frac"><span class="num">R</span><span class="den">t</span></span></span>
+      <span class="lbl">R = 组织循环纱线数；t = 一根纱线在一个组织循环内与另一系统纱线的交织次数</span>
+    </div>
+    <p>
+      <strong>平均浮长</strong>的含义可以直白地理解为：一根纱在一个组织循环里，平均连续浮在另一系统纱线之上的格数。
+      它衡量的是纱线被约束的程度——F 越大，纱线越自由，布面越松软。
+    </p>
+    <div class="note d">
+      <span class="note-h">三原组织的 t 恒为 2</span>
+      平纹、斜纹、缎纹这三类原组织，一根纱在一个循环内都只经历<strong>两次交织</strong>（一次由浮转沉、一次由沉转浮），
+      因此 t ≡ 2，平均浮长就简化为 <span class="fml">F = R / 2</span>。这是本讲最省事的结论。
+    </div>
+
+    <h3>三原组织对比速览</h3>
+    <div class="tw">
+      <table>
+        <thead>
+          <tr>
+            <th>组织</th><th class="num">R</th><th class="num">t</th><th class="num">F</th>
+            <th class="num">最大经浮长</th><th class="num">最大纬浮长</th>
+            <th>光泽</th><th>坚牢度</th><th>手感</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>平纹 1/1</strong></td><td class="num">2</td><td class="num">2</td><td class="num">1</td><td class="num">1</td><td class="num">1</td><td>较暗</td><td>最好</td><td>紧、挺</td></tr>
+          <tr><td><strong>斜纹 2/1</strong></td><td class="num">3</td><td class="num">2</td><td class="num">1.5</td><td class="num">2</td><td class="num">1</td><td>较好</td><td>较好</td><td>较紧</td></tr>
+          <tr><td><strong>斜纹 3/1</strong></td><td class="num">4</td><td class="num">2</td><td class="num">2</td><td class="num">3</td><td class="num">1</td><td>好</td><td>一般</td><td>较软</td></tr>
+          <tr><td><strong>缎纹 5 枚</strong></td><td class="num">5</td><td class="num">2</td><td class="num">2.5</td><td class="num">4</td><td class="num">1</td><td>最好</td><td>最差</td><td>最软</td></tr>
+          <tr><td><strong>缎纹 8 枚</strong></td><td class="num">8</td><td class="num">2</td><td class="num">4</td><td class="num">7</td><td class="num">1</td><td>最好</td><td>最差</td><td>最软</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small">
+      表中「最大经浮长」与「最大纬浮长」之和恰等于 R（1+1=2，2+1=3，3+1=4，4+1=5，7+1=8），
+      故两者的平均值也就是 F。这是一条很实用的自查：<span class="fml">(最大经浮长 + 最大纬浮长) ÷ 2 = R ÷ 2 = F</span>。
+    </p>
+
+    <div class="grid3">
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"plain","R":6}' data-cell="34"></div>
+        <p class="figcap"><b>图 7-1a</b>　平纹（F = 1）：黑白最碎、交错最密。</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"twill","R":4,"S":1,"m":2}' data-cell="34"></div>
+        <p class="figcap"><b>图 7-1b</b>　2/2 斜纹（F = 2）：黑格连成斜线。</p>
+      </div>
+      <div class="fig" style="margin:10px 0">
+        <div class="draftwrap" data-draft='{"t":"satin","R":5,"S":2,"face":"warp"}' data-cell="34"></div>
+        <p class="figcap"><b>图 7-1c</b>　5 枚 2 飞经面缎纹（F = 2.5）：大片连成一体，只余零星孤立点。</p>
+      </div>
+    </div>
+
+    <div class="note g">
+      <span class="note-h">从 F 到服用性能：一条完整的因果链</span>
+      <ul style="margin:8px 0 0">
+        <li><strong>F ↑ → 浮长线 ↑ → 纱线可舒展、可压扁</strong>：织物更柔软、更松软，纱线排列更紧密，布面更平滑；</li>
+        <li><strong>浮长线 ↑ → 反光面连续 ↑</strong>：光泽更好。缎纹的光泽优于斜纹，斜纹优于平纹，根源就在这里；</li>
+        <li><strong>浮长线 ↑ → 交织点 ↓、摩擦时绒线易被勾起</strong>：强度与耐磨性下降，易起毛、勾丝、擦伤。</li>
+      </ul>
+    </div>
+    <p>
+      这条链可以解释你在丝织物分类表中会看到的一句话——<strong>缎纹「因经纬浮长线长，耐磨性稍差」</strong>。
+      它不是经验之谈，而是 F = R / t 的必然结果。
+    </p>
+
+    <details class="q">
+      <summary><span class="qn">练</span>某缎纹组织的最大经浮长为 7、最大纬浮长为 1。求它的枚数 R、平均浮长 F，并判断它最可能是几枚缎纹。</summary>
+      <div class="ans">
+        <p>R = 最大经浮长 + 最大纬浮长 = 7 + 1 = <span class="fin">8</span>，即八枚缎纹。</p>
+        <p>F = R / t = 8 / 2 = <span class="fin">4</span>；用浮长校核 (7 + 1) / 2 = 4，一致。</p>
+        <p class="small">八枚缎纹是丝织物中最常用的缎纹组织——丝线细、密度大，浮长再长一些也不至于散乱，光泽却更上一层。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 08 实物还原与常见错误 ========== -->
+  <section id="restore">
+    <h2><span class="num">08</span>从实物到组织图：还原实战</h2>
+    <p class="lead">前面都是「给定规律画图」，这一步反过来：给一块布，把规律读出来。</p>
+
+    <h3>还原织物组织的四个步骤</h3>
+    <div class="grid4">
+      <div class="step"><span class="sn">1</span><strong>观察</strong><br>用<strong>照布镜</strong>（或低倍放大镜）观察织物的经纬密度与浮线走向，判断哪一系统纱线浮在表面。</div>
+      <div class="step"><span class="sn">2</span><strong>记录</strong><br>把观察到的经纬密度、浮线走向、单个组织点的间距等信息详细记下来，作为绘图依据。</div>
+      <div class="step"><span class="sn">3</span><strong>绘图</strong><br>在方格纸上按「经浮点涂黑、纬浮点留白」逐格画出，先定完全组织的大小，再逐格填色。</div>
+      <div class="step"><span class="sn">4</span><strong>验证</strong><br>把画好的组织图上下左右拼接，看能否无缝衔接；再与实物对照，核对斜向与浮长。</div>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">一个实用的起点判断</span>
+      拿到一块布，先问三个问题：<strong>①</strong> 布面有没有明显斜向纹路？（有 → 斜纹或缎纹；没有而颗粒均匀 → 平纹）
+      <strong>②</strong> 表面是一种纱线独占还是两种交替？（一种独占且光泽强 → 缎纹）
+      <strong>③</strong> 反光最好的方向是经向还是纬向？（经向 → 经面缎纹；纬向 → 纬面缎纹）
+    </div>
+
+    <h3>常见错误与修正速查</h3>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:24%">错误现象</th><th style="width:40%">原因</th><th>修正方法</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>斜纹方向反了</strong></td>
+            <td>飞数的符号取反（+1 画成了 −1）</td>
+            <td>观察斜纹线方向，回头核对飞数符号；右斜 S 为正、左斜 S 为负。</td>
+          </tr>
+          <tr>
+            <td><strong>缎纹黑点（孤立点）重叠或错位</strong></td>
+            <td>飞数推进时忘记对 R 取模，越界后没有循环回绕</td>
+            <td>重新按取模规则计算落位，确保每根纱上恰有 1 个孤立点、且分布均匀。</td>
+          </tr>
+          <tr>
+            <td><strong>平纹边界断行</strong></td>
+            <td>自检时忽略了边界循环，拼接处多涂或多空一格</td>
+            <td>回到 2×2 最小单元重新检查；用「上下左右各复制一次」的方法验证无缝。</td>
+          </tr>
+          <tr>
+            <td><strong>浮长过长</strong></td>
+            <td>枚数选得过大，或浮长组合与设计意图不符</td>
+            <td>数连续同色格，确认与所选枚数的浮长一致；若布面要求耐磨，改用较小枚数。</td>
+          </tr>
+          <tr>
+            <td><strong>经、纬编号方向搞反</strong></td>
+            <td>把经纱序号标在了纵轴、或纬纱序号自下而上与自上而下混用</td>
+            <td>统一规范：经纱自左向右 1…R，纬纱自下而上 1…R。方向一乱，斜向与飞数判断全会跟着错。</td>
+          </tr>
+          <tr>
+            <td><strong>经面缎纹与纬面缎纹弄混</strong></td>
+            <td>把孤立点的颜色记反了</td>
+            <td>记牢：经面缎纹以<strong>经组织点（黑）为主</strong>、孤立的是白点；纬面缎纹反之。绘制前先确认织物正面由哪一种浮长覆盖。</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ========== 09 上机图 ========== -->
+  <section id="loom">
+    <h2><span class="num">09</span>从组织图到上机图</h2>
+    <p class="lead">组织图是「布应该长成什么样」，上机图是「织机该怎么动」。两者之间隔着一层翻译。</p>
+
+    <h3>为什么还要一张上机图</h3>
+    <p>
+      组织图只描述了经纬纱的交织规律，但织机不知道「哪根经纱该抬起来」。织机能做的只有两件事：
+      <strong>把某些经纱提起（提综）</strong>，然后<strong>打一根纬纱进去</strong>。
+      所以必须把组织图翻译成织机听得懂的指令——这就是<strong>上机图</strong>。
+    </p>
+    <p>上机图由三张互相关联的图组成，位置关系是固定的：</p>
+    <div class="chain">
+      <div class="node"><h5>穿综图</h5><p>每根经纱穿在第几片综框上。（在上）</p></div>
+      <div class="arw">+</div>
+      <div class="node"><h5>纹板图</h5><p>每根纬纱投入时，该提起哪几片综框。（在右）</p></div>
+      <div class="arw">+</div>
+      <div class="node"><h5>组织图</h5><p>交织规律本身，是另两张图的「结果」。（在左下）</p></div>
+      <div class="arw">=</div>
+      <div class="node"><h5>上机图</h5><p>织机可以直接执行的一组指令。</p></div>
+    </div>
+
+    <h3>三张图的读法</h3>
+    <div class="grid3">
+      <div class="card d">
+        <h4>组织图</h4>
+        <p><strong>横格 = 经纱序号，纵格 = 纬纱序号。</strong>黑格表示该处经纱浮在纬纱之上。</p>
+      </div>
+      <div class="card g">
+        <h4>穿综图</h4>
+        <p><strong>横格 = 经纱序号，纵格 = 综框序号。</strong>在「经纱 j × 综框 i」处做标记，表示第 j 根经纱穿入第 i 片综框。</p>
+      </div>
+      <div class="card k">
+        <h4>纹板图</h4>
+        <p><strong>横格 = 综框序号，纵格 = 纬纱序号。</strong>在第 k 根纬纱那一行标出要提起的综框，就是这一梭的提综指令。</p>
+      </div>
+    </div>
+
+    <h3>三图联动：以 2/1 ↗ 斜纹为例</h3>
+    <p>
+      取 2/1 ↗ 斜纹，R = 3，用 3 片综框、<strong>顺穿法</strong>（第 1 根经纱穿第 1 片综，第 2 根穿第 2 片，依此类推）。
+      下面这张图把三张图按标准位置摆在一起：
+    </p>
+    <div class="fig wide">
+      <div class="draftwrap" data-loom='{"t":"twill","R":3,"S":1,"m":2}' data-cell="34"></div>
+      <p class="figcap"><b>图 9-1</b>　2/1 ↗ 斜纹的完整上机图。上方为穿综图，左下为组织图，右下为纹板图。
+        三图中同一根经纱、同一根纬纱、同一片综框的位置一一对应。</p>
+    </div>
+
+    <h4>逐根对照读一遍</h4>
+    <div class="tw">
+      <table>
+        <thead><tr><th style="width:16%">对象</th><th style="width:42%">在组织图上看</th><th>在上机图上的对应</th></tr></thead>
+        <tbody>
+          <tr><td><strong>经纱 1</strong></td><td>纬 1、纬 2 涂黑，纬 3 留白 → 这根经纱大多数时候要抬起</td><td>穿综图第 1 列在第 1 片综上做标记 → 经纱 1 挂在综框 1</td></tr>
+          <tr><td><strong>经纱 2</strong></td><td>纬 1 涂黑，纬 2 涂黑，纬 3 留白</td><td>穿综图第 2 列标记在第 2 片综 → 经纱 2 挂在综框 2</td></tr>
+          <tr><td><strong>经纱 3</strong></td><td>纬 1 留白，纬 2、纬 3 涂黑</td><td>穿综图第 3 列标记在第 3 片综 → 经纱 3 挂在综框 3</td></tr>
+          <tr><td><strong>纬 1 那一梭</strong></td><td>该行黑格落在经 1、经 2</td><td>纹板图纬 1 行标记综框 1、综框 2 → 这一梭提起第 1、2 片综</td></tr>
+          <tr><td><strong>纬 2 那一梭</strong></td><td>该行黑格落在经 2、经 3</td><td>纹板图纬 2 行标记综框 2、综框 3</td></tr>
+          <tr><td><strong>纬 3 那一梭</strong></td><td>该行黑格落在经 1、经 3</td><td>纹板图纬 3 行标记综框 1、综框 3</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note d">
+      <span class="note-h">顺穿法下的一条便利结论</span>
+      采用顺穿法时，第 j 根经纱恰好穿在第 j 片综框上，于是<strong>纹板图与组织图完全相同</strong>——
+      纬纱 k 那一行要提的综框，正是组织图第 k 行涂黑的那些经纱。这也是初学者最容易上手的一种上机方式。
+      若改用飞穿、分区穿等其他穿综方法，穿综图的标记位置会变，纹板图也要跟着重排。
+    </div>
+
+    <h3>别忘了穿筘图</h3>
+    <p>
+      完整的上机图还包含一张<strong>穿筘图</strong>，用来表示每个筘齿中穿入几根经纱。
+      缎纹织物多数采用<strong>顺穿法</strong>，每一筘齿穿入 2～4 根经纱；筘齿穿入数直接决定织物的经密，
+      因此它虽然简单，却与成品的紧度和外观直接相关。
+    </p>
+
+    <h3>正织与反织</h3>
+    <p>
+      同一块布可以正织，也可以反织。例如五枚经面缎纹，既能用 <strong>4/1 踏盘正织</strong>，
+      也能用 <strong>1/4 踏盘反织</strong>——两者得到的织物互为反面。
+    </p>
+    <div class="grid2">
+      <div class="card g">
+        <h4>正织</h4>
+        <p>产品质量与机械效率都更高，但断经、跳纱一类的疵点在布面上<strong>不易被发现</strong>，往往要等到验布才暴露。</p>
+      </div>
+      <div class="card r">
+        <h4>反织</h4>
+        <p>断经、跳纱疵点<strong>容易发现</strong>，便于及时处理；代价是产品质量与机械效率都不如正织。采用哪种，取决于品种与设备条件。</p>
+      </div>
+    </div>
+
+    <details class="q">
+      <summary><span class="qn">练</span>对 2/2 ↗ 斜纹（R = 4）采用顺穿法，写出纹板图每一梭要提起的综框，并说明纹板图与组织图的关系。</summary>
+      <div class="ans">
+        <p><strong>组织图（2/2 ↗，S = +1）：</strong></p>
+        <p class="fml" style="display:block;white-space:normal;line-height:2">
+          纬 1：■ ■ □ □<br>
+          纬 2：□ ■ ■ □<br>
+          纬 3：□ □ ■ ■<br>
+          纬 4：■ □ □ ■
+        </p>
+        <p><strong>顺穿法</strong>下经 1～经 4 分别穿入综框 1～4，因此纹板图与组织图相同，逐梭提综为：</p>
+        <ul>
+          <li>纬 1：提综框 <span class="fin">1、2</span></li>
+          <li>纬 2：提综框 <span class="fin">2、3</span></li>
+          <li>纬 3：提综框 <span class="fin">3、4</span></li>
+          <li>纬 4：提综框 <span class="fin">4、1</span>（第 4 梭越界后回绕到综框 1）</li>
+        </ul>
+        <p class="small">规律：每一梭提起的是相邻的两片综框，逐梭向后平移并在边界回绕——这正是斜纹纹路在布面上连续上升的来源。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 10 生成器 ========== -->
+  <section id="gen">
+    <h2><span class="num">10</span>织物组织图生成器</h2>
+    <p class="lead">把飞数改成别的数会怎样？改一个参数，立刻看到图、也看到后果——包括它是否还成立。</p>
+
+    <div class="tool">
+      <div class="tool-h">组织图生成器（依飞数规则实时绘制）</div>
+
+      <div class="frow">
+        <div class="fld">
+          <label for="g-type">组织类型</label>
+          <select id="g-type">
+            <option value="plain">平纹</option>
+            <option value="twill">斜纹</option>
+            <option value="satin" selected>缎纹</option>
+          </select>
+        </div>
+        <div class="fld">
+          <label for="g-R">枚数 R（完全组织纱线数）</label>
+          <input type="number" id="g-R" min="2" max="12" step="1" value="5">
+        </div>
+        <div class="fld" id="g-m-wrap">
+          <label for="g-m">分子 m（连续经浮根数）</label>
+          <input type="number" id="g-m" min="1" max="11" step="1" value="2">
+        </div>
+        <div class="fld">
+          <label for="g-S">飞数 S（负值为左斜）</label>
+          <input type="range" id="g-S" min="-11" max="11" step="1" value="2">
+          <span class="rngv" id="g-Sv">2</span>
+        </div>
+      </div>
+
+      <div class="frow" id="g-face-wrap">
+        <div class="fld" id="g-face-fld">
+          <label>缎纹的面</label>
+          <div class="chips" style="margin:0" id="g-face">
+            <button class="chip on" type="button" data-face="warp">经面缎纹</button>
+            <button class="chip" type="button" data-face="weft">纬面缎纹</button>
+          </div>
+        </div>
+        <div class="fld">
+          <label>显示</label>
+          <div class="chips" style="margin:0">
+            <button class="chip" type="button" id="g-tile">循环拼接自检（3×3）</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chips" id="g-presets">
+        <button class="chip" type="button" data-preset="plain,2,1,1,warp">平纹 1/1</button>
+        <button class="chip" type="button" data-preset="twill,3,1,2,warp">2/1 ↗</button>
+        <button class="chip" type="button" data-preset="twill,3,-1,2,warp">2/1 ↖</button>
+        <button class="chip" type="button" data-preset="twill,4,1,3,warp">3/1 ↗</button>
+        <button class="chip" type="button" data-preset="twill,4,1,2,warp">2/2 ↗</button>
+        <button class="chip" type="button" data-preset="satin,5,2,1,warp">5 枚 2 飞经面缎</button>
+        <button class="chip" type="button" data-preset="satin,5,3,1,warp">5 枚 3 飞经面缎</button>
+        <button class="chip" type="button" data-preset="satin,5,2,1,weft">5 枚 2 飞纬面缎</button>
+        <button class="chip" type="button" data-preset="satin,7,3,1,weft">7 枚 3 飞纬面缎</button>
+        <button class="chip" type="button" data-preset="satin,8,3,1,warp">8 枚 3 飞经面缎</button>
+        <button class="chip" type="button" data-preset="satin,12,5,1,warp">12 枚 5 飞经面缎</button>
+      </div>
+
+      <div class="draftwrap" id="g-out"></div>
+      <div class="out" id="g-cards"></div>
+      <div class="err" id="g-err"></div>
+    </div>
+
+    <div class="legend">
+      <span class="it"><span class="sw blk"></span>■ 经组织点（经浮，涂黑）</span>
+      <span class="it"><span class="sw wht"></span>□ 纬组织点（纬浮，留白）</span>
+      <span class="it">横轴：经纱 1…R（自左向右）</span>
+      <span class="it">纵轴：纬纱 1…R（自下而上）</span>
+    </div>
+
+    <h3>生成器会替你检查的四件事</h3>
+    <div class="grid4">
+      <div class="step"><span class="sn">1</span><strong>枚数与飞数的合法性</strong><br>缎纹要求 R ≥ 5、R ≠ 6，且 1 &lt; |S| &lt; R−1。</div>
+      <div class="step"><span class="sn">2</span><strong>R 与 S 是否互质</strong><br>不互质时组织循环会提前闭合，图上会出现「有的纱没有组织点」。</div>
+      <div class="step"><span class="sn">3</span><strong>循环能否无缝拼接</strong><br>点开「循环拼接自检」，把完全组织复制成 3×3，拼接处应毫无痕迹。</div>
+      <div class="step"><span class="sn">4</span><strong>浮长有多长</strong><br>实时给出最大经浮长、最大纬浮长与平均浮长 F，并换算成坚牢度提示。</div>
+    </div>
+
+    <div class="note k">
+      <span class="note-h">建议试三组数，把结论踩实</span>
+      <ul style="margin:8px 0 0">
+        <li>把缎纹的枚数从 <strong>5</strong> 调到 <strong>8</strong>：浮长从 4 变到 7，F 从 2.5 变到 4 —— 光泽更好，坚牢度更低。</li>
+        <li>把缎纹的飞数设成 <strong>R 的因数</strong>（如 R = 6、S = 3）：看它怎样被判定为不合法。</li>
+        <li>把斜纹的飞数从 <strong>+1</strong> 改成 <strong>−1</strong>：斜线整体翻向，其余参数一个没动。</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========== 11 自测练习 ========== -->
+  <section id="quiz">
+    <h2><span class="num">11</span>自测练习</h2>
+    <p class="lead">先合上图自己画一遍，再点开对照。画错的那一处，就是还没真正掌握的地方。</p>
+
+    <details class="q">
+      <summary><span class="qn">1</span>在方格纸上画出 2×2 平纹组织图，说明它为什么是「最小的」完全组织。</summary>
+      <div class="ans">
+        <p>第一行 ■ □，第二行 □ ■。</p>
+        <p>因为平纹的交织规律以「一上一下」为周期，一根经纱与相邻两根纬纱的关系就已经包含了全部变化——
+          再多画就只是重复。故 R<sub>j</sub> = R<sub>w</sub> = 2，这是所有组织中最小的循环单元。</p>
+        <p class="small">自检方法：把 2×2 向上下左右各复制一次，拼接处不应出现两条黑格或两条白格并列。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">2</span>为什么平纹的完全组织边长不能是奇数？</summary>
+      <div class="ans">
+        <p>因为「一上一下」要求每一行的黑白严格交替，回到起点时必须恰好用了偶数个格子才能闭合。
+          若画成 3×3、5×5 这类奇数边长，最后回到起点时会出现「黑接黑」的相位错位，
+          拼接时必然断行。<span class="fin">平纹的完全组织固定为 2，画更大时只能取 2 的整数倍。</span></p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">3</span>写出 2/1 ↗ 右斜纹逐根纬纱的填色（用 ■ 与 □ 表示）。</summary>
+      <div class="ans">
+        <p class="fml" style="display:block;white-space:normal;line-height:2">
+          纬 1：■ ■ □<br>
+          纬 2：□ ■ ■<br>
+          纬 3：■ □ ■
+        </p>
+        <p>做法就是「一次次向右移一格」：纬 2 由纬 1 右移 1 格得到，纬 3 由纬 2 再右移 1 格得到；
+          纬 3 移出右边界后循环回绕到最左边，因此第一格又是黑。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">4</span>已知某斜纹的最大经浮长为 3、最大纬浮长为 2。求它的枚数与平均浮长。</summary>
+      <div class="ans">
+        <p>R = 3 + 2 = <span class="fin">5</span>，即五枚斜纹（写作 3/2）。</p>
+        <p>F = R / t = 5 / 2 = <span class="fin">2.5</span>；用浮长校核 (3 + 2) / 2 = 2.5，一致。</p>
+        <p class="small">注意：最大经浮长与最大纬浮长之和恒等于 R，这是判断枚数最快的方法。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">5</span>下列哪一组能构成正则缎纹？A：R = 5, S = 2；B：R = 6, S = 5；C：R = 8, S = 4；D：R = 7, S = 2。</summary>
+      <div class="ans">
+        <p><strong>A 能</strong>：R ≥ 5 且 ≠ 6；1 &lt; 2 &lt; 4；gcd(5, 2) = 1。<span class="fin">5 枚 2 飞缎纹</span>。</p>
+        <p><strong>B 不能</strong>：R = 6 属「6 除外」。</p>
+        <p><strong>C 不能</strong>：gcd(8, 4) = 4 ≠ 1，循环会提前闭合。</p>
+        <p><strong>D 能</strong>：R = 7；1 &lt; 2 &lt; 6；gcd(7, 2) = 1。<span class="fin">7 枚 2 飞缎纹</span>。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">6</span>一块绸面光滑、几乎看不出纹路、光泽很强的面料。如何判断它是经面缎纹还是纬面缎纹？</summary>
+      <div class="ans">
+        <p>看<strong>反光最好的方向</strong>：把面料分别沿经向与纬向转动观察（或改变视线方向），
+          反光带沿经向延伸、经向光泽最强的，是<strong>经面缎纹</strong>；反光带沿纬向的，是<strong>纬面缎纹</strong>。</p>
+        <p>辅助方法：比较经纬密度。经面缎纹为突出经纱效应，经密大于纬密（紧度比约 5:3 或经密:纬密约 3:2）；
+          纬面缎纹反之（紧度比约 2:3）。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">7</span>采用顺穿法时，纹板图与组织图有什么关系？为什么？</summary>
+      <div class="ans">
+        <p>两者<strong>完全相同</strong>。</p>
+        <p>因为顺穿法下第 j 根经纱恰好穿在第 j 片综框上，于是「第 k 梭要提哪几片综」与「第 k 行有哪些经组织点」
+          是同一件事。<span class="fin">纹板图第 k 行 = 组织图第 k 行。</span></p>
+        <p class="small">若改用飞穿、分区穿等穿综方法，穿综图的标记位置改变，纹板图也要相应重排，这一等式便不再成立。</p>
+      </div>
+    </details>
+
+    <details class="q">
+      <summary><span class="qn">8</span>把 5 枚缎纹换成 8 枚缎纹，织物性能会怎么变？用平均浮长解释。</summary>
+      <div class="ans">
+        <p>枚数由 5 增至 8，最大经浮长由 4 增至 7，平均浮长 F = R / t 由 2.5 增至 4。</p>
+        <p><strong>变好的：</strong>浮长线更长、更连续，反光面更完整 → 光泽更好、手感更柔软、布面更平滑紧密。</p>
+        <p><strong>变差的：</strong>交织点更稀、浮长线更易被勾起 → 强度与耐磨性下降，更易起毛、勾丝、擦伤。</p>
+        <p class="small">这正是丝织物多采用八枚缎纹、而棉毛织物多用五枚缎纹的原因——丝线细、密度大，浮长再长也不易散乱。</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ========== 12 一页速记 ========== -->
+  <section id="summary">
+    <h2><span class="num">12</span>一页速记</h2>
+    <p class="lead">如果只带走一页，带走这一页。</p>
+
+    <div class="grid2">
+      <div class="card d">
+        <h4>三组必背数字</h4>
+        <div class="tw" style="margin:10px 0 0">
+          <table>
+            <thead><tr><th>组织</th><th class="num">R</th><th class="num">F = R/2</th><th class="num">经浮长 / 纬浮长</th></tr></thead>
+            <tbody>
+              <tr><td>平纹 1/1</td><td class="num">2</td><td class="num">1</td><td class="num">1 / 1</td></tr>
+              <tr><td>斜纹 2/1</td><td class="num">3</td><td class="num">1.5</td><td class="num">2 / 1</td></tr>
+              <tr><td>斜纹 3/1</td><td class="num">4</td><td class="num">2</td><td class="num">3 / 1</td></tr>
+              <tr><td>缎纹 5 枚</td><td class="num">5</td><td class="num">2.5</td><td class="num">4 / 1</td></tr>
+              <tr><td>缎纹 8 枚</td><td class="num">8</td><td class="num">4</td><td class="num">7 / 1</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small" style="margin-top:8px">恒定关系：最大经浮长 + 最大纬浮长 = R；(两者之和) ÷ 2 = F。</p>
+      </div>
+
+      <div class="card g">
+        <h4>三原组织的一句话</h4>
+        <ul>
+          <li><strong>平纹</strong>：一上一下，交错最密，最坚牢最挺括，光泽较暗。</li>
+          <li><strong>斜纹</strong>：循环移位，斜线连缀，有正反面，居中。</li>
+          <li><strong>缎纹</strong>：单点孤立，浮长最长，最光滑最柔软，最易勾丝。</li>
+        </ul>
+        <p class="small" style="margin-top:6px">
+          一句话串起来：<strong>交错越多 → 越牢越挺；浮长越长 → 越光越软</strong>。
+        </p>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card r">
+        <h4>最容易错的四处</h4>
+        <ul>
+          <li>斜纹移位越界后<strong>忘了循环回绕</strong>，斜线在边界断开。</li>
+          <li>经纱、纬纱的<strong>编号方向</strong>不统一，导致斜向判断全错。</li>
+          <li>把经面缎纹与纬面缎纹的<strong>孤立点颜色</strong>记反。</li>
+          <li>缎纹飞数<strong>未对 R 取模</strong>，孤立点重叠或错位。</li>
+        </ul>
+      </div>
+      <div class="card k">
+        <h4>缎纹三条件的速记</h4>
+        <ul>
+          <li><strong>R ≥ 5，但 6 不算</strong></li>
+          <li><strong>1 &lt; S &lt; R − 1</strong>（不能取 1 或 R−1，否则变斜纹）</li>
+          <li><strong>R 与 S 互质</strong>（否则织不成布）</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>画完必做的三件事</h4>
+        <ol style="margin:0;padding-left:20px">
+          <li>上下左右各复制一次，看是否无缝。</li>
+          <li>数一行、数一列，核对组织点个数。</li>
+          <li>数连续同色格，核对浮长与所选枚数一致。</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 13 参考文献 ========== -->
+  <section id="ref">
+    <h2><span class="num">13</span>参考文献与标准</h2>
+    <p class="lead">术语与符号的口径以所列标准与教材为准；教材的版次与年份请以版权页为准。</p>
+
+    <p class="refs-cat">一、织物组织与结构<span>组织图、上机图、飞数与浮长的定义依据</span></p>
+    <ol class="refs">
+      <li>蔡陛霞 主编. 织物结构与设计. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>顾平 主编. 织物组织与结构学. 上海：东华大学出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>中国棉纺织行业协会. 常用的织物组织结构. <span class="src">cotton.org.cn（行业技术资料）</span></li>
+    </ol>
+
+    <p class="refs-cat">二、纺织材料与服装材料<span>本讲与后续单元衔接的教材</span></p>
+    <ol class="refs">
+      <li>姚穆 主编. 纺织材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>于伟东 主编. 纺织材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+      <li>王革辉 主编. 服装材料学. 北京：中国纺织出版社. <em>（版次与年份请以版权页为准）</em></li>
+    </ol>
+
+    <p class="refs-cat">三、国家标准<span>本讲涉及的术语、标示与分类依据</span></p>
+    <ol class="refs">
+      <li>GB/T 4668—1995 机织物密度的测定.</li>
+      <li>GB/T 22860—2009 丝绸（机织物）的分类、命名及编号.</li>
+      <li>GB/T 3291.1—1997 纺织 纺织材料性能和试验术语 第 1 部分：纤维和纱线.</li>
+      <li>FZ/T 01035—2014 纺织品 标示线密度的通用制（特克斯制）.</li>
+      <li>GB/T 8693—2008 纺织品 纱线的标示.</li>
+      <li>GB/T 9994—2018 纺织材料公定回潮率.</li>
+    </ol>
+
+    <div class="note d">
+      <span class="note-h">关于本页所有组织图</span>
+      本页每一张组织图都由页面内的脚本依飞数规则实时生成，不引用任何外部图片或网络资源。
+      任一参数改变，图形、浮长与校验结论都会同步重算——因此图中的每一格都可以自行核对。
+    </div>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <p style="margin:0 0 6px">织物组织图的绘制 · 从三原组织到上机图 ｜ 配套单元：织物组织与结构</p>
+  <p style="margin:0 0 6px">授课：梁帅童 · 上海工程技术大学纺织服装学院</p>
+  <p style="margin:0; color:#8a949f">本页为零外链单文件课件，全部组织图由页面脚本实时生成，断网亦可正常使用。</p>
+</footer>
+
+<script>
+/* ================= 阅读进度 ================= */
+(function(){
+  var bar = document.getElementById('pbar');
+  function upd(){
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var p = h > 0 ? (window.scrollY / h) * 100 : 0;
+    if (bar) bar.style.width = Math.max(0, Math.min(100, p)) + '%';
+  }
+  window.addEventListener('scroll', upd, {passive:true});
+  window.addEventListener('resize', upd);
+  upd();
+})();
+
+/* ================= 导航高亮 ================= */
+(function(){
+  var links = Array.prototype.slice.call(document.querySelectorAll('#nav a'));
+  var map = {};
+  links.forEach(function(a){
+    var id = a.getAttribute('href').slice(1);
+    var el = document.getElementById(id);
+    if (el) map[id] = a;
+  });
+  var ids = Object.keys(map);
+  var secs = ids.map(function(id){ return document.getElementById(id); });
+  function setOn(id){
+    links.forEach(function(a){ a.classList.remove('on'); });
+    if (map[id]) map[id].classList.add('on');
+  }
+  var raf = null;
+  function sync(){
+    var y = window.scrollY + 150, cur = ids[0];
+    for (var i = 0; i < secs.length; i++){
+      if (secs[i].offsetTop <= y) cur = ids[i];
+    }
+    setOn(cur);
+  }
+  function onScroll(){
+    if (raf) return;
+    raf = requestAnimationFrame(function(){ raf = null; sync(); });
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll);
+  window.addEventListener('load', sync);
+  sync();
+})();
+
+/* ================= 打印时自动展开练习答案 ================= */
+(function(){
+  var saved = [];
+  window.addEventListener('beforeprint', function(){
+    saved = [];
+    Array.prototype.forEach.call(document.querySelectorAll('details'), function(d){
+      saved.push([d, d.open]);
+      d.open = true;
+    });
+  });
+  window.addEventListener('afterprint', function(){
+    saved.forEach(function(p){ p[0].open = p[1]; });
+    saved = [];
+  });
+})();
+
+/* ================= 组织图引擎 ================= */
+function gcd(a, b){
+  a = Math.abs(a); b = Math.abs(b);
+  while (b) { var t = a % b; a = b; b = t; }
+  return a;
+}
+function mod(n, m){ return ((n % m) + m) % m; }
+
+/* 生成组织矩阵：M[纬索引][经索引]，true = 经组织点（涂黑） */
+function buildDraft(t, R, S, face, m){
+  R = Math.max(1, Math.round(R));
+  S = Math.round(S || 0);
+  m = Math.max(1, Math.round(m || 1));
+  var M = [], i, j;
+  for (i = 0; i < R; i++){ M.push([]); for (j = 0; j < R; j++) M[i].push(false); }
+  if (t === 'plain'){
+    for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = ((i + j) % 2 === 0);
+  } else if (t === 'twill'){
+    for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = (mod(j - i * S, R) < m);
+  } else { /* satin */
+    if (face === 'weft'){
+      for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = false;
+      for (i = 0; i < R; i++) M[i][mod(i * S, R)] = true;
+    } else {
+      for (i = 0; i < R; i++) for (j = 0; j < R; j++) M[i][j] = true;
+      for (j = 0; j < R; j++) M[mod(j * S, R)][j] = false;
+    }
+  }
+  return M;
+}
+
+/* 沿列方向连续 want 值的最大长度（循环计数） */
+function maxRunCol(M, col, want){
+  var R = M.length, c = 0, best = 0, i;
+  for (i = 0; i < 2 * R; i++){
+    if (M[i % R][col] === want){ c++; if (c > best) best = c; } else c = 0;
+  }
+  return Math.min(best, R);
+}
+/* 沿行方向连续 want 值的最大长度（循环计数） */
+function maxRunRow(M, row, want){
+  var R = M.length, c = 0, best = 0, i;
+  for (i = 0; i < 2 * R; i++){
+    if (M[row][i % R] === want){ c++; if (c > best) best = c; } else c = 0;
+  }
+  return Math.min(best, R);
+}
+/* 最大经浮长：列方向连续黑格；最大纬浮长：行方向连续白格 */
+function floats(M){
+  var R = M.length, w = 0, f = 0, i;
+  for (i = 0; i < R; i++){
+    w = Math.max(w, maxRunCol(M, i, true));
+    f = Math.max(f, maxRunRow(M, i, false));
+  }
+  return { warp: w, weft: f };
+}
+
+/* 循环序列的交织（穿插）次数：相邻元素发生变化的次数 */
+function transitions(seq){
+  var n = seq.length, c = 0, i;
+  for (i = 0; i < n; i++){ if (seq[i] !== seq[(i + 1) % n]) c++; }
+  return c;
+}
+/* 循环序列中 want 值的平均连续长度（即该方向平均浮长的单向分量） */
+function avgRun(seq, want){
+  var n = seq.length, i, c = 0, runs = [], start = 0;
+  while (start < n && seq[start] === want) start++;
+  if (start === n) return want === seq[0] ? n : 0;
+  var s = seq.slice(start).concat(seq.slice(0, start));
+  for (i = 0; i < n; i++){
+    if (s[i] === want){ c++; }
+    else if (c){ runs.push(c); c = 0; }
+  }
+  if (c) runs.push(c);
+  if (!runs.length) return 0;
+  var tot = 0;
+  for (i = 0; i < runs.length; i++) tot += runs[i];
+  return tot / runs.length;
+}
+
+/* 综合指标：最大浮长、交织次数、平均浮长（Fj = R/tj，Fw = R/tw） */
+function metrics(M){
+  var R = M.length, i, j, tj = 0, tw = 0, maxWarp = 0, maxWeft = 0;
+  for (j = 0; j < R; j++){
+    var col = [];
+    for (i = 0; i < R; i++) col.push(M[i][j]);
+    maxWarp = Math.max(maxWarp, maxRunCol(M, j, true));
+    tj += transitions(col);
+  }
+  for (i = 0; i < R; i++){
+    maxWeft = Math.max(maxWeft, maxRunRow(M, i, false));
+    tw += transitions(M[i]);
+  }
+  tj = tj / R; tw = tw / R;
+  return {
+    maxWarp: maxWarp, maxWeft: maxWeft,
+    tWarp: tj, tWeft: tw,
+    Fj: tj > 0 ? R / tj : 0,
+    Fw: tw > 0 ? R / tw : 0
+  };
+}
+
+/* 绘制组织图 SVG */
+function draftSVG(M, opt){
+  opt = opt || {};
+  var R = M.length;
+  var cell = opt.cell || 34, gl = opt.gl || 46, gt = opt.gt || 26, pad = 12;
+  var tile = opt.tile || 1;
+  var N = R * tile;
+  var w = gl + N * cell + pad, h = gt + N * cell + pad;
+  var s = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h +
+          '" role="img" aria-label="织物组织图">';
+  s += '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="#ffffff"/>';
+  var kr, j, k, x, y;
+  for (kr = 0; kr < N; kr++){
+    k = N - 1 - kr;
+    for (j = 0; j < N; j++){
+      x = gl + j * cell; y = gt + kr * cell;
+      var on = M[mod(k, R)][mod(j, R)];
+      s += '<rect x="' + x + '" y="' + y + '" width="' + cell + '" height="' + cell +
+           '" fill="' + (on ? '#1c2733' : '#ffffff') + '" stroke="#c3ccd6" stroke-width="1"/>';
+    }
+  }
+  s += '<rect x="' + gl + '" y="' + gt + '" width="' + (N * cell) + '" height="' + (N * cell) +
+       '" fill="none" stroke="#455468" stroke-width="1.6"/>';
+  if (tile > 1){
+    var c0 = gl + (tile - 1) * R * cell / 2, cy0 = gt + (tile - 1) * R * cell / 2;
+    s += '<rect x="' + c0 + '" y="' + cy0 + '" width="' + (R * cell) + '" height="' + (R * cell) +
+         '" fill="none" stroke="#1f4e79" stroke-width="2" stroke-dasharray="6 4"/>';
+  }
+  for (j = 0; j < N; j++){
+    if (tile > 1 && (j % R !== 0)) continue;
+    s += '<text x="' + (gl + j * cell + cell / 2) + '" y="' + (gt - 9) +
+         '" text-anchor="middle" font-size="12" fill="#455468">' + (mod(j, R) + 1) + '</text>';
+  }
+  for (kr = 0; kr < N; kr++){
+    if (tile > 1 && (kr % R !== 0)) continue;
+    s += '<text x="' + (gl - 8) + '" y="' + (gt + kr * cell + cell / 2 + 4) +
+         '" text-anchor="end" font-size="12" fill="#455468">' + (mod(N - 1 - kr, R) + 1) + '</text>';
+  }
+  s += '<text x="' + (gl - 10) + '" y="' + (gt - 9) +
+       '" text-anchor="end" font-size="11" fill="#6b7a8d">纬\\经</text>';
+  if (opt.hl && opt.hl.length){
+    for (var q = 0; q < opt.hl.length; q++){
+      var kk = N - opt.hl[q];
+      s += '<rect x="' + (gl - 3) + '" y="' + (gt + kk * cell - 3) + '" width="' + (N * cell + 6) +
+           '" height="' + (cell + 6) + '" fill="none" stroke="#d97b2b" stroke-width="2.4" rx="3"/>';
+    }
+  }
+  return s + '</svg>';
+}
+
+/* 绘制上机图 SVG（穿综图在上、组织图左下、纹板图右下，顺穿法） */
+function loomSVG(M, opt){
+  opt = opt || {};
+  var R = M.length, cell = opt.cell || 34;
+  var gl = 34, gt = 30, gapX = 30, gapY = 34, pad = 14;
+  var gw = R * cell;
+  var w = gl + gw + gapX + gw + pad;
+  var h = gt + gw + gapY + gw + pad;
+  var s = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="' + w + '" height="' + h +
+          '" role="img" aria-label="上机图">';
+  s += '<rect x="0" y="0" width="' + w + '" height="' + h + '" fill="#ffffff"/>';
+
+  function grid(x0, y0, marks, onColor){
+    var out = '', kr2, j2, px, py;
+    for (kr2 = 0; kr2 < R; kr2++){
+      for (j2 = 0; j2 < R; j2++){
+        px = x0 + j2 * cell; py = y0 + kr2 * cell;
+        var on = marks(kr2, j2);
+        out += '<rect x="' + px + '" y="' + py + '" width="' + cell + '" height="' + cell +
+               '" fill="' + (on ? onColor : '#ffffff') + '" stroke="#c3ccd6" stroke-width="1"/>';
+      }
+    }
+    out += '<rect x="' + x0 + '" y="' + y0 + '" width="' + gw + '" height="' + gw +
+           '" fill="none" stroke="#455468" stroke-width="1.6"/>';
+    return out;
+  }
+
+  var xL = gl, xR = gl + gw + gapX, yT = gt, yB = gt + gw + gapY;
+
+  /* 穿综图：横格 = 经纱，纵格 = 综框（自下而上），顺穿法为对角线 */
+  s += grid(xL, yT, function(kr, j){ return (R - 1 - kr) === j; }, '#1a6f5a');
+  /* 纹板图：横格 = 综框，纵格 = 纬纱（自下而上）；顺穿法下等于组织图 */
+  s += grid(xR, yT, function(kr, f){ return M[R - 1 - kr][f]; }, '#1c2733');
+  /* 组织图 */
+  s += grid(xL, yB, function(kr, j){ return M[R - 1 - kr][j]; }, '#1c2733');
+
+  var j2, kr2;
+  /* 穿综图行标签（综框 1..R 自下而上） */
+  for (kr2 = 0; kr2 < R; kr2++){
+    s += '<text x="' + (xL - 7) + '" y="' + (yT + kr2 * cell + cell / 2 + 4) +
+         '" text-anchor="end" font-size="11" fill="#1a6f5a">' + (R - kr2) + '</text>';
+  }
+  /* 穿综图列标签（经纱 1..R） */
+  for (j2 = 0; j2 < R; j2++){
+    s += '<text x="' + (xL + j2 * cell + cell / 2) + '" y="' + (yT - 8) +
+         '" text-anchor="middle" font-size="11" fill="#455468">' + (j2 + 1) + '</text>';
+  }
+  /* 纹板图行标签（纬纱 1..R 自下而上） */
+  for (kr2 = 0; kr2 < R; kr2++){
+    s += '<text x="' + (xR - 7) + '" y="' + (yT + kr2 * cell + cell / 2 + 4) +
+         '" text-anchor="end" font-size="11" fill="#455468">' + (R - kr2) + '</text>';
+  }
+  /* 纹板图列标签（综框 1..R） */
+  for (j2 = 0; j2 < R; j2++){
+    s += '<text x="' + (xR + j2 * cell + cell / 2) + '" y="' + (yT - 8) +
+         '" text-anchor="middle" font-size="11" fill="#6b7a8d">' + (j2 + 1) + '</text>';
+  }
+  /* 组织图行标签（纬纱）与列标签（经纱） */
+  for (kr2 = 0; kr2 < R; kr2++){
+    s += '<text x="' + (xL - 7) + '" y="' + (yB + kr2 * cell + cell / 2 + 4) +
+         '" text-anchor="end" font-size="11" fill="#455468">' + (R - kr2) + '</text>';
+  }
+  for (j2 = 0; j2 < R; j2++){
+    s += '<text x="' + (xL + j2 * cell + cell / 2) + '" y="' + (yB - 8) +
+         '" text-anchor="middle" font-size="11" fill="#455468">' + (j2 + 1) + '</text>';
+  }
+  /* 四角标题 */
+  s += '<text x="' + (xL - 26) + '" y="' + (yT + 12) + '" font-size="11.5" fill="#1a6f5a" font-weight="700">穿综</text>';
+  s += '<text x="' + (xR + gw + 4) + '" y="' + (yT + 12) + '" font-size="11.5" fill="#1c2733" font-weight="700">纹板</text>';
+  s += '<text x="' + (xL - 26) + '" y="' + (yB + 12) + '" font-size="11.5" fill="#1f4e79" font-weight="700">组织</text>';
+  s += '<text x="' + (xL - 30) + '" y="' + (yT - 20) + '" font-size="10.5" fill="#6b7a8d">综框</text>';
+  s += '<text x="' + (xL + gw + 6) + '" y="' + (yT - 20) + '" font-size="10.5" fill="#6b7a8d">综框</text>';
+  return s + '</svg>';
+}
+
+/* ================= 渲染页内静态示意图 ================= */
+(function(){
+  var nodes = document.querySelectorAll('[data-draft]');
+  Array.prototype.forEach.call(nodes, function(node){
+    var o;
+    try { o = JSON.parse(node.getAttribute('data-draft')); } catch (e) { return; }
+    var M = buildDraft(o.t, o.R, o.S || 1, o.face || 'warp', o.m || 1);
+    var hlRaw = node.getAttribute('data-hl');
+    var hl = hlRaw ? hlRaw.split(',').map(function(x){ return parseInt(x, 10); }) : [];
+    var html = draftSVG(M, {
+      cell: parseInt(node.getAttribute('data-cell'), 10) || 34,
+      tile: o.tile || 1,
+      hl: hl
+    });
+    node.innerHTML = html;
+  });
+  var looms = document.querySelectorAll('[data-loom]');
+  Array.prototype.forEach.call(looms, function(node){
+    var o;
+    try { o = JSON.parse(node.getAttribute('data-loom')); } catch (e) { return; }
+    var M = buildDraft(o.t, o.R, o.S || 1, o.face || 'warp', o.m || 1);
+    node.innerHTML = loomSVG(M, {cell: parseInt(node.getAttribute('data-cell'), 10) || 34});
+  });
+})();
+</script>
+
+<script>
+/* ================= 组织图生成器 ================= */
+(function(){
+  var $ = function(id){ return document.getElementById(id); };
+  var tEl = $('g-type'), REl = $('g-R'), mEl = $('g-m'), SEl = $('g-S'), SvEl = $('g-Sv');
+  var out = $('g-out'), cards = $('g-cards'), errEl = $('g-err');
+  var mWrap = $('g-m-wrap'), faceFld = $('g-face-fld');
+  var face = 'warp', tiled = false;
+
+  function fmt1(x){
+    var s = (Math.round(x * 10) / 10).toFixed(1);
+    return s.replace(/\.0$/, '');
+  }
+  function typeName(t, R, S, m){
+    if (t === 'plain') return '平纹 1/1';
+    if (t === 'twill') return m + '/' + (R - m) + (S > 0 ? ' ↗ 右斜纹' : ' ↖ 左斜纹');
+    return R + ' 枚 ' + Math.abs(S) + ' 飞' + (face === 'warp' ? '经面' : '纬面') + '缎纹';
+  }
+  function describe(t, R, S, m){
+    if (t === 'plain') return '以左下角为起点，每一根纬纱的填色与上一根完全反相，黑白交替。';
+    if (t === 'twill') return '每根纬纱连续 ' + m + ' 格涂黑、' + (R - m) + ' 格留白，' +
+      '换到下一根纬纱时整体' + (S > 0 ? '向右' : '向左') + '移动 ' + Math.abs(S) + ' 格，越界后循环回绕。';
+    if (face === 'warp') return '全图先一律涂黑，再按经向飞数 ' + Math.abs(S) +
+      ' 自左下角逐根经纱向上数，找出 ' + R + ' 个孤立纬组织点并留白。';
+    return '全图先一律留白，再按纬向飞数 ' + Math.abs(S) +
+      ' 自左下角逐根纬纱向右数，点出 ' + R + ' 个孤立经组织点。';
+  }
+
+  function syncUI(){
+    var t = tEl.value;
+    if (t === 'plain'){
+      REl.value = 2; REl.disabled = true;
+      mWrap.style.display = 'none'; faceFld.style.display = 'none';
+    } else if (t === 'twill'){
+      REl.disabled = false;
+      mWrap.style.display = ''; faceFld.style.display = 'none';
+      var R = parseInt(REl.value, 10) || 3;
+      if ((parseInt(mEl.value, 10) || 1) > R - 1) mEl.value = Math.max(1, R - 1);
+    } else {
+      REl.disabled = false;
+      mWrap.style.display = 'none'; faceFld.style.display = '';
+    }
+    var Rr = parseInt(REl.value, 10) || 2;
+    SEl.min = -(Rr - 1); SEl.max = Rr - 1;
+    var sv = parseInt(SEl.value, 10) || 0;
+    if (sv > Rr - 1) SEl.value = Rr - 1;
+    if (sv < -(Rr - 1)) SEl.value = -(Rr - 1);
+    SvEl.textContent = SEl.value;
+  }
+
+  function card(k, u, v, hi){
+    return '<div class="ocard' + (hi ? ' hi' : '') + '"><div class="k">' + k + '</div>' +
+           '<div class="v">' + v + '</div><div class="u">' + u + '</div></div>';
+  }
+
+  function render(){
+    syncUI();
+    var t = tEl.value;
+    var R = parseInt(REl.value, 10) || 2;
+    var S = parseInt(SEl.value, 10) || 0;
+    var m = parseInt(mEl.value, 10) || 1;
+    var errs = [], notes = [];
+
+    if (t === 'plain'){ R = 2; S = 1; m = 1; }
+
+    if (t === 'twill'){
+      if (R < 3) errs.push('斜纹的枚数 R 至少为 3，当前 R = ' + R + '。');
+      if (m < 1 || m > R - 1) errs.push('分子 m（连续经浮根数）须满足 1 ≤ m ≤ R−1，当前 m = ' + m + '。');
+      if (Math.abs(S) < 1 || Math.abs(S) > R - 1) errs.push('斜纹的飞数须满足 1 ≤ |S| ≤ R−1，当前 |S| = ' + Math.abs(S) + '。');
+      else if (gcd(R, Math.abs(S)) !== 1) notes.push('提示：R 与 |S| 不互质（gcd = ' + gcd(R, Math.abs(S)) +
+        '），斜纹线会在循环中途断开——此时得到的其实是破斜纹或加强斜纹，不属于正则斜纹。');
+    }
+
+    if (t === 'satin'){
+      if (R < 5) errs.push('缎纹要求 R ≥ 5，当前 R = ' + R + '。');
+      if (R === 6) errs.push('R = 6 不存在正则缎纹（六枚只能构成变则缎纹）。');
+      if (!(Math.abs(S) > 1 && Math.abs(S) < R - 1)) errs.push('缎纹的飞数须满足 1 < |S| < R−1，当前 |S| = ' + Math.abs(S) + '。');
+      else if (gcd(R, Math.abs(S)) !== 1) errs.push('R 与 |S| 不互质（gcd = ' + gcd(R, Math.abs(S)) +
+        '），组织循环会提前闭合——有的纱上出现多个组织点、有的一个都没有，这样织不成布。');
+    }
+
+    if (errs.length){
+      out.innerHTML = '<p class="small" style="padding:26px 4px;text-align:center">参数不合法，暂不出图。请按下方提示调整。</p>';
+      cards.innerHTML = '';
+      errEl.style.color = '#b5342a';
+      errEl.innerHTML = '✕ ' + errs.join('<br>✕ ');
+      return;
+    }
+
+    var M = buildDraft(t, R, S, face, m);
+    var cell = t === 'plain' ? 92 : (R > 8 ? 32 : 42);
+    out.innerHTML = draftSVG(M, {cell: cell, tile: tiled ? 3 : 1});
+
+    var mt = metrics(M);
+    var sameF = Math.abs(mt.Fj - mt.Fw) < 1e-9;
+    cards.innerHTML =
+      card('枚数 R', '完全组织纱线数', R, false) +
+      card('飞数 |S|', '每次移动格数', Math.abs(S), false) +
+      card('最大经浮长', '列方向连续黑格', mt.maxWarp, false) +
+      card('最大纬浮长', '行方向连续白格', mt.maxWeft, false) +
+      (sameF
+        ? card('平均浮长 F', 'R / t（t = ' + fmt1(mt.tWarp) + '）', fmt1(mt.Fj), true)
+        : card('平均浮长 F<sub>j</sub> / F<sub>w</sub>', 'R / t<sub>j</sub> 与 R / t<sub>w</sub>',
+               fmt1(mt.Fj) + ' / ' + fmt1(mt.Fw), true));
+
+    var msg = [];
+    msg.push('当前组织：<b>' + typeName(t, R, S, m) + '</b>');
+    msg.push('绘制规则：' + describe(t, R, S, m));
+    msg.push('交织次数：t<sub>j</sub> = ' + fmt1(mt.tWarp) + '（经纱），t<sub>w</sub> = ' + fmt1(mt.tWeft) +
+             '（纬纱）；最大经浮长 ' + mt.maxWarp + ' 格、最大纬浮长 ' + mt.maxWeft + ' 格');
+    if (t === 'plain' || sameF && Math.abs(mt.tWarp - 2) < 1e-9){
+      msg.push('浮长校核：三原组织的 t 恒为 2，故 F = R / 2 = ' + fmt1(mt.Fj) +
+               '；且各根纱线的浮长完全相等，因此「最大浮长」就等于「平均浮长」，可用 (最大经浮长 + 最大纬浮长) ÷ 2 直接核对。');
+    } else if (sameF){
+      msg.push('浮长校核：F = R / t = ' + fmt1(mt.Fj) + '；本结构虽各向一致，但 t ≠ 2，已不是三原组织。');
+    } else {
+      msg.push('注意：本结构的 t ≠ 2，经纱与纬纱的平均浮长不相等（F<sub>j</sub> = ' + fmt1(mt.Fj) +
+               '、F<sub>w</sub> = ' + fmt1(mt.Fw) + '），已不属于三原组织；此时最大浮长大于平均浮长，(最大经浮长 + 最大纬浮长) ÷ 2 不再等于 F。');
+    }
+    errEl.style.color = '#6b7a8d';
+    errEl.innerHTML = msg.join('<br>') + (notes.length ? '<br>' + notes.join('<br>') : '');
+  }
+
+  /* 事件绑定 */
+  ['change', 'input'].forEach(function(ev){
+    tEl.addEventListener(ev, render);
+    REl.addEventListener(ev, render);
+    mEl.addEventListener(ev, render);
+    SEl.addEventListener(ev, function(){ SvEl.textContent = SEl.value; render(); });
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('#g-face .chip'), function(b){
+    b.addEventListener('click', function(){
+      face = b.getAttribute('data-face');
+      Array.prototype.forEach.call(document.querySelectorAll('#g-face .chip'), function(x){ x.classList.remove('on'); });
+      b.classList.add('on');
+      render();
+    });
+  });
+
+  var tileBtn = $('g-tile');
+  tileBtn.addEventListener('click', function(){
+    tiled = !tiled;
+    tileBtn.classList.toggle('on', tiled);
+    render();
+  });
+
+  Array.prototype.forEach.call(document.querySelectorAll('#g-presets .chip'), function(b){
+    b.addEventListener('click', function(){
+      var p = b.getAttribute('data-preset').split(',');
+      tEl.value = p[0]; REl.value = p[1]; SEl.value = p[2]; mEl.value = p[3];
+      face = p[4] || 'warp';
+      Array.prototype.forEach.call(document.querySelectorAll('#g-face .chip'), function(x){
+        x.classList.toggle('on', x.getAttribute('data-face') === face);
+      });
+      render();
+    });
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
