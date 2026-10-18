@@ -316,6 +316,11 @@ footer{
 .chain .node h5{margin:0 0 6px; font-size:14.5px; color:var(--direct)}
 .chain .node p{margin:0; font-size:13px; color:var(--ink-2); line-height:1.62}
 .chain .arw{display:flex; align-items:center; color:var(--ink-3); font-size:17px; padding:0 1px}
+/* 5 节点链：收窄基宽与间距，保证一行排满（经面缎纹步骤条） */
+.chain.c5{gap:6px}
+.chain.c5 .node{flex:1 1 124px; padding:10px 12px}
+.chain.c5 .node h5{font-size:13.5px}
+.chain.c5 .node p{font-size:12.2px; line-height:1.55}
 .grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:16px 0}
 .step{border:1px solid var(--line); border-radius:10px; padding:11px 13px; background:#fcfdfe; font-size:13.8px; line-height:1.62}
 .step .sn{display:inline-block; width:20px; height:20px; border-radius:50%; background:var(--direct); color:#fff; font-size:11.5px; text-align:center; line-height:20px; margin-right:6px; font-weight:700; vertical-align:1px}
@@ -1065,7 +1070,7 @@ tbody tr.picked:hover{background:#eaf2fa}
 
     <h4>「单独」到底单独在哪里</h4>
     <p>
-      <strong>单独组织点不是第三种组织点</strong>。组织点只有经组织点（黑）与纬组织点（白）两种，
+      先把一个误解拆掉：<strong>单独组织点不是第三种组织点</strong>。组织点只有经组织点（黑）与纬组织点（白）两种，
       「单独」说的是它的<strong>排列状态</strong>——在这一根纱线上只出现一次，上下左右四邻全是另一种颜色，孤立、不与同类相连。
       同一个点，说「它是纬浮点」和说「它是单独组织点」，是从两个角度描述同一件事。
     </p>
@@ -1158,7 +1163,7 @@ tbody tr.picked:hover{background:#eaf2fa}
       经面缎纹的起点取在左下角（经 1、纬 1），该点是<strong>孤立纬组织点</strong>；其余所有格子先一律填成经组织点（黑）。
       然后按经向飞数 2 依次找到另外四个孤立点：
     </p>
-    <div class="chain">
+    <div class="chain c5">
       <div class="node"><h5>经 1</h5><p>孤立点在纬 1</p></div>
       <div class="arw">→</div>
       <div class="node"><h5>经 2</h5><p>向右移 1 根、向上 2 格 → 纬 3</p></div>
