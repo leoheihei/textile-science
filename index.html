@@ -84,6 +84,32 @@
       font-size: 13px;
     }
 
+    /* Vercount 计数器：脚本只负责把数字写进这些 span，容器需自备 */
+    .counter {
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid #e5e7eb;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px 22px;
+      color: #9ca3af;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .counter span {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 5px;
+    }
+
+    .counter b {
+      color: #4b5563;
+      font-weight: 600;
+    }
+
     @media (max-width: 640px) {
       .cards {
         grid-template-columns: 1fr;
@@ -126,6 +152,12 @@
         <p>多重维度 · 精纺与粗纺 · 护理</p>
       </a>
     </div>
+
+    <p class="counter">
+      <span>本页访问 <b id="vercount_value_page_pv">加载中</b> 次</span>
+      <span>本站总访问 <b id="vercount_value_site_pv">加载中</b> 次</span>
+      <span>访客 <b id="vercount_value_site_uv">加载中</b> 人</span>
+    </p>
   </main>
   <!-- Vercount 访问计数器（可选，如长期显示"加载中…"可删除本行） -->
   <script defer src="https://events.vercount.one/js"></script>
