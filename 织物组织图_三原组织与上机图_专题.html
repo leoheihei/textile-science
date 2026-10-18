@@ -578,6 +578,55 @@ tbody tr.picked:hover{background:#eaf2fa}
         上方数字为经纱序号（自左向右）。黑白相间如棋盘，这是平纹最直观的特征。</p>
     </div>
 
+    <h3>R 是怎么定出来的</h3>
+    <p>
+      一句话：R 不是画出来的，而是<strong>最小重复单元里包含的纱线根数</strong>。横向数经得 R<sub>j</sub>，
+      纵向数纬得 R<sub>w</sub>；三原组织两者相等，才并成一个 R 来记。实际用到时有三条路径，场合不同：
+    </p>
+
+    <div class="grid3">
+      <div class="card d">
+        <h4>① 由组织类型定</h4>
+        <p>设计时用，不必数图。平纹 R = 2，没有第二种可能；斜纹 <strong>R = m + n</strong>（m、n 为连续经浮、纬浮根数），R ≥ 3；
+          缎纹 R ≥ 5 且 R ≠ 6，并须与飞数互质 gcd(R,S) = 1。</p>
+      </div>
+      <div class="card g">
+        <h4>② 由组织图数</h4>
+        <p>分析时用。固定一根纬纱看一行，取黑白串的<strong>最小周期</strong>得 R<sub>j</sub>；再固定一根经纱看一列得 R<sub>w</sub>。
+          判据两条：第 R+1 行（列）与第 1 行（列）整格重合，且 R 不能再缩小。</p>
+      </div>
+      <div class="card k">
+        <h4>③ 由构造算</h4>
+        <p>变化、联合、复杂组织没有现成公式，按构成方法推：2/2 方平 R = 4、蜂巢组织 R = 10。
+          复杂组织常出现 R<sub>j</sub> ≠ R<sub>w</sub>，不能硬套一个 R。</p>
+      </div>
+    </div>
+
+    <div class="tw">
+      <table>
+        <caption>三类原组织的 R：确定式与例</caption>
+        <thead><tr><th style="width:20%">组织</th><th style="width:36%">R 的确定式</th><th>例</th></tr></thead>
+        <tbody>
+          <tr><td>平纹 1/1</td><td>恒为 2</td><td class="num">2</td></tr>
+          <tr><td>斜纹 m/n</td><td>R = m + n（R ≥ 3）</td><td>2/1 → 3；3/1 → 4；2/2 → 4</td></tr>
+          <tr><td>缎纹</td><td>R ≥ 5、R ≠ 6、gcd(R,S) = 1</td><td>5、7、8、10、12 枚</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="note r">
+      <span class="note-h">三个常见的错</span>
+      <strong>取成倍数</strong>——4 枚平纹其实 R = 2，能拼上但循环不是最小，纹板数白白多一倍；
+      <strong>只数行不数列</strong>——把 R<sub>j</sub> 当成 R，遇上急斜纹、缓斜纹必错；
+      <strong>取得太小</strong>——周期没闭合，平铺时接缝断线，正是下面自检线要抓的错。
+    </div>
+
+    <div class="note d">
+      <span class="note-h">R 不只是纸面数字</span>
+      它直接决定上机规模：<strong>纹板数 ≈ R<sub>w</sub></strong>，<strong>综框数 ≤ R<sub>j</sub></strong>。
+      R 一变，穿综与纹板全部要重排——这正是第 09 节要把组织图翻译成上机图的原因。
+    </div>
+
     <h3>组织图的三条自检线</h3>
     <div class="grid3">
       <div class="card"><h4>循环拼接</h4><p>不要只是照抄复制——复制本身必然无缝，查不出错。正确做法是遮住第 1 行，按你用的规律把第 R+1 行写出来，再与第 1 行逐格对照，两者必须完全相同；平铺后接缝两侧的浮长线、斜线不得错位或断头。</p></div>
@@ -1013,6 +1062,45 @@ tbody tr.picked:hover{background:#eaf2fa}
       这些单独组织点彼此相距较远、分布均匀，并被两旁另一系统纱线的<strong>浮长线</strong>所遮盖。
       于是织物表面几乎全由一种浮长线构成，因而平滑、匀整、富有光泽。
     </div>
+
+    <h4>「单独」到底单独在哪里</h4>
+    <p>
+      先把一个误解拆掉：<strong>单独组织点不是第三种组织点</strong>。组织点只有经组织点（黑）与纬组织点（白）两种，
+      「单独」说的是它的<strong>排列状态</strong>——在这一根纱线上只出现一次，上下左右四邻全是另一种颜色，孤立、不与同类相连。
+      同一个点，说「它是纬浮点」和说「它是单独组织点」，是从两个角度描述同一件事。
+    </p>
+
+    <div class="grid3">
+      <div class="card">
+        <h4>每根纱各一个</h4>
+        <p>把每根经纱自上而下数一遍，只遇到 1 个孤立点；每根纬纱自左向右数，同样只有 1 个。R 根经加 R 根纬，全图恰好 R 个。</p>
+      </div>
+      <div class="card">
+        <h4>数目就是枚数</h4>
+        <p>数出来的孤立点个数就等于 R。「五枚」在图上不是 5 行 5 列，而是 5 个孤立点，每个点各占一根经、一根纬。</p>
+      </div>
+      <div class="card">
+        <h4>颜色看面定</h4>
+        <p>经面缎纹的孤立点是<strong>纬组织点（白）</strong>，黑格是主体；纬面缎纹正好反过来，孤立点是<strong>经组织点（黑）</strong>。</p>
+      </div>
+    </div>
+
+    <p class="small">
+      本节稍后的图 6-1 已把这 5 个孤立点用橙圈逐一标出，可以对照着数一遍：任意一行、任意一列都只有一个。
+    </p>
+
+    <div class="note k">
+      <span class="note-h">反过来，它是一条验算尺</span>
+      若某一根纱上出现 <strong>0 个或 2 个</strong>孤立点，说明 R 与 S 不互质、循环在中途提前闭合——一根纱上多点、另一根上一个也没有，
+      这样的组织织不成布。这正是下文「三个构成条件」第三条的实际后果。
+    </div>
+
+    <div class="note g">
+      <span class="note-h">每根纱只有 1 个点，t 为什么还是 2</span>
+      t 数的是循环序列里的<strong>转变次数</strong>：一个孤立点在循环串上贡献「进」与「出」两次转变。
+      所以三原组织的 t 恒为 2，F&nbsp;=&nbsp;R/2 对缎纹照样成立——「点少」与「转变少」是两件事。
+    </div>
+
     <p>
       由此引申出<strong>经面缎纹</strong>与<strong>纬面缎纹</strong>的分野：
     </p>
@@ -1087,8 +1175,9 @@ tbody tr.picked:hover{background:#eaf2fa}
     </p>
 
     <div class="fig">
-      <div class="draftwrap" data-draft='{"t":"satin","R":5,"S":2,"face":"warp"}' data-cell="52"></div>
-      <p class="figcap"><b>图 6-1</b>　5 枚 2 飞<b>经面</b>缎纹。经组织点（黑）占多数，5 个孤立纬组织点（白）均匀分布且互不相邻——
+      <div class="draftwrap" data-draft='{"t":"satin","R":5,"S":2,"face":"warp"}' data-cell="52" data-ring="1"></div>
+      <p class="figcap"><b>图 6-1</b>　5 枚 2 飞<b>经面</b>缎纹。经组织点（黑）占多数，5 个孤立纬组织点（白）均匀分布且互不相邻，
+        图中已用橙圈逐一标出——任意一行、任意一列上都只有一个。
         「枚数 5」在图上就是 5 个白点的个数，「飞数 2」就是白点每次的移动量。</p>
     </div>
 
@@ -1906,6 +1995,21 @@ function draftSVG(M, opt){
            '" fill="' + (on ? '#1c2733' : '#ffffff') + '" stroke="#c3ccd6" stroke-width="1"/>';
     }
   }
+  if (opt.ring){
+    for (kr = 0; kr < N; kr++){
+      for (j = 0; j < N; j++){
+        var rr = mod(N - 1 - kr, R), cc = mod(j, R), vv = M[rr][cc], same = 0;
+        if (M[mod(rr + 1, R)][cc] === vv) same++;
+        if (M[mod(rr - 1 + R, R)][cc] === vv) same++;
+        if (M[rr][mod(cc + 1, R)] === vv) same++;
+        if (M[rr][mod(cc - 1 + R, R)] === vv) same++;
+        if (!same){
+          s += '<circle cx="' + (gl + j * cell + cell / 2) + '" cy="' + (gt + kr * cell + cell / 2) +
+               '" r="' + (cell * 0.30).toFixed(1) + '" fill="none" stroke="#d97b2b" stroke-width="2"/>';
+        }
+      }
+    }
+  }
   s += '<rect x="' + gl + '" y="' + gt + '" width="' + (N * cell) + '" height="' + (N * cell) +
        '" fill="none" stroke="#455468" stroke-width="1.6"/>';
   if (tile > 1){
@@ -2022,7 +2126,8 @@ function loomSVG(M, opt){
     var html = draftSVG(M, {
       cell: parseInt(node.getAttribute('data-cell'), 10) || 34,
       tile: o.tile || 1,
-      hl: hl
+      hl: hl,
+      ring: node.getAttribute('data-ring') === '1'
     });
     node.innerHTML = html;
   });
