@@ -1,0 +1,75 @@
+name: Visit Snapshot
+
+# 每天 23:59（北京时间，UTC 15:59）读取 Vercount 累计访问数，
+# 以「上海时区日期」为键写入 visits.json，供首页折线图计算每日访问量。
+on:
+  schedule:
+    - cron: "59 15 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch Vercount totals (GET, read-only)
+        id: fetch
+        run: |
+          RESP=$(curl -sf --retry 3 --retry-delay 5 \
+            "https://events.vercount.one/api/v2/log?url=https%3A%2F%2Fleoheihei.github.io%2Ftextile-science%2F")
+          echo "response: $RESP"
+          echo "$RESP" > /tmp/vercount.json
+
+      - name: Upsert snapshot into visits.json
+        run: |
+          python3 - <<'PY'
+          import json, os
+          from datetime import datetime, timedelta, timezone
+
+          with open("/tmp/vercount.json", encoding="utf-8") as f:
+              data = json.load(f)
+          assert data.get("status") == "success", "unexpected vercount response: %r" % data
+          counts = data["data"]
+
+          today = (datetime.now(timezone.utc) + timedelta(hours=8)).strftime("%Y-%m-%d")
+
+          path = "visits.json"
+          if os.path.exists(path):
+              with open(path, encoding="utf-8") as f:
+                  store = json.load(f)
+          else:
+              store = {"updated": today, "daily": []}
+
+          entry = {
+              "date": today,
+              "site_pv": int(counts["site_pv"]),
+              "site_uv": int(counts["site_uv"]),
+              "page_pv": int(counts["page_pv"]),
+          }
+          daily = [d for d in store.get("daily", []) if d.get("date") != today]
+          daily.append(entry)
+          daily.sort(key=lambda d: d["date"])
+          store["daily"] = daily
+          store["updated"] = today
+
+          with open(path, "w", encoding="utf-8") as f:
+              json.dump(store, f, ensure_ascii=False, indent=2)
+              f.write("\n")
+          print("wrote:", entry)
+          PY
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "visit-snapshot-bot"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          if [ -n "$(git status --porcelain visits.json)" ]; then
+            git add visits.json
+            git commit -m "chore: daily visit snapshot $(date -u -d '+8 hours' +%F)"
+            git push
+          else
+            echo "visits.json unchanged, nothing to commit"
+          fi

@@ -118,6 +118,49 @@
       letter-spacing: 0.02em;
     }
 
+    /* 每日访问趋势折线图 */
+    .chart-card {
+      margin-top: 28px;
+      padding: 24px;
+      background: #ffffff;
+      border: 1px solid #e5e7eb;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    }
+
+    .chart-card h2 {
+      margin: 0 0 6px;
+      font-size: 19px;
+      color: #1d4ed8;
+    }
+
+    .chart-card .chart-desc {
+      margin: 0 0 14px;
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    .chart-wrap svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    .chart-note {
+      margin: 10px 0 0;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 12px;
+    }
+
+    .chart-empty {
+      padding: 48px 16px;
+      text-align: center;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+
     @media (max-width: 640px) {
       .cards {
         grid-template-columns: 1fr;
@@ -172,8 +215,123 @@
       <span>访客 <b id="vercount_value_site_uv">加载中</b> 人</span>
     </p>
 
+    <section class="chart-card" id="visit-chart">
+      <h2>近 30 天每日访问趋势</h2>
+      <p class="chart-desc">每日 23:59（北京时间）由 GitHub Actions 自动记录站点累计访问量快照，当日访问量 = 相邻两天累计值之差。</p>
+      <div class="chart-wrap" id="visit-chart-body">
+        <p class="chart-empty">数据加载中…</p>
+      </div>
+      <p class="chart-note" id="visit-chart-note"></p>
+    </section>
+
     <footer class="credit">梁帅童 liangst@sues.edu.cn，上海工程技术大学，纺织服装学院</footer>
   </main>
+  <script>
+    (function () {
+      var body = document.getElementById('visit-chart-body');
+      var note = document.getElementById('visit-chart-note');
+
+      function showEmpty(msg) {
+        body.innerHTML = '<p class="chart-empty">' + msg + '</p>';
+      }
+
+      fetch('visits.json?ts=' + Date.now(), { cache: 'no-store' })
+        .then(function (res) {
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          return res.json();
+        })
+        .then(function (data) {
+          var daily = (data.daily || []).slice()
+            .filter(function (d) { return d && d.date && typeof d.site_pv === 'number'; })
+            .sort(function (a, b) { return a.date < b.date ? -1 : a.date > b.date ? 1 : 0; });
+
+          // 当日访问量 = 后一天累计 − 前一天累计（缺口日期归入较晚一天，负值钳 0）
+          var points = [];
+          for (var i = 1; i < daily.length; i++) {
+            var diff = daily[i].site_pv - daily[i - 1].site_pv;
+            points.push({ date: daily[i].date, visits: Math.max(0, diff) });
+          }
+          points = points.slice(-30);
+
+          if (points.length < 1) {
+            showEmpty('数据积累中，至少 2 天快照后自动显示趋势');
+            return;
+          }
+          drawChart(points);
+          note.textContent = '共 ' + points.length + ' 天数据 · 最近更新 ' + (data.updated || daily[daily.length - 1].date);
+        })
+        .catch(function () {
+          showEmpty('数据积累中，至少 2 天快照后自动显示趋势');
+        });
+
+      function drawChart(points) {
+        var W = 860, H = 300;
+        var padL = 52, padR = 20, padT = 20, padB = 42;
+        var plotW = W - padL - padR, plotH = H - padT - padB;
+        var n = points.length;
+        var maxV = Math.max.apply(null, points.map(function (p) { return p.visits; }));
+        if (maxV <= 0) maxV = 1;
+        var stepY = niceStep(maxV, 4);
+        var yMax = Math.ceil(maxV / stepY) * stepY;
+        if (yMax === 0) yMax = stepY;
+
+        function x(i) { return padL + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW); }
+        function y(v) { return padT + plotH - (v / yMax) * plotH; }
+
+        var svg = ['<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="每日访问数量折线图" xmlns="http://www.w3.org/2000/svg">'];
+        svg.push('<defs><linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">' +
+          '<stop offset="0%" stop-color="#1d4ed8" stop-opacity="0.18"/>' +
+          '<stop offset="100%" stop-color="#1d4ed8" stop-opacity="0.02"/></linearGradient></defs>');
+
+        // 水平网格线 + y 轴刻度
+        for (var v = 0; v <= yMax; v += stepY) {
+          var yy = y(v);
+          svg.push('<line x1="' + padL + '" y1="' + yy + '" x2="' + (W - padR) + '" y2="' + yy +
+            '" stroke="' + (v === 0 ? '#9ca3af' : '#e5e7eb') + '" stroke-width="1"/>');
+          svg.push('<text x="' + (padL - 8) + '" y="' + (yy + 4) + '" text-anchor="end" font-size="12" fill="#6b7280">' + v + '</text>');
+        }
+
+        // x 轴日期标签（MM-DD，过密自动隔位）
+        var labelEvery = Math.ceil(n / 10);
+        for (var i = 0; i < n; i++) {
+          if (i % labelEvery !== 0 && i !== n - 1) continue;
+          var md = points[i].date.slice(5);
+          svg.push('<text x="' + x(i) + '" y="' + (H - padB + 20) + '" text-anchor="middle" font-size="12" fill="#6b7280">' + md + '</text>');
+        }
+
+        // 面积 + 折线
+        var linePts = points.map(function (p, i) { return x(i).toFixed(1) + ',' + y(p.visits).toFixed(1); });
+        if (n > 1) {
+          svg.push('<polygon points="' + linePts.join(' ') + ' ' + x(n - 1).toFixed(1) + ',' + y(0) + ' ' + x(0).toFixed(1) + ',' + y(0) +
+            '" fill="url(#areaGrad)"/>');
+        }
+        svg.push('<polyline points="' + linePts.join(' ') + '" fill="none" stroke="#1d4ed8" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>');
+
+        // 数据点 + 悬停提示
+        for (var j = 0; j < n; j++) {
+          svg.push('<circle cx="' + x(j).toFixed(1) + '" cy="' + y(points[j].visits).toFixed(1) + '" r="4" fill="#ffffff" stroke="#1d4ed8" stroke-width="2">' +
+            '<title>' + points[j].date + ' · 访问 ' + points[j].visits + ' 次</title></circle>');
+        }
+
+        // 轴标题
+        svg.push('<text x="' + (W / 2) + '" y="' + (H - 4) + '" text-anchor="middle" font-size="12" fill="#9ca3af">日期</text>');
+        svg.push('<text x="14" y="14" font-size="12" fill="#9ca3af">访问数量（次）</text>');
+
+        body.innerHTML = svg.join('');
+      }
+
+      // 计算好看的 y 轴步长（1/2/5 × 10^k）
+      function niceStep(maxV, targetTicks) {
+        var raw = maxV / targetTicks;
+        var pow = Math.pow(10, Math.floor(Math.log(raw) / Math.LN10));
+        var candidates = [1, 2, 5, 10];
+        for (var i = 0; i < candidates.length; i++) {
+          if (candidates[i] * pow >= raw) return candidates[i] * pow;
+        }
+        return 10 * pow;
+      }
+    })();
+  </script>
   <!-- Vercount 访问计数器（可选，如长期显示"加载中…"可删除本行） -->
   <script defer src="https://events.vercount.one/js"></script>
 </body>
