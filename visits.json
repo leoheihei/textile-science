@@ -1,11 +1,17 @@
 {
-  "updated": "2026-11-24",
+  "updated": "2026-11-25",
   "daily": [
     {
       "date": "2026-11-24",
       "site_pv": 741,
       "site_uv": 184,
       "page_pv": 689
+    },
+    {
+      "date": "2026-11-25",
+      "site_pv": 759,
+      "site_uv": 191,
+      "page_pv": 694
     }
   ]
 }
